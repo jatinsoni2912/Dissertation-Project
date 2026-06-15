@@ -31,3 +31,17 @@ SKIP_WORDS = {
     'like', 'need', 'looking', 'place', 'places', 'area', 'edinburgh',
     'city', 'centre',
 }
+
+HARDCODED_LOCATIONS = {
+    'city centre':   (-3.1883, 55.9533),
+    'leith':         (-3.1716, 55.9784),
+    'stockbridge':   (-3.2051, 55.9588),
+    'morningside':   (-3.2107, 55.9290),
+    'portobello':    (-3.1120, 55.9536),
+    'bruntsfield':   (-3.2040, 55.9380),
+    'newington':     (-3.1809, 55.9365),
+    'holyrood':      (-3.1772, 55.9507),
+    'princes street':(-3.1936, 55.9521),
+    'the meadows':   (-3.1896, 55.9402),
+    'ferry road':    (-3.2497, 55.9671),
+}
