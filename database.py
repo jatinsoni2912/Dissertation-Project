@@ -29,4 +29,49 @@ def get_schema():
     
     TABLE: ontology_mappings (activity to OSM tag mappings)
     COLUMNS: id, activity_term, osm_key, osm_value, source, verified
-    """    
+    """
+
+def get_ontology_mappings(activity_terms, conn=None):
+    is_local_conn = False
+    if conn is None:
+        conn = get_connection()
+        is_local_conn = True
+        
+    cur = conn.cursor()
+    try:
+        cur.execute("""
+            SELECT activity_term, osm_key, osm_value
+            FROM ontology_mappings
+            WHERE activity_term = ANY(%s)
+            AND verified = TRUE
+            ORDER BY activity_term, osm_key
+        """, (activity_terms,))
+        results = cur.fetchall()
+    finally:
+        cur.close()
+        if is_local_conn:
+            conn.close()
+            
+    if not results:
+        return None
+        
+    mappings = {}
+    for term, key, value in results:
+        if term not in mappings:
+            mappings[term] = []
+        mappings[term].append(f"{key} = '{value}'")
+    return mappings   
+
+def execute_query(sql):
+    conn = get_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute(sql)
+        results = cur.fetchall()
+        columns = [desc[0] for desc in cur.description]
+        return {'success': True, 'results': results, 'columns': columns}
+    except Exception as e:
+        return {'success': False, 'error': str(e)}
+    finally:
+        cur.close()
+        conn.close() 
