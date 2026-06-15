@@ -21,3 +21,13 @@ INVALID_TAG_FIXES = {
     "highway = 'bicycle'":     "highway = 'cycleway'",
     "highway = 'walking'":     "highway = 'footway'",
 }
+
+SKIP_WORDS = {
+    'me', 'the', 'a', 'an', 'some', 'any', 'good', 'nice', 'best',
+    'nearest', 'closest', 'find', 'show', 'where', 'can', 'go', 'get',
+    'are', 'there', 'parks', 'cafes', 'restaurants', 'cycling', 'walking',
+    'swimming', 'running', 'hiking', 'football', 'tennis', 'within',
+    'metres', 'kilometers', 'km', 'miles', 'around', 'along', 'want',
+    'like', 'need', 'looking', 'place', 'places', 'area', 'edinburgh',
+    'city', 'centre',
+}
