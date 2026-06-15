@@ -45,3 +45,55 @@ HARDCODED_LOCATIONS = {
     'the meadows':   (-3.1896, 55.9402),
     'ferry road':    (-3.2497, 55.9671),
 }
+
+def extract_activity_terms(user_query):
+
+    activity_keyword_map = {
+        'walking':     'walking',
+        'walk':        'walking',
+        'cycling':     'cycling',
+        'cycle':       'cycling',
+        'bike':        'cycling',
+        'biking':      'cycling',
+        'swimming':    'swimming',
+        'swim':        'swimming',
+        'running':     'running',
+        'run':         'running',
+        'jogging':     'jogging',
+        'jog':         'jogging',
+        'hiking':      'hiking',
+        'hike':        'hiking',
+        'dog':         'dog walking',
+        'dog walking': 'dog walking',
+        'relaxing':    'relaxing',
+        'relax':       'relaxing',
+        'picnic':      'picnic',
+        'football':    'football',
+        'soccer':      'football',
+        'tennis':      'tennis',
+        'golf':        'golf',
+        'basketball':  'basketball',
+        'eating':      'eating',
+        'food':        'eating',
+        'restaurant':  'eating',
+        'drinking':    'drinking',
+        'pub':         'drinking',
+        'coffee':      'coffee',
+        'cafe':        'coffee',
+        'shopping':    'shopping',
+        'studying':    'studying',
+        'library':     'studying',
+        'sightseeing': 'sightseeing',
+        'museum':      'sightseeing',
+        'parking':     'parking',
+        'post office': 'post office',
+        'healthcare':  'healthcare',
+        'hospital':    'healthcare',
+    }
+
+    query_lower = user_query.lower()
+    found = set()
+    for keyword in sorted(activity_keyword_map.keys(), key=len, reverse=True):
+        if keyword in query_lower:
+            found.add(activity_keyword_map[keyword])
+    return list(found)
