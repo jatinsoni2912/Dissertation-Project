@@ -12,3 +12,21 @@ def get_connection():
         user=os.getenv('DB_USER'),
         password=os.getenv('DB_PASSWORD')
     )
+
+def get_schema():
+    return """
+    TABLE: planet_osm_point (points of interest, shops, amenities)
+    COLUMNS: osm_id, name, amenity, leisure, shop, tourism, 
+             highway, historic, way (geometry, EPSG:4326)
+    
+    TABLE: planet_osm_line (roads, paths, rivers)  
+    COLUMNS: osm_id, name, highway, leisure, waterway, 
+             route, way (geometry, EPSG:4326)
+    
+    TABLE: planet_osm_polygon (parks, buildings, land use areas)
+    COLUMNS: osm_id, name, amenity, leisure, landuse, 
+             building, shop, tourism, natural, way (geometry, EPSG:4326)
+    
+    TABLE: ontology_mappings (activity to OSM tag mappings)
+    COLUMNS: id, activity_term, osm_key, osm_value, source, verified
+    """    
