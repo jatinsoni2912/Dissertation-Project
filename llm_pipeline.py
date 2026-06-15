@@ -47,7 +47,7 @@ HARDCODED_LOCATIONS = {
 }
 
 def extract_activity_terms(user_query):
-
+    
     activity_keyword_map = {
         'walking':     'walking',
         'walk':        'walking',
@@ -97,3 +97,10 @@ def extract_activity_terms(user_query):
         if keyword in query_lower:
             found.add(activity_keyword_map[keyword])
     return list(found)
+
+def extract_location(user_query):
+    query_lower = user_query.lower()
+    for place, coords in HARDCODED_LOCATIONS.items():
+        if place in query_lower:
+            return place.title(), coords
+    return 'city centre', (-3.1883, 55.9533)
