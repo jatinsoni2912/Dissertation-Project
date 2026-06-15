@@ -98,9 +98,19 @@ def extract_activity_terms(user_query):
             found.add(activity_keyword_map[keyword])
     return list(found)
 
+
 def extract_location(user_query):
     query_lower = user_query.lower()
     for place, coords in HARDCODED_LOCATIONS.items():
         if place in query_lower:
             return place.title(), coords
     return 'city centre', (-3.1883, 55.9533)
+
+def validate_sql(sql):
+    sql_upper = sql.upper().strip()
+    for blocked in BLOCKED_KEYWORDS:
+        if re.search(r'\b' + blocked + r'\b', sql_upper):
+            return False, f"Blocked keyword detected: {blocked}"
+    if not sql_upper.startswith('SELECT'):
+        return False, "Query must start with SELECT"
+    return True, "Valid"
