@@ -119,3 +119,54 @@ A: SELECT name, ST_AsGeoJSON(way) FROM planet_osm_point WHERE amenity = 'cafe' A
 USER QUERY: {user_query}
 
 SQL:"""
+
+def generate_sql_with_mcp(user_query: str, model: str = None) -> dict:
+
+    if model is None:
+        model = os.getenv('OLLAMA_MODEL', 'qwen2.5-coder:1.5b')
+
+    activity_terms = extract_activity_terms(user_query)
+    ontology_mappings = get_ontology_mappings(activity_terms) if activity_terms else None
+
+    location_name, (lon, lat) = extract_location(user_query)
+
+    live_schema = get_live_schema_via_mcp()
+
+    ontology_section = ""
+    if ontology_mappings:
+        ontology_section = "VERIFIED OSM TAG MAPPINGS:\n"
+        for term, mappings in ontology_mappings.items():
+            ontology_section += f"  {term}: {', '.join(mappings)}\n"
+    else:
+        ontology_section = "No ontology mappings found.\n"
+
+    prompt = MCP_PROMPT.format(
+        live_schema=live_schema,
+        ontology_section=ontology_section,
+        location_name=location_name,
+        lon=lon,
+        lat=lat,
+        user_query=user_query,
+    )
+
+    response = ollama.chat(
+        model=model,
+        messages=[{'role': 'user', 'content': prompt}],
+        options={'temperature': 0}
+    )
+
+    sql = response['message']['content'].strip()
+
+    is_valid, message = validate_sql(sql)
+
+    return {
+        'sql': sql,
+        'valid': is_valid,
+        'validation_message': message,
+        'ontology_used': ontology_mappings is not None,
+        'activity_terms_found': activity_terms,
+        'location_resolved': location_name,
+        'model_used': model,
+        'approach': 'Approach 2 — LLM + MCP',
+        'schema_source': 'live_mcp' if 'TABLE:' in live_schema else 'static_fallback',
+    }
