@@ -116,6 +116,10 @@ def validate_sql(sql):
         return False, "Query must start with SELECT"
     return True, "Valid"
 
+def validate_and_fix(sql):
+
+    return ""
+
 def generate_sql(user_query, model=None):
     if model is None:
         model = os.getenv('OLLAMA_MODEL', 'qwen2.5-coder:1.5b')
