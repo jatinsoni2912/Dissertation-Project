@@ -46,5 +46,76 @@ def get_live_schema_via_mcp() -> str:
 
     # Fallback — return static schema if MCP server is unavailable
     print("[MCP] Server unavailable — falling back to static schema")
+    return get_static_schema()
 
 
+def get_static_schema() -> str:
+    """Minimal static schema fallback if MCP server is not running."""
+    return """
+    TABLE: planet_osm_point — amenity, shop, tourism, highway, name, way
+    TABLE: planet_osm_line — highway, waterway, route, name, way
+    TABLE: planet_osm_polygon — leisure, landuse, amenity, building, name, place, boundary, way
+    TABLE: ontology_mappings — activity_term, osm_key, osm_value, verified
+    """
+
+MCP_PROMPT = """You are a PostGIS SQL expert generating queries for the Edinburgh geospatial database.
+Return ONLY the SQL query — no explanation, no markdown, no text before or after the SQL.
+
+LIVE DATABASE SCHEMA (retrieved via Postgres MCP — use these exact column names):
+{live_schema}
+
+{ontology_section}
+
+OSM TAG REFERENCE — use these exact tags:
+  Parks and green space  → planet_osm_polygon  WHERE leisure = 'park'
+  Gardens                → planet_osm_polygon  WHERE leisure = 'garden'
+  Cycleways              → planet_osm_line     WHERE highway = 'cycleway'
+  Footways and paths     → planet_osm_line     WHERE highway IN ('footway','path')
+  Swimming pools         → planet_osm_polygon  WHERE leisure = 'swimming_pool'
+  Sports pitches         → planet_osm_polygon  WHERE leisure = 'pitch'
+  Running tracks         → planet_osm_polygon  WHERE leisure IN ('track','sports_centre')
+  Golf courses           → planet_osm_polygon  WHERE leisure = 'golf_course'
+  Cafes                  → planet_osm_point    WHERE amenity = 'cafe'
+  Restaurants            → planet_osm_point    WHERE amenity = 'restaurant'
+  Pubs                   → planet_osm_point    WHERE amenity = 'pub'
+  Post offices           → planet_osm_point    WHERE amenity = 'post_office'
+  Libraries              → planet_osm_point    WHERE amenity = 'library'
+  Museums                → planet_osm_point    WHERE tourism = 'museum'
+  Parking                → planet_osm_point    WHERE amenity = 'parking'
+  Dog walking            → planet_osm_polygon  WHERE leisure = 'park'
+  Picnic spots           → planet_osm_polygon  WHERE leisure IN ('park','garden')
+
+RULES:
+- Return ONLY the SQL — no explanation text
+- Only SELECT statements — never INSERT UPDATE DELETE DROP
+- ALWAYS cast: way::geography AND ST_MakePoint(lon,lat)::geography
+- NEVER use ST_Intersects for proximity — use ST_DWithin
+- In spatial joins ALWAYS use ST_Intersects(p.way, boundary.way) in JOIN ON
+- Cycling and hiking: 5000m radius minimum
+- Walking: 2000m minimum
+- Default radius: 1000m
+- Add LIMIT 50 unless counting
+- For counts: SELECT COUNT(*) with no LIMIT
+
+DETECTED LOCATION: {location_name} — lon={lon}, lat={lat}
+
+FEW-SHOT EXAMPLES:
+
+Q: Where can I go cycling in Edinburgh?
+A: SELECT name, ST_AsGeoJSON(way) FROM planet_osm_line WHERE highway IN ('cycleway','path') AND ST_DWithin(way::geography, ST_MakePoint(-3.1883, 55.9533)::geography, 5000) LIMIT 50;
+
+Q: Find parks near the city centre
+A: SELECT name, ST_AsGeoJSON(way) FROM planet_osm_polygon WHERE leisure = 'park' AND ST_DWithin(way::geography, ST_MakePoint(-3.1883, 55.9533)::geography, 1000) LIMIT 50;
+
+Q: How many post offices are in Edinburgh?
+A: SELECT COUNT(*) FROM planet_osm_point WHERE amenity = 'post_office';
+
+Q: Where can I walk my dog near Leith?
+A: SELECT p.name, ST_AsGeoJSON(p.way) FROM planet_osm_polygon p JOIN planet_osm_polygon boundary ON ST_Intersects(p.way, boundary.way) WHERE boundary.name ILIKE '%leith%' AND boundary.place IN ('suburb','neighbourhood','quarter','village') AND p.leisure = 'park' LIMIT 50;
+
+Q: Find cafes within 500 metres of Princes Street
+A: SELECT name, ST_AsGeoJSON(way) FROM planet_osm_point WHERE amenity = 'cafe' AND ST_DWithin(way::geography, ST_MakePoint(-3.1936, 55.9521)::geography, 500) LIMIT 50;
+
+USER QUERY: {user_query}
+
+SQL:"""
