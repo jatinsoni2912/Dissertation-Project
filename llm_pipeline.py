@@ -3,6 +3,7 @@ import os
 import re
 from dotenv import load_dotenv
 from database import get_schema, get_ontology_mappings
+from prompt import build_prompt
  
 load_dotenv()
  
@@ -114,3 +115,6 @@ def validate_sql(sql):
     if not sql_upper.startswith('SELECT'):
         return False, "Query must start with SELECT"
     return True, "Valid"
+
+def generate_sql(user_query, model=None):
+    return ""
