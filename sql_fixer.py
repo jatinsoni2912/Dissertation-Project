@@ -9,3 +9,10 @@ class SqlFixer:
         self.lat = lat
         self.is_city_wide = is_city_wide
         self.fixes = []
+    
+    def note(self, message):
+        self.fixes.append(message)
+
+    def run(self):
+        self.fix_geography_casts()
+        self.fix_alias_prefix()
