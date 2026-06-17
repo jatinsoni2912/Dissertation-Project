@@ -252,10 +252,17 @@ def get_dynamic_tags_from_db(user_query, conn, limit=4):
         return ""
 
 
-def determine_query_mode(sql):
+def determine_query_type(sql):
     is_dep = 'edinburgh_deprivation' in sql.lower()
     if is_dep and 'planet_osm' not in sql.lower():
         return 'deprivation'
     if is_dep:
         return 'cross'
     return 'osm'
+
+def fix_deprivation_columns(sql):
+    sql = re.sub(r'\bSELECT\s+name\b', 'SELECT dzname', sql, flags=re.IGNORECASE)
+    sql = re.sub(r',\s*name\b(?!\s*\()', ', dzname', sql, flags=re.IGNORECASE)
+    sql = re.sub(r'ST_AsGeoJSON\(way\)', 'ST_AsGeoJSON(geom)', sql, flags=re.IGNORECASE)
+    sql = re.sub(r'\bname\b(?=\s*,|\s+FROM)', 'dzname', sql, flags=re.IGNORECASE)
+    return sql
