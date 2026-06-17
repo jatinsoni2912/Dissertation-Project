@@ -363,6 +363,25 @@ def handle_search_fallback(result, sql, fixes, location_name, lon, lat):
 
     return expand_search_radius(result, table, tag_parts, fixes, lon, lat)
 
+def adjust_search_radius(result, sql, fixes):
 
+    check = execute_query(result.get('sql', sql))
+    if not (check['success'] and len(check['results']) == 0):
+        return result
 
+    for multiplier in [3, 10]:
+        expanded = re.sub(
+            r'(::geography\s*,\s*)(\d+)(\s*\))',
+            lambda m, mul=multiplier: m.group(1) + str(int(m.group(2)) * mul) + m.group(3),
+            result.get('sql', sql)
+        )
+        retry = execute_query(expanded)
+        if retry['success'] and len(retry['results']) > 0:
+            result['sql'] = expanded
+            result['fixes_applied'] = fixes + [
+                f'Auto-expanded radius {multiplier}x — found {len(retry["results"])} results'
+            ]
+            print(f"[Retry] {multiplier}x — {len(retry['results'])} results")
+            break
 
+    return result
