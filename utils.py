@@ -63,3 +63,11 @@ def finalise_example_keys(keys):
     if len(chosen) == 1:
         chosen.append('named_area' if chosen[0] != 'named_area' else 'proximity_point')
     return chosen
+
+def select_examples(activity_terms, is_city_wide, is_named_area, user_query):
+    q = user_query.lower()
+    terms = [x.lower() for x in (activity_terms or [])]
+    flags = classify_query(terms, q)
+    keys = pick_example_keys(terms, is_city_wide, is_named_area, flags)
+    chosen = finalise_example_keys(keys)
+    return '\n\n'.join(EXAMPLES[k] for k in chosen)
