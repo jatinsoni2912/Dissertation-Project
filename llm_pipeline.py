@@ -173,12 +173,15 @@ def generate_sql(user_query, model=None):
 
     sql = response['message']['content'].strip()
 
+    sql, fixes = validate_and_fix(sql)
+
     is_valid, message = validate_sql(sql)
 
     return {
         'sql': sql,
         'valid': is_valid,
         'validation_message': message,
+        'fixes_applied': fixes,
         'ontology_used': ontology_mappings is not None,
         'activity_terms_found': activity_terms,
         'location_resolved': location_name,
