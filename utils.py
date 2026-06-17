@@ -20,3 +20,11 @@ def classify_query(terms, query):
         'has_limit': bool(re.search(r'show me \d+|find \d+|\d+\s+(?:cafes?|parks?|pubs?)', query)),
         'has_sport': any(s in terms for s in SPORTS),
     }
+
+
+def pick_city_wide_key(terms):
+    if 'walking' in terms:     return 'walking_paths'
+    if 'running' in terms:     return 'running'
+    if any(x in terms for x in ['cycling', 'hiking']):  return 'city_wide_line'
+    if any(x in terms for x in ['swimming', 'golf']):   return 'city_wide_polygon'
+    return 'city_wide_point'
