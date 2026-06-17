@@ -106,3 +106,16 @@ def find_street_word_boundary(cur, location_name):
         (location_name,)
     )
     return cur.fetchone()
+
+def find_street_partial(cur, location_name):
+    cur.execute(
+        "SELECT ST_X(ST_Centroid(way)) AS lon,"
+        "       ST_Y(ST_Centroid(way)) AS lat, name"
+        " FROM planet_osm_line"
+        " WHERE name ILIKE %s AND name IS NOT NULL"
+        + EXCLUDE_ROUTES_CLAUSE +
+        " ORDER BY (LOWER(name) = LOWER(%s)) DESC,"
+        "          LENGTH(name) ASC LIMIT 1",
+        (f'%{location_name}%', location_name)
+    )
+    return cur.fetchone()
