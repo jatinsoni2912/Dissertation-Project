@@ -1,5 +1,7 @@
 import re
 
+from database import geocode_location
+
 from constants import (
     BLOCKED_KEYWORDS, SPORTS, SKIP_WORDS, SKIP_PREFIXES,
     CITY_WIDE_SIGNALS, EXAMPLES, ACTIVITY_FEATURE,
@@ -132,4 +134,15 @@ def build_location_candidates(query):
         candidates.append(' '.join(words[-length:]))
 
     return candidates
+
+def candidate_is_valid(candidate):
+    if candidate in SKIP_WORDS or len(candidate) < 3:
+        return False
+    if any(candidate.startswith(p) for p in SKIP_PREFIXES):
+        return False
+    if candidate.replace('.', '').isdigit():
+        return False
+    if candidate.split()[0] in ('within', 'metres', 'meters', 'km', 'miles'):
+        return False
+    return True
 
