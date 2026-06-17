@@ -335,4 +335,20 @@ def build_spatial_query(table, tag_parts, lon, lat, radius):
         f"AND ST_DWithin(way::geography, ST_MakePoint({lon:.6f},{lat:.6f})::geography, {radius});"
     )
 
+def expand_search_radius(result, table, tag_parts, fixes, lon, lat):
+    
+    for radius in [3000, 5000, 10000]:
+        fallback_sql = build_spatial_query(table, tag_parts, lon, lat, radius)
+        fb = execute_query(fallback_sql)
+        
+        if fb['success'] and len(fb['results']) > 0:
+            result['sql'] = fallback_sql
+            result['fixes_applied'] = fixes + [
+                f'Named area boundary returned 0 — fell back to ST_DWithin {radius}m'
+            ]
+            print(f"[Named fallback] {len(fb['results'])} results at {radius}m")
+            break
+            
+    return result
+
 
