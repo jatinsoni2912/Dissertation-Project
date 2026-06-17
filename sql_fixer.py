@@ -35,3 +35,24 @@ class SqlFixer:
             self.sql = self.sql.rstrip(';') + ';'
 
         return self.sql, self.fixes
+    
+    def fix_geography_casts(self):
+        sql = self.sql
+        if 'ST_DWithin(way,' in sql and 'way::geography' not in sql:
+            sql = sql.replace('ST_DWithin(way,', 'ST_DWithin(way::geography,')
+            self.note("Added ::geography cast to way")
+
+        def add_cast(m):
+            if '::geography' not in m.group(2):
+                return m.group(1) + m.group(2) + '::geography' + m.group(3)
+            return m.group(0)
+
+        updated = re.sub(
+            r'(ST_DWithin\(way::geography,\s*)(ST_MakePoint\([^)]+\))(\s*,)',
+            add_cast, sql
+        )
+        if updated != sql:
+            self.note("Added ::geography cast to ST_MakePoint")
+            sql = updated
+
+        self.sql = sql
