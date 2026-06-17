@@ -163,3 +163,26 @@ def resolve_location(candidates, conn):
             print(f"[Geocoder] '{candidate}' -> '{matched_name}' ({lon:.4f}, {lat:.4f})")
             return matched_name, (lon, lat)
     return None
+
+def extract_location(user_query, conn=None):
+    q = user_query.lower()
+
+    if any(sig in q for sig in CITY_WIDE_SIGNALS):
+        print("[Geocoder] City-wide Edinburgh query detected")
+        return 'edinburgh', (-3.1883, 55.9533), True
+
+    has_indicator = any(
+        ind in q for ind in ['near ', 'close to ', 'next to ', 'at ', 'around ', 'within ', 'of ']
+    )
+    if 'edinburgh' in q and not has_indicator:
+        print("[Geocoder] Edinburgh mentioned without proximity — city-wide scope")
+        return 'edinburgh', (-3.1883, 55.9533), True
+
+    candidates = build_location_candidates(q)
+    found = resolve_location(candidates, conn)
+    if found:
+        name, (lon, lat) = found
+        return name, (lon, lat), False
+
+    print("[Geocoder] No location found — defaulting to city centre")
+    return 'city centre', (-3.1883, 55.9533), False
