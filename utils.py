@@ -146,3 +146,20 @@ def candidate_is_valid(candidate):
         return False
     return True
 
+def resolve_location(candidates, conn):
+    seen = set()
+    for candidate in candidates:
+        candidate = candidate.strip('?.!, ')
+        if not candidate or candidate in seen:
+            continue
+        seen.add(candidate)
+        if not candidate_is_valid(candidate):
+            continue
+        result = geocode_location(candidate, conn=conn)
+        if result:
+            lon, lat, matched_name = result
+            if len(matched_name) > len(candidate) * 5:
+                continue
+            print(f"[Geocoder] '{candidate}' -> '{matched_name}' ({lon:.4f}, {lat:.4f})")
+            return matched_name, (lon, lat)
+    return None
