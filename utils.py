@@ -186,3 +186,13 @@ def extract_location(user_query, conn=None):
 
     print("[Geocoder] No location found — defaulting to city centre")
     return 'city centre', (-3.1883, 55.9533), False
+
+
+def validate_sql(sql):
+    sql_upper = sql.upper().strip()
+    for keyword in BLOCKED_KEYWORDS:
+        if re.search(r'\b' + keyword + r'\b', sql_upper):
+            return False, f"Blocked keyword: {keyword}"
+    if not sql_upper.startswith('SELECT'):
+        return False, "Query must start with SELECT"
+    return True, "Valid"
