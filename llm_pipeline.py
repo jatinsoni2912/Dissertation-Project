@@ -117,8 +117,39 @@ def validate_sql(sql):
     return True, "Valid"
 
 def validate_and_fix(sql):
+    
+    fixes = []
 
-    return ""
+    sql = re.sub(r'```sql\s*', '', sql, flags=re.IGNORECASE)
+    sql = re.sub(r'```\s*', '', sql)
+    sql = sql.strip()
+
+    for wrong, correct in INVALID_TAG_FIXES.items():
+        if wrong in sql:
+            sql = sql.replace(wrong, correct)
+            fixes.append(f"Fixed '{wrong}' to '{correct}'")
+
+    if 'ST_DWithin(way,' in sql and 'way::geography' not in sql:
+        sql = sql.replace('ST_DWithin(way,', 'ST_DWithin(way::geography,')
+        fixes.append("Added ::geography cast to way")
+
+    def add_geo_cast(m):
+        if '::geography' not in m.group(2):
+            return m.group(1) + m.group(2) + '::geography' + m.group(3)
+        return m.group(0)
+    new_sql = re.sub(
+        r'(ST_DWithin\(way::geography,\s*)(ST_MakePoint\([^)]+\))(\s*,)',
+        add_geo_cast, sql
+    )
+    if new_sql != sql:
+        fixes.append("Added ::geography cast to ST_MakePoint")
+        sql = new_sql
+
+    if 'COUNT(' not in sql.upper() and 'LIMIT' not in sql.upper():
+        sql = sql.rstrip(';') + ' LIMIT 50;'
+        fixes.append("Added missing LIMIT 50")
+
+    return sql, fixes
 
 def generate_sql(user_query, model=None):
     if model is None:
