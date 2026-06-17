@@ -80,3 +80,16 @@ def execute_query(sql):
 def is_street_name(location_name):
     words = location_name.lower().strip().split()
     return any(word in STREET_SUFFIXES for word in words)
+
+def find_street_exact(cur, location_name):
+    cur.execute(
+        "SELECT ST_X(ST_Centroid(way)) AS lon,"
+        "       ST_Y(ST_Centroid(way)) AS lat, name"
+        " FROM planet_osm_line"
+        " WHERE LOWER(name) = LOWER(%s)"
+        " AND name IS NOT NULL"
+        + EXCLUDE_ROUTES_CLAUSE +
+        " LIMIT 1",
+        (location_name,)
+    )
+    return cur.fetchone()
