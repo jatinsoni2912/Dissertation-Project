@@ -90,3 +90,25 @@ class SqlFixer:
         tag_parts.append(f"ST_DWithin(way::geography, ST_MakePoint({self.lon},{self.lat})::geography, 1000)")
         self.sql = f"{select_part} FROM {table} WHERE {' AND '.join(tag_parts)};"
         self.note("Replaced incorrect boundary JOIN with coordinate ST_DWithin")
+
+    
+    def add_missing_spatial_filter(self):
+        sql = self.sql
+        sql_upper = sql.upper()
+        has_spatial = any(x in sql_upper for x in ('ST_DWITHIN', 'ST_INTERSECTS', 'ST_CONTAINS', 'JOIN'))
+        if has_spatial:
+            return
+
+        spatial = f"ST_DWithin(way::geography, ST_MakePoint({self.lon},{self.lat})::geography, 1000)"
+        has_where = 'WHERE' in sql_upper
+        has_limit = 'LIMIT' in sql_upper
+
+        if has_where:
+            sql = re.sub(r'(?i)\bLIMIT\b', f"AND {spatial} LIMIT", sql) if has_limit \
+                else sql.rstrip(';').strip() + f" AND {spatial};"
+        else:
+            sql = re.sub(r'(?i)\bLIMIT\b', f"WHERE {spatial} LIMIT", sql) if has_limit \
+                else sql.rstrip(';').strip() + f" WHERE {spatial};"
+
+        self.sql = sql
+        self.note("Injected missing spatial filter")
