@@ -28,3 +28,24 @@ def pick_city_wide_key(terms):
     if any(x in terms for x in ['cycling', 'hiking']):  return 'city_wide_line'
     if any(x in terms for x in ['swimming', 'golf']):   return 'city_wide_polygon'
     return 'city_wide_point'
+
+
+def pick_example_keys(terms, is_city_wide, is_named_area, flags):
+    keys = []
+    if flags['is_count']:  keys.append('count')
+    if flags['is_cross']:  keys.append('cross_query')
+    elif flags['is_dep']:  keys.append('deprivation_only')
+    if flags['has_sport']: keys.append('sport_named_area' if is_named_area else 'sport_proximity')
+    if flags['has_limit']: keys.append('explicit_limit')
+
+    if is_named_area and not flags['has_sport']:
+        keys.append('named_area')
+    elif is_city_wide:
+        keys.append(pick_city_wide_key(terms))
+    elif not flags['is_dep']:
+        keys.append(
+            'proximity_polygon'
+            if any(x in terms for x in ['park', 'swimming', 'golf'])
+            else 'proximity_point'
+        )
+    return keys
