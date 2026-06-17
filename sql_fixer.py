@@ -56,7 +56,6 @@ class SqlFixer:
             sql = updated
 
         self.sql = sql
-    
 
     def fix_alias_prefix(self):
         sql = self.sql
@@ -64,3 +63,30 @@ class SqlFixer:
             and re.search(r'ST_DWithin\(\s*(?<!p\.)way', sql, re.IGNORECASE)):
             self.sql = re.sub(r'ST_DWithin\(\s*(?<!p\.)way', 'ST_DWithin(p.way', sql, flags=re.IGNORECASE)
             self.note("Fixed ambiguous column reference — added p. prefix inside ST_DWithin")
+
+    
+    def rebuild_query_from_boundary_join(self):
+        sql = self.sql
+        if 'ST_DWithin' in sql or 'JOIN' not in sql.upper() or 'boundary' not in sql.lower():
+            return
+
+        table_match = re.search(r'FROM\s+(planet_osm_\w+)', sql, re.IGNORECASE)
+        if not table_match:
+            return
+
+        table = table_match.group(1)
+        select_part = "SELECT COUNT(*)" if 'COUNT(' in sql.upper() else "SELECT name, ST_AsGeoJSON(way)"
+
+        tag_parts = []
+        where_match = re.search(r'WHERE\s+(.*)', sql, re.IGNORECASE)
+        if where_match:
+            clause = re.sub(r'LIMIT\s+\d+', '', where_match.group(1), flags=re.IGNORECASE).strip().rstrip(';')
+            clause = re.sub(r'\bp\.', '', clause)
+            for part in re.split(r'\s+AND\s+', clause, flags=re.IGNORECASE):
+                p = part.strip()
+                if not any(x in p.lower() for x in ('boundary', 'place', 'st_intersects', 'st_dwithin')):
+                    tag_parts.append(p)
+
+        tag_parts.append(f"ST_DWithin(way::geography, ST_MakePoint({self.lon},{self.lat})::geography, 1000)")
+        self.sql = f"{select_part} FROM {table} WHERE {' AND '.join(tag_parts)};"
+        self.note("Replaced incorrect boundary JOIN with coordinate ST_DWithin")
