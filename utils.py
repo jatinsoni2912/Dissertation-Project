@@ -269,11 +269,21 @@ def fix_deprivation_columns(sql):
 
 def check_tag_presence(sql, key, val, table, allow_in_clause):
     sql_lower = sql.lower()
-    # Check for direct key/val pairing
+    
     if f"{key} = '{val}'" in sql_lower or f"{key}='{val}'" in sql_lower:
         return True
-    # Check for IN clause if allowed
+   
     if allow_in_clause and f"'{val}'" in sql_lower and table.lower() in sql_lower:
         return True
     return False
 
+def construct_sql_for_activity_query(table, key, val, is_city_wide, lon, lat, radius):
+    base_sql = f"SELECT name, ST_AsGeoJSON(way) AS geometry FROM {table} WHERE {key} = '{val}'"
+    
+    if is_city_wide:
+        return f"{base_sql};"
+    
+    return (
+        f"{base_sql} AND ST_DWithin(way::geography, "
+        f"ST_MakePoint({lon:.6f}, {lat:.6f})::geography, {radius});"
+    )
