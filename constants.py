@@ -105,3 +105,41 @@ EXAMPLES = {
         "FROM planet_osm_point p JOIN edinburgh_deprivation d ON ST_Intersects(p.way, d.geom) "
         "WHERE p.amenity = 'cafe' AND d.la_decile <= 2;",
 }
+
+ACTIVITY_FEATURE = {
+    'cycling':     ('highway', 'cycleway',      'planet_osm_line'),
+    'hiking':      ('highway', 'path',          'planet_osm_line'),
+    'swimming':    ('leisure', 'swimming_pool', 'planet_osm_polygon'),
+    'golf':        ('leisure', 'golf_course',   'planet_osm_polygon'),
+    'running':     ('leisure', 'track',         'planet_osm_polygon'),
+    'coffee':      ('amenity', 'cafe',          'planet_osm_point'),
+    'eating':      ('amenity', 'restaurant',    'planet_osm_point'),
+    'drinking':    ('amenity', 'pub',           'planet_osm_point'),
+    'studying':    ('amenity', 'library',       'planet_osm_point'),
+    'shopping':    ('shop',    'supermarket',   'planet_osm_point'),
+    'sightseeing': ('tourism', 'attraction',    'planet_osm_point'),
+    'healthcare':  ('amenity', 'hospital',      'planet_osm_point'),
+    'parking':     ('amenity', 'parking',       'planet_osm_point'),
+}
+
+LANDUSE_CORRECTIONS = {
+    'park':              ('leisure', 'park',           'planet_osm_polygon'),
+    'recreation_ground': ('leisure', 'park',           'planet_osm_polygon'),
+    'pitch':             ('leisure', 'pitch',          'planet_osm_polygon'),
+    'garden':            ('leisure', 'garden',         'planet_osm_polygon'),
+    'golf_course':       ('leisure', 'golf_course',    'planet_osm_polygon'),
+    'swimming_pool':     ('leisure', 'swimming_pool',  'planet_osm_polygon'),
+    'sports_centre':     ('leisure', 'sports_centre',  'planet_osm_polygon'),
+    'track':             ('leisure', 'track',          'planet_osm_polygon'),
+    'nature_reserve':    ('leisure', 'nature_reserve', 'planet_osm_polygon'),
+    'playground':        ('leisure', 'playground',     'planet_osm_polygon'),
+    'cycleway':          ('highway', 'cycleway',       'planet_osm_line'),
+    'footway':           ('highway', 'footway',        'planet_osm_line'),
+    'path':              ('highway', 'path',           'planet_osm_line'),
+    'cycling':           ('highway', 'cycleway',       'planet_osm_line'),
+}
+
+LEISURE_POLYGON_TAGS = [
+    'swimming_pool', 'sports_centre', 'golf_course',
+    'track', 'garden', 'park', 'nature_reserve', 'playground',
+]
