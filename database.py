@@ -30,6 +30,14 @@ def get_schema():
     
     TABLE: ontology_mappings (activity to OSM tag mappings)
     COLUMNS: id, activity_term, osm_key, osm_value, source, verified
+
+    TABLE: edinburgh_deprivation (Scottish Index of Multiple Deprivation 2019)
+    COLUMNS: ogc_fid, dzname (data zone name), datazone (code),
+             la_rank (rank, lower=more deprived),
+             la_pct (percentile), la_decile (1=most deprived 10=least deprived),
+             geom (geometry, EPSG:4326)
+    NOTE: la_decile 1 = most deprived, 10 = least deprived
+    CROSS-QUERY PATTERN: JOIN edinburgh_deprivation d ON ST_Intersects(p.way, d.geom)
     """
 
 def get_ontology_mappings(activity_terms, conn=None):
@@ -168,7 +176,7 @@ def find_line_fallback(cur, location_name):
 
 
 def geocode_location(location_name, conn=None):
-    
+
     is_local_conn = conn is None
     if is_local_conn:
         conn = get_connection()
