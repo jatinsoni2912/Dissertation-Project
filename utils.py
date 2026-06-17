@@ -304,3 +304,12 @@ def check_activity_filter(sql, activity_terms, query_mode, is_city_wide, lon, la
             break
             
     return sql
+
+def extract_tag_parts(where_clause, location_name):
+    skip = ('boundary', 'place', 'st_intersects', 'st_dwithin', location_name.lower())
+    parts = []
+    for part in re.split(r'\s+AND\s+', where_clause, flags=re.IGNORECASE):
+        p = part.strip().rstrip(';')
+        if not any(x in p.lower() for x in skip):
+            parts.append(re.sub(r'^[lp]\.', '', p))
+    return parts
