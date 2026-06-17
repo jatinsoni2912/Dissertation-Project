@@ -143,3 +143,10 @@ LEISURE_POLYGON_TAGS = [
     'swimming_pool', 'sports_centre', 'golf_course',
     'track', 'garden', 'park', 'nature_reserve', 'playground',
 ]
+
+CROSS_TAG_FIXES = [
+    ('amenity', 'cycleway', 'highway', 'cycleway', 'planet_osm_line'),
+    ('amenity', 'footway',  'highway', 'footway',  'planet_osm_line'),
+    ('amenity', 'path',     'highway', 'path',     'planet_osm_line'),
+    ('amenity', 'park',     'leisure', 'park',     'planet_osm_polygon'),
+]
