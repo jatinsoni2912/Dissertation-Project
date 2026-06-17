@@ -156,3 +156,12 @@ def find_point_of_interest(cur, location_name):
         {ORDER_BY_NAME_MATCH} LIMIT 1
     """, (f'%{location_name}%', location_name, location_name, location_name))
     return cur.fetchone()
+
+def find_line_fallback(cur, location_name):
+    cur.execute(f"""
+        SELECT ST_X(ST_Centroid(way)) AS lon, ST_Y(ST_Centroid(way)) AS lat, name
+        FROM planet_osm_line
+        WHERE (name ILIKE %s OR name ~* ('\\y' || %s || '\\y')) AND name IS NOT NULL
+        {ORDER_BY_NAME_MATCH} LIMIT 1
+    """, (f'%{location_name}%', location_name, location_name, location_name))
+    return cur.fetchone()
