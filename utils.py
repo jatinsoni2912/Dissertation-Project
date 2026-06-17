@@ -49,3 +49,17 @@ def pick_example_keys(terms, is_city_wide, is_named_area, flags):
             else 'proximity_point'
         )
     return keys
+
+def finalise_example_keys(keys):
+    seen, chosen = set(), []
+    for k in keys:
+        if k not in seen and k in EXAMPLES:
+            seen.add(k)
+            chosen.append(k)
+        if len(chosen) == 4:
+            break
+    if not chosen:
+        return ['proximity_point', 'named_area']
+    if len(chosen) == 1:
+        chosen.append('named_area' if chosen[0] != 'named_area' else 'proximity_point')
+    return chosen
