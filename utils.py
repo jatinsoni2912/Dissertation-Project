@@ -287,3 +287,20 @@ def construct_sql_for_activity_query(table, key, val, is_city_wide, lon, lat, ra
         f"{base_sql} AND ST_DWithin(way::geography, "
         f"ST_MakePoint({lon:.6f}, {lat:.6f})::geography, {radius});"
     )
+
+def check_activity_filter(sql, activity_terms, query_mode, is_city_wide, lon, lat, radius, allow_in_clause=False):
+    if query_mode != 'osm' or not activity_terms:
+        return sql
+
+    for term in activity_terms:
+        if term not in ACTIVITY_FEATURE:
+            continue
+            
+        exp_key, exp_val, exp_table = ACTIVITY_FEATURE[term]
+        
+        if not check_tag_presence(sql, exp_key, exp_val, exp_table, allow_in_clause):
+            sql = construct_sql_for_activity_query(exp_table, exp_key, exp_val, is_city_wide, lon, lat, radius)
+            print(f"[Activity fix] Rebuilt SQL for {term}: {exp_key}='{exp_val}'")
+            break
+            
+    return sql
