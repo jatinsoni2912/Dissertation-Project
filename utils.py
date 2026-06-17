@@ -196,3 +196,19 @@ def validate_sql(sql):
     if not sql_upper.startswith('SELECT'):
         return False, "Query must start with SELECT"
     return True, "Valid"
+
+
+def is_district(location_name, conn):
+    if location_name.lower() in ('city centre', 'edinburgh', 'city of edinburgh'):
+        return False
+    cur = conn.cursor()
+    try:
+        cur.execute("""
+            SELECT 1 FROM planet_osm_polygon
+            WHERE name ILIKE %s
+            AND place IN ('suburb','neighbourhood','quarter','village','town')
+            LIMIT 1
+        """, (f'%{location_name}%',))
+        return cur.fetchone() is not None
+    finally:
+        cur.close()
