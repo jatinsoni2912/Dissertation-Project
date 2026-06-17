@@ -165,3 +165,30 @@ def find_line_fallback(cur, location_name):
         {ORDER_BY_NAME_MATCH} LIMIT 1
     """, (f'%{location_name}%', location_name, location_name, location_name))
     return cur.fetchone()
+
+
+def geocode_location(location_name, conn=None):
+    
+    is_local_conn = conn is None
+    if is_local_conn:
+        conn = get_connection()
+
+    cur = conn.cursor()
+    try:
+        street_like = is_street_name(location_name)
+
+        result = find_street(cur, location_name) if street_like else None
+        if not result:
+            result = find_neighbourhood(cur, location_name)
+        if not result:
+            result = find_polygon_boundary(cur, location_name)
+        if not result:
+            result = find_point_of_interest(cur, location_name)
+        if not result and not street_like:
+            result = find_line_fallback(cur, location_name)
+
+        return result
+    finally:
+        cur.close()
+        if is_local_conn:
+            conn.close()
