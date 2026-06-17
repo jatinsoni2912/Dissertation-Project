@@ -150,3 +150,11 @@ CROSS_TAG_FIXES = [
     ('amenity', 'path',     'highway', 'path',     'planet_osm_line'),
     ('amenity', 'park',     'leisure', 'park',     'planet_osm_polygon'),
 ]
+
+STREET_SUFFIXES = {
+    'road','street','lane','avenue','drive','crescent','place',
+    'rd','st','ave','mile','wynd','close','gate','terrace',
+    'grove','walk','row','gardens','court','way','path',
+    'vennel','loan','brae','hill','bank','view','park',
+    'square','circus','quay','bridge','causeway',
+}
