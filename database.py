@@ -119,3 +119,10 @@ def find_street_partial(cur, location_name):
         (f'%{location_name}%', location_name)
     )
     return cur.fetchone()
+
+def find_street(cur, location_name):
+    for finder in (find_street_exact, find_street_word_boundary, find_street_partial):
+        result = finder(cur, location_name)
+        if result:
+            return result
+    return None
