@@ -112,3 +112,24 @@ def extract_activity_terms(user_query):
         if keyword in q:
             found.add(keyword_map[keyword])
     return list(found)
+
+
+def build_location_candidates(query):
+    indicators = [
+        'near ', 'in ', 'around ', 'at ', 'close to ',
+        'next to ', 'towards ', 'along ', 'within ', 'of '
+    ]
+    candidates = []
+    for ind in indicators:
+        if ind in query:
+            after = query[query.find(ind) + len(ind):].strip()
+            words = after.split()
+            for length in range(min(4, len(words)), 0, -1):
+                candidates.append(' '.join(words[:length]))
+
+    words = query.split()
+    for length in range(min(4, len(words)), 0, -1):
+        candidates.append(' '.join(words[-length:]))
+
+    return candidates
+
