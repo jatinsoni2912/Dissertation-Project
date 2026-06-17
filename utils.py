@@ -351,4 +351,18 @@ def expand_search_radius(result, table, tag_parts, fixes, lon, lat):
             
     return result
 
+def handle_search_fallback(result, sql, fixes, location_name, lon, lat):
+
+    check = execute_query(sql)
+    if not (check['success'] and len(check['results']) == 0):
+        return result
+
+    table, tag_parts = get_sql_components(sql, location_name)
+    if not table or not tag_parts:
+        return result
+
+    return expand_search_radius(result, table, tag_parts, fixes, lon, lat)
+
+
+
 
