@@ -1,6 +1,7 @@
 import psycopg2
 import os
 from dotenv import load_dotenv
+from constants import STREET_SUFFIXES, EXCLUDE_ROUTES_CLAUSE, ORDER_BY_NAME_MATCH
 
 load_dotenv()
 
@@ -74,4 +75,8 @@ def execute_query(sql):
         return {'success': False, 'error': str(e)}
     finally:
         cur.close()
-        conn.close() 
+        conn.close()
+
+def is_street_name(location_name):
+    words = location_name.lower().strip().split()
+    return any(word in STREET_SUFFIXES for word in words)
