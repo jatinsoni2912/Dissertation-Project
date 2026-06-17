@@ -126,3 +126,14 @@ def find_street(cur, location_name):
         if result:
             return result
     return None
+
+def find_neighbourhood(cur, location_name):
+    cur.execute("""
+        SELECT ST_X(ST_Centroid(way)) AS lon, ST_Y(ST_Centroid(way)) AS lat, name
+        FROM planet_osm_polygon
+        WHERE (name ILIKE %s OR name ~* ('\\y' || %s || '\\y'))
+        AND place IN ('suburb','neighbourhood','quarter','village','town')
+        ORDER BY (LOWER(name) = LOWER(%s)) DESC, (name ~* ('\\y' || %s || '\\y')) DESC, ST_Area(way::geography) DESC
+        LIMIT 1
+    """, (f'%{location_name}%', location_name, location_name, location_name))
+    return cur.fetchone()
