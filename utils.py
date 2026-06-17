@@ -1,3 +1,11 @@
+import re
+
+from constants import (
+    BLOCKED_KEYWORDS, SPORTS, SKIP_WORDS, SKIP_PREFIXES,
+    CITY_WIDE_SIGNALS, EXAMPLES, ACTIVITY_FEATURE,
+    LANDUSE_CORRECTIONS, LEISURE_POLYGON_TAGS,
+)
+
 def classify_query(terms, query):
     is_dep = 'deprivation' in terms or any(
         x in query for x in ('deprived', 'deprivation', 'decile', 'affluent')
