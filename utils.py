@@ -250,3 +250,12 @@ def get_dynamic_tags_from_db(user_query, conn, limit=4):
     except Exception as e:
         print(f"Tag lookup failed: {e}")
         return ""
+
+
+def determine_query_mode(sql):
+    is_dep = 'edinburgh_deprivation' in sql.lower()
+    if is_dep and 'planet_osm' not in sql.lower():
+        return 'deprivation'
+    if is_dep:
+        return 'cross'
+    return 'osm'
