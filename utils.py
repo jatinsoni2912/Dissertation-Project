@@ -212,3 +212,41 @@ def is_district(location_name, conn):
         return cur.fetchone() is not None
     finally:
         cur.close()
+
+def get_search_radius(activity_terms, user_query):
+    q = user_query.lower()
+    terms = [x.lower() for x in activity_terms]
+    if 'swimming' in terms or 'swimming' in q:                              
+        return 5000
+    if any(x in terms for x in ['cycling', 'hiking']) or 'cycleway' in q:  
+        return 5000
+    if 'golf' in terms or 'golf' in q:                                      
+        return 5000
+    if any(x in terms for x in ['cricket', 'rugby', 'football', 'tennis', 'basketball']): 
+        return 3000
+    if 'sports centre' in q or 'sports_centre' in q:                        
+        return 3000
+    if any(x in terms for x in ['walking', 'dog walking', 'park']) or 'park' in q: 
+        return 3000
+    
+    return 1500
+
+def get_dynamic_tags_from_db(user_query, conn, limit=4):
+    try:
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT osm_table, osm_key, osm_value, search_term
+            FROM osm_feature_map
+            ORDER BY search_term <-> %s
+            LIMIT %s;
+        """, (user_query, limit))
+        rows = cur.fetchall()
+        if not rows:
+            return ""
+        hints = "VERIFIED OSM TAG MAPPINGS FOR THIS QUERY:\n"
+        for osm_table, osm_key, osm_value, search_term in rows:
+            hints += f"  - To find '{search_term}': Use table `{osm_table}` WHERE {osm_key} = '{osm_value}'\n"
+        return hints
+    except Exception as e:
+        print(f"Tag lookup failed: {e}")
+        return ""
