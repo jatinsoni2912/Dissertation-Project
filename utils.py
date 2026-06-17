@@ -1,6 +1,6 @@
 import re
 
-from database import geocode_location
+from database import geocode_location, execute_query
 
 from constants import (
     BLOCKED_KEYWORDS, SPORTS, SKIP_WORDS, SKIP_PREFIXES,
@@ -313,3 +313,18 @@ def extract_tag_parts(where_clause, location_name):
         if not any(x in p.lower() for x in skip):
             parts.append(re.sub(r'^[lp]\.', '', p))
     return parts
+
+def get_sql_components(sql, location_name):
+    
+    table_match = re.search(r'FROM\s+(planet_osm_\w+)', sql, re.IGNORECASE)
+    where_match = re.search(r'WHERE\s+(.+)', sql, re.IGNORECASE | re.DOTALL)
+    
+    if not table_match or not where_match:
+        return None, None
+        
+    table = table_match.group(1)
+    tag_parts = extract_tag_parts(where_match.group(1), location_name)
+    
+    return table, tag_parts
+
+
