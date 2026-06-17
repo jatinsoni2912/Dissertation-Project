@@ -327,4 +327,12 @@ def get_sql_components(sql, location_name):
     
     return table, tag_parts
 
+def build_spatial_query(table, tag_parts, lon, lat, radius):
+    
+    return (
+        f"SELECT name, ST_AsGeoJSON(way) AS geometry "
+        f"FROM {table} WHERE {' AND '.join(tag_parts)} "
+        f"AND ST_DWithin(way::geography, ST_MakePoint({lon:.6f},{lat:.6f})::geography, {radius});"
+    )
+
 
