@@ -266,3 +266,14 @@ def fix_deprivation_columns(sql):
     sql = re.sub(r'ST_AsGeoJSON\(way\)', 'ST_AsGeoJSON(geom)', sql, flags=re.IGNORECASE)
     sql = re.sub(r'\bname\b(?=\s*,|\s+FROM)', 'dzname', sql, flags=re.IGNORECASE)
     return sql
+
+def check_tag_presence(sql, key, val, table, allow_in_clause):
+    sql_lower = sql.lower()
+    # Check for direct key/val pairing
+    if f"{key} = '{val}'" in sql_lower or f"{key}='{val}'" in sql_lower:
+        return True
+    # Check for IN clause if allowed
+    if allow_in_clause and f"'{val}'" in sql_lower and table.lower() in sql_lower:
+        return True
+    return False
+
