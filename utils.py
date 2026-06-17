@@ -71,3 +71,44 @@ def select_examples(activity_terms, is_city_wide, is_named_area, user_query):
     keys = pick_example_keys(terms, is_city_wide, is_named_area, flags)
     chosen = finalise_example_keys(keys)
     return '\n\n'.join(EXAMPLES[k] for k in chosen)
+
+def extract_activity_terms(user_query):
+    keyword_map = {
+        'walking': 'walking',   'walk': 'walking',
+        'path': 'walking',      'paths': 'walking',
+        'cycling': 'cycling',   'cycle': 'cycling',
+        'bike': 'cycling',      'biking': 'cycling',
+        'swimming': 'swimming', 'swim': 'swimming',
+        'running': 'running',   'run': 'running',
+        'hiking': 'hiking',     'hike': 'hiking',
+        'dog': 'dog walking',   'dog walking': 'dog walking',
+        'park': 'park',         'parks': 'park',
+        'relaxing': 'relaxing', 'relax': 'relaxing',
+        'picnic': 'picnic',
+        'football': 'football', 'soccer': 'football',
+        'tennis': 'tennis',     'golf': 'golf',
+        'basketball': 'basketball', 'cricket': 'cricket',
+        'rugby': 'rugby',       'bowls': 'bowls',
+        'bowling': 'bowls',     'hockey': 'hockey',
+        'netball': 'netball',   'volleyball': 'volleyball',
+        'eating': 'eating',     'food': 'eating',
+        'restaurant': 'eating', 'drinking': 'drinking',
+        'pub': 'drinking',      'coffee': 'coffee',
+        'cafe': 'coffee',       'shopping': 'shopping',
+        'studying': 'studying', 'library': 'studying',
+        'sightseeing': 'sightseeing', 'museum': 'sightseeing',
+        'parking': 'parking',   'post office': 'post office',
+        'healthcare': 'healthcare', 'hospital': 'healthcare',
+        'deprived': 'deprivation',      'deprivation': 'deprivation',
+        'most deprived': 'deprivation', 'least deprived': 'deprivation',
+        'poorest': 'deprivation',       'affluent': 'deprivation',
+        'poverty': 'deprivation',       'decile': 'deprivation',
+        'low income': 'deprivation',    'high income': 'deprivation',
+        'inequality': 'deprivation',    'socioeconomic': 'deprivation',
+    }
+    q = user_query.lower()
+    found = set()
+    for keyword in sorted(keyword_map.keys(), key=len, reverse=True):
+        if keyword in q:
+            found.add(keyword_map[keyword])
+    return list(found)
