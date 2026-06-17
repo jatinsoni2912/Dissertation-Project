@@ -147,3 +147,12 @@ def find_polygon_boundary(cur, location_name):
         LIMIT 1
     """, (f'%{location_name}%', location_name, location_name, location_name))
     return cur.fetchone()
+
+def find_point_of_interest(cur, location_name):
+    cur.execute(f"""
+        SELECT ST_X(way) AS lon, ST_Y(way) AS lat, name
+        FROM planet_osm_point
+        WHERE (name ILIKE %s OR name ~* ('\\y' || %s || '\\y'))
+        {ORDER_BY_NAME_MATCH} LIMIT 1
+    """, (f'%{location_name}%', location_name, location_name, location_name))
+    return cur.fetchone()
