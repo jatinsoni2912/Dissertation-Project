@@ -56,3 +56,11 @@ class SqlFixer:
             sql = updated
 
         self.sql = sql
+    
+
+    def fix_alias_prefix(self):
+        sql = self.sql
+        if (re.search(r'\b(FROM|JOIN)\s+planet_osm_\w+\s+p\b', sql, re.IGNORECASE) 
+            and re.search(r'ST_DWithin\(\s*(?<!p\.)way', sql, re.IGNORECASE)):
+            self.sql = re.sub(r'ST_DWithin\(\s*(?<!p\.)way', 'ST_DWithin(p.way', sql, flags=re.IGNORECASE)
+            self.note("Fixed ambiguous column reference — added p. prefix inside ST_DWithin")
