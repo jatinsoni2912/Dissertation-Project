@@ -200,3 +200,13 @@ def geocode_location(location_name, conn=None):
         cur.close()
         if is_local_conn:
             conn.close()
+
+tag_cache = {}
+
+def fetch_sports(cur):
+    cur.execute(
+        "SELECT DISTINCT sport FROM planet_osm_polygon "
+        "WHERE sport IS NOT NULL ORDER BY sport LIMIT 20"
+    )
+    return [r[0] for r in cur.fetchall() if r[0]]
+
