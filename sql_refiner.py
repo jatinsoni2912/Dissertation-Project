@@ -28,3 +28,13 @@ def remove_invalid_place_values(sql):
     for term in invalid_terms:
         sql = sql.replace(term, "")
     return sql
+
+def fix_missing_table_aliases(sql):
+    if ' p ' in sql and 'JOIN planet_osm_polygon boundary' in sql:
+        for col in ['leisure', 'sport', 'amenity', 'highway', 'tourism', 'shop']:
+            sql = re.sub(
+                rf'(?<!\w)(?<!p\.)(?<!boundary\.)({col}\s*(?:=|ILIKE|IN)\s)',
+                lambda m: f'p.{m.group(1)}',
+                sql
+            )
+    return sql
