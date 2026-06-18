@@ -33,6 +33,7 @@ class SqlFixer:
 
         if 'COUNT(' not in self.sql.upper() and 'LIMIT' not in self.sql.upper():
             self.sql = self.sql.rstrip(';') + ';'
+            self.note("Added missing semicolon")
 
         return self.sql, self.fixes
     
@@ -148,7 +149,7 @@ class SqlFixer:
         ]:
             updated = re.sub(pat, fn, sql, flags=re.IGNORECASE)
             if updated != sql:
-                self.note("Replaced tags->>'sport' hstore with sport ILIKE column")
+                self.note("Fixed: replaced tags->>'sport' hstore with sport ILIKE column")
                 sql = updated
 
         self.sql = sql
@@ -160,7 +161,7 @@ class SqlFixer:
                 r'\s+AND\s+ST_DWithin\s*\([^;]*?::[^;]*?,[^;]*?::[^;]*?,\s*\d+\)',
                 '', sql, flags=re.IGNORECASE
             )
-            self.note("Stripped ST_DWithin from city-wide query")
+            self.note("Stripped incorrect ST_DWithin from city-wide query")
     
 
     def fix_landuse_tags(self):

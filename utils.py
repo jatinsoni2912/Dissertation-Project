@@ -301,7 +301,8 @@ def check_activity_filter(sql, activity_terms, query_mode, is_city_wide, lon, la
         if not check_tag_presence(sql, exp_key, exp_val, exp_table, allow_in_clause):
             sql = construct_sql_for_activity_query(exp_table, exp_key, exp_val, is_city_wide, lon, lat, radius)
             print(f"[Activity fix] Rebuilt SQL for {term}: {exp_key}='{exp_val}'")
-            break
+        
+        break
             
     return sql
 
