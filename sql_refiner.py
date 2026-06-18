@@ -12,3 +12,10 @@ def remove_unfilled_placeholders(sql):
     for pattern in patterns:
         sql = re.sub(pattern, '', sql, flags=re.IGNORECASE)
     return sql
+
+def resolve_contradictory_tags(sql):
+    if "leisure = 'swimming_pool'" in sql and '"natural"' in sql:
+        sql = re.sub(r'\s+AND\s+"natural"\s*=\s*\'[^\']+\'', '', sql, flags=re.IGNORECASE)
+        sql = re.sub(r'"natural"\s*=\s*\'[^\']+\'\s+AND\s+', '', sql, flags=re.IGNORECASE)
+    return sql
+
