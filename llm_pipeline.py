@@ -1,10 +1,24 @@
 import ollama
 import os
-import re
 from dotenv import load_dotenv
-from database import get_schema, get_ontology_mappings
+from database import get_schema, get_connection, get_available_tags
 from prompt import build_prompt
- 
+from sql_fixer import validate_and_fix
+from utils import (
+    extract_activity_terms,
+    extract_location,
+    validate_sql,
+    get_search_radius,
+    get_dynamic_tags_from_db,
+    select_examples,
+    is_district,
+    determine_query_type,
+    fix_deprivation_columns,
+    check_activity_filter,
+    handle_search_fallback,
+    adjust_search_radius,
+)
+
 load_dotenv()
 
 
