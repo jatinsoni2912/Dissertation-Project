@@ -4,7 +4,8 @@ def build_tag_section(available_tags):
     lines = ["REAL TAG VALUES IN THIS DATABASE — use ONLY these values:"]
     leisure_vals = available_tags.get('leisure_poly', [])
     if leisure_vals:
-        lines.append(f"  RULE: {', '.join(leisure_vals[:6])} use leisure= key (NOT amenity=)")
+        quoted = ", ".join(f"'{v}'" for v in leisure_vals[:6])
+        lines.append(f"  RULE: {quoted} use leisure= key (NOT amenity=)")
     if available_tags.get('amenity'):
         lines.append(f"  amenity (planet_osm_point): {', '.join(available_tags['amenity'][:20])}")
     if leisure_vals:
