@@ -211,3 +211,14 @@ class SqlFixer:
                 break
 
         self.sql = sql
+    
+
+    def resolve_spatial_join_mismatch(self):
+        sql = self.sql
+        if re.search(r'JOIN\s+planet_osm_polygon\s+\w+\s+ON\s+ST_DWithin', sql, re.IGNORECASE):
+            self.sql = re.sub(
+                r'(JOIN\s+planet_osm_polygon\s+(\w+)\s+ON\s+)ST_DWithin\([^)]+\)',
+                lambda m: m.group(1) + f'ST_Intersects(p.way, {m.group(2)}.way)',
+                sql, flags=re.IGNORECASE
+            )
+            self.note("Fixed broken spatial join in JOIN ON")
