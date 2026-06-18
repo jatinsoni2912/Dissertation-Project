@@ -255,3 +255,31 @@ def fetch_tourism(cur):
     )
     return [r[0] for r in cur.fetchall()]
 
+
+def get_available_tags(conn=None):
+    global tag_cache
+    if tag_cache:
+        return tag_cache
+
+    is_local_conn = conn is None
+    if is_local_conn:
+        conn = get_connection()
+    cur = conn.cursor()
+
+    try:
+        tag_cache = {
+            'sport':         fetch_sports(cur),
+            'amenity':       fetch_amenities(cur),
+            'leisure_poly':  fetch_leisure_poly(cur),
+            'leisure_point': fetch_leisure_point(cur),
+            'highway':       fetch_highways(cur),
+            'shop':          fetch_shops(cur),
+            'tourism':       fetch_tourism(cur),
+        }
+    finally:
+        cur.close()
+        if is_local_conn:
+            conn.close()
+
+    return tag_cache
+
