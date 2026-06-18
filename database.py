@@ -240,3 +240,18 @@ def fetch_highways(cur):
     )
     return [r[0] for r in cur.fetchall()]
 
+def fetch_shops(cur):
+    cur.execute(
+        "SELECT shop, COUNT(*) cnt FROM planet_osm_point "
+        "WHERE shop IS NOT NULL GROUP BY shop ORDER BY cnt DESC LIMIT 15"
+    )
+    return [r[0] for r in cur.fetchall()]
+
+
+def fetch_tourism(cur):
+    cur.execute(
+        "SELECT tourism, COUNT(*) cnt FROM planet_osm_point "
+        "WHERE tourism IS NOT NULL GROUP BY tourism ORDER BY cnt DESC LIMIT 10"
+    )
+    return [r[0] for r in cur.fetchall()]
+
