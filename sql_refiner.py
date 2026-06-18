@@ -22,3 +22,9 @@ def resolve_contradictory_tags(sql):
 def normalize_boundary_name_wildcards(sql):
     pattern = r"(boundary\.name\s+ILIKE\s+)'([^%']+)'"
     return re.sub(pattern, lambda m: f"{m.group(1)}'%{m.group(2)}%'", sql, flags=re.IGNORECASE)
+
+def remove_invalid_place_values(sql):
+    invalid_terms = ["'city centre',", ", 'city centre'", "'city',", ", 'city'"]
+    for term in invalid_terms:
+        sql = sql.replace(term, "")
+    return sql
