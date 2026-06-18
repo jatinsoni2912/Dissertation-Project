@@ -223,3 +223,7 @@ class SqlFixer:
                 sql, flags=re.IGNORECASE
             )
             self.note("Fixed broken spatial join in JOIN ON")
+
+def validate_and_fix(sql, lon=None, lat=None, is_city_wide=False):
+    fixer = SqlFixer(sql, lon=lon, lat=lat, is_city_wide=is_city_wide)
+    return fixer.run()
