@@ -19,3 +19,6 @@ def resolve_contradictory_tags(sql):
         sql = re.sub(r'"natural"\s*=\s*\'[^\']+\'\s+AND\s+', '', sql, flags=re.IGNORECASE)
     return sql
 
+def normalize_boundary_name_wildcards(sql):
+    pattern = r"(boundary\.name\s+ILIKE\s+)'([^%']+)'"
+    return re.sub(pattern, lambda m: f"{m.group(1)}'%{m.group(2)}%'", sql, flags=re.IGNORECASE)
