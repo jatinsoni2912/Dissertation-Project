@@ -1,3 +1,18 @@
+def build_tag_section(available_tags):
+    if not available_tags:
+        return ""
+    lines = ["REAL TAG VALUES IN THIS DATABASE — use ONLY these values:"]
+    leisure_vals = available_tags.get('leisure_poly', [])
+    if leisure_vals:
+        lines.append(f"  RULE: {', '.join(leisure_vals[:6])} use leisure= key (NOT amenity=)")
+    if available_tags.get('amenity'):
+        lines.append(f"  amenity (planet_osm_point): {', '.join(available_tags['amenity'][:20])}")
+    if leisure_vals:
+        lines.append(f"  leisure (planet_osm_polygon): {', '.join(leisure_vals[:15])}")
+    if available_tags.get('highway'):
+        lines.append(f"  highway (planet_osm_line): {', '.join(available_tags['highway'][:8])}")
+    return "\n".join(lines) + "\n"
+
 def build_prompt(user_query, ontology_mappings, schema, location_name, lon, lat):
     ontology_section = ""
     if ontology_mappings:
