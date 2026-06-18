@@ -189,3 +189,25 @@ class SqlFixer:
         ]:
             sql = re.sub(pat, '', sql, flags=re.IGNORECASE)
         return re.sub(r'\s{2,}', ' ', sql).strip()
+    
+
+    def fix_leisure_table(self):
+        sql = self.sql
+        if 'planet_osm_line' not in sql.lower():
+            return
+
+        if "leisure = 'pitch'" in sql.lower():
+            sql = re.sub(r'FROM\s+planet_osm_line', 'FROM planet_osm_polygon', sql, flags=re.IGNORECASE)
+            sql = self.strip_highway_clauses(sql)
+            self.note("Fixed: leisure=pitch uses planet_osm_polygon not planet_osm_line")
+            self.sql = sql
+            return
+
+        for tag in LEISURE_POLYGON_TAGS:
+            if f"leisure = '{tag}'" in sql.lower():
+                sql = re.sub(r'FROM\s+planet_osm_line', 'FROM planet_osm_polygon', sql, flags=re.IGNORECASE)
+                sql = self.strip_highway_clauses(sql)
+                self.note(f"Fixed: leisure='{tag}' uses planet_osm_polygon not planet_osm_line")
+                break
+
+        self.sql = sql
