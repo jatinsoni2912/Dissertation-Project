@@ -152,3 +152,12 @@ class SqlFixer:
                 sql = updated
 
         self.sql = sql
+    
+    def strip_dwithin_from_city_wide_search(self):
+        sql = self.sql
+        if 'ST_DWITHIN' in sql.upper():
+            self.sql = re.sub(
+                r'\s+AND\s+ST_DWithin\s*\([^;]*?::[^;]*?,[^;]*?::[^;]*?,\s*\d+\)',
+                '', sql, flags=re.IGNORECASE
+            )
+            self.note("Stripped ST_DWithin from city-wide query")
