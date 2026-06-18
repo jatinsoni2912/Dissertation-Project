@@ -112,3 +112,20 @@ class SqlFixer:
 
         self.sql = sql
         self.note("Injected missing spatial filter")
+    
+    def fix_intersects_proximity(self):
+        sql = self.sql
+
+        prox = r"ST_Intersects\(way,\s*ST_MakePoint\(([^)]+)\)(?:::geography)?\)"
+        m = re.search(prox, sql)
+        if m:
+            sql = re.sub(prox, f"ST_DWithin(way::geography, ST_MakePoint({m.group(1)})::geography, 1000)", sql)
+            self.note("Replaced ST_Intersects proximity with ST_DWithin 1000m")
+
+        geo = r"ST_Intersects\(p\.way,\s*ST_MakePoint\(([^)]+)\)::geography\)"
+        m = re.search(geo, sql)
+        if m:
+            sql = re.sub(geo, f"ST_DWithin(p.way::geography, ST_MakePoint({m.group(1)})::geography, 1000)", sql)
+            self.note("Replaced ST_Intersects geography point with ST_DWithin 1000m")
+
+        self.sql = sql
