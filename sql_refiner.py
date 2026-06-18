@@ -38,3 +38,15 @@ def fix_missing_table_aliases(sql):
                 sql
             )
     return sql
+
+
+def sanitize_sql(sql):
+    
+    sql = quote_sql_identifiers(sql)
+    sql = remove_unfilled_placeholders(sql)
+    sql = resolve_contradictory_tags(sql)
+    sql = normalize_boundary_name_wildcards(sql)
+    sql = remove_invalid_place_values(sql)
+    sql = fix_missing_table_aliases(sql)
+    
+    return sql.strip()
