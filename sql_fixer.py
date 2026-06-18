@@ -161,3 +161,21 @@ class SqlFixer:
                 '', sql, flags=re.IGNORECASE
             )
             self.note("Stripped ST_DWithin from city-wide query")
+    
+
+    def fix_landuse_tags(self):
+        sql = self.sql
+        for lv, (correct_key, correct_val, correct_table) in LANDUSE_CORRECTIONS.items():
+            if f"landuse = '{lv}'" in sql.lower() or f"landuse='{lv}'" in sql.lower():
+                sql = re.sub(
+                    rf"landuse\s*=\s*'{re.escape(lv)}'",
+                    f"{correct_key} = '{correct_val}'",
+                    sql, flags=re.IGNORECASE
+                )
+                if correct_table == 'planet_osm_line':
+                    for wrong in ('planet_osm_polygon', 'planet_osm_point'):
+                        if wrong in sql.lower():
+                            sql = re.sub(wrong, 'planet_osm_line', sql, flags=re.IGNORECASE)
+                            break
+                self.note(f"Fixed landuse='{lv}' to {correct_key}='{correct_val}'")
+        self.sql = sql
