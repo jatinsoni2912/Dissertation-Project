@@ -38,73 +38,38 @@ def build_location_rule(location_name, lon, lat, is_city_wide, is_named_area, se
         f"- DO NOT add a filter like name = '{location_name}'. The spatial coordinates handle the location."
     )
 
-def build_prompt(user_query, ontology_mappings, schema, location_name, lon, lat):
-    ontology_section = ""
-    if ontology_mappings:
-        ontology_section = "VERIFIED OSM TAG MAPPINGS FOR THIS QUERY:\n"
-        for term, mappings in ontology_mappings.items():
-            ontology_section += f"  {term}: {', '.join(mappings)}\n"
-        ontology_section += "Use these verified mappings in your SQL query.\n"
-    else:
-        ontology_section = "No ontology mappings found. Use your knowledge of OSM tags.\n"
+def build_prompt(user_query, dynamic_tag_hints, schema, location_name,
+                 lon, lat, is_city_wide=False, is_named_area=False,
+                 search_radius=1500, examples=None, available_tags=None):
 
-    prompt = f"""You are a PostGIS SQL expert generating queries for the Edinburgh geospatial database.
+    tag_section = build_tag_section(available_tags)
+    location_rule = build_location_rule(location_name, lon, lat, is_city_wide, is_named_area, search_radius)
 
-DATABASE SCHEMA:
+    return f"""You are a PostGIS expert. Return ONLY valid SQL queries. No text, no markdown.
+
+SCHEMA:
 {schema}
 
-{ontology_section}
+{dynamic_tag_hints}
+{tag_section}
+RULES:
+- Output ONLY a raw SELECT query string. Do not use code blocks.
+- Always cast geometry using ::geography.
+- Count queries must use SELECT COUNT(*) and have NO limit.
+- Non-count queries: do NOT add LIMIT — return all results.
+- Sports pitches are ALWAYS in planet_osm_polygon with leisure='pitch'. NEVER use planet_osm_line for pitches.
+- For specific sports use: AND sport ILIKE '%football%' — sport is a plain text column, NOT an hstore tag.
+- Parks, gardens, swimming pools, sports centres are ALWAYS in planet_osm_polygon.
+- DEPRIVATION TABLE: edinburgh_deprivation has columns dzname, la_decile, la_rank, geom (EPSG:4326)
+- la_decile: 1=most deprived, 10=least deprived
+- For deprivation cross-queries JOIN edinburgh_deprivation d ON ST_Intersects(p.way, d.geom)
+- Always use d.geom (not d.way) for the deprivation geometry column
 
-STRICT RULES:
-- Only generate SELECT statements — never INSERT UPDATE DELETE DROP
-- Parks ALWAYS use leisure = 'park' — NEVER landuse = 'park'
-- Cycleways ALWAYS use highway = 'cycleway' in planet_osm_line
-- Post offices ALWAYS use amenity = 'post_office' with underscore
-- Dog walking areas use leisure = 'park' — amenity = 'dog_walking' does NOT exist
-- ALWAYS cast both sides: way::geography AND ST_MakePoint(lon,lat)::geography
-- NEVER use ST_Intersects for proximity — use ST_DWithin
-- Cycling queries use minimum 5000m radius
-- Walking queries use minimum 2000m radius
-- Default radius 1000m unless specified
-- Always include name in SELECT unless counting
-- Add LIMIT 50 unless user asks for a count
-- For counts use SELECT COUNT(*) with no LIMIT
+{location_rule}
 
-WHEN USER MENTIONS A NAMED AREA (Leith, Morningside, Portobello etc):
-Use a spatial join — do NOT use coordinates for area queries:
-SELECT p.name, ST_AsGeoJSON(p.way)
-FROM planet_osm_polygon p
-JOIN planet_osm_polygon boundary ON ST_Intersects(p.way, boundary.way)
-WHERE boundary.name ILIKE '%area_name%'
-AND boundary.place IN ('suburb','neighbourhood','quarter','village')
-AND p.leisure = 'park'
-LIMIT 50;
+EXAMPLES:
+{examples}
 
-WHEN NO NAMED AREA — use these resolved coordinates:
-Location: {location_name} — lon={lon}, lat={lat}
-
-FEW-SHOT EXAMPLES:
-
-Q: Where can I go cycling in Edinburgh?
-A: SELECT name, ST_AsGeoJSON(way) FROM planet_osm_line WHERE highway IN ('cycleway','path') AND ST_DWithin(way::geography, ST_MakePoint(-3.1883, 55.9533)::geography, 5000) LIMIT 50;
-
-Q: Find parks near the city centre
-A: SELECT name, ST_AsGeoJSON(way) FROM planet_osm_polygon WHERE leisure = 'park' AND ST_DWithin(way::geography, ST_MakePoint(-3.1883, 55.9533)::geography, 1000) LIMIT 50;
-
-Q: How many post offices are in Edinburgh?
-A: SELECT COUNT(*) FROM planet_osm_point WHERE amenity = 'post_office';
-
-Q: Where can I walk my dog near Leith?
-A: SELECT p.name, ST_AsGeoJSON(p.way) FROM planet_osm_polygon p JOIN planet_osm_polygon boundary ON ST_Intersects(p.way, boundary.way) WHERE boundary.name ILIKE '%leith%' AND boundary.place IN ('suburb','neighbourhood','quarter','village') AND p.leisure = 'park' LIMIT 50;
-
-Q: Find cafes within 500 metres of Princes Street
-A: SELECT name, ST_AsGeoJSON(way) FROM planet_osm_point WHERE amenity = 'cafe' AND ST_DWithin(way::geography, ST_MakePoint(-3.1936, 55.9521)::geography, 500) LIMIT 50;
-
-Q: Show me running tracks near Morningside
-A: SELECT p.name, ST_AsGeoJSON(p.way) FROM planet_osm_polygon p JOIN planet_osm_polygon boundary ON ST_Intersects(p.way, boundary.way) WHERE boundary.name ILIKE '%morningside%' AND boundary.place IN ('suburb','neighbourhood','quarter','village') AND p.leisure = 'track' LIMIT 50;
-
-NOW GENERATE SQL FOR:
+NOW GENERATE SQL:
 Q: {user_query}
 A:"""
-    
-    return prompt
