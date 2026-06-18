@@ -225,3 +225,18 @@ def fetch_leisure_poly(cur):
     )
     return [r[0] for r in cur.fetchall()]
 
+def fetch_leisure_point(cur):
+    cur.execute(
+        "SELECT leisure, COUNT(*) cnt FROM planet_osm_point "
+        "WHERE leisure IS NOT NULL GROUP BY leisure ORDER BY cnt DESC LIMIT 10"
+    )
+    return [r[0] for r in cur.fetchall()]
+
+
+def fetch_highways(cur):
+    cur.execute(
+        "SELECT highway, COUNT(*) cnt FROM planet_osm_line "
+        "WHERE highway IS NOT NULL GROUP BY highway ORDER BY cnt DESC LIMIT 20"
+    )
+    return [r[0] for r in cur.fetchall()]
+
