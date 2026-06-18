@@ -179,3 +179,13 @@ class SqlFixer:
                             break
                 self.note(f"Fixed landuse='{lv}' to {correct_key}='{correct_val}'")
         self.sql = sql
+
+    def strip_highway_tags(self, sql):
+        for pat in [
+            r"highway\s+IN\s*\([^)]+\)\s+AND\s+",
+            r"\s+AND\s+highway\s+IN\s*\([^)]+\)",
+            r"highway\s*=\s*'[^']+'\s+AND\s+",
+            r"\s+AND\s+highway\s*=\s*'[^']+'"
+        ]:
+            sql = re.sub(pat, '', sql, flags=re.IGNORECASE)
+        return re.sub(r'\s{2,}', ' ', sql).strip()
