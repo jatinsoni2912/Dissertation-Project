@@ -14,6 +14,30 @@ def build_tag_section(available_tags):
         lines.append(f"  highway (planet_osm_line): {', '.join(available_tags['highway'][:8])}")
     return "\n".join(lines) + "\n"
 
+def build_location_rule(location_name, lon, lat, is_city_wide, is_named_area, search_radius):
+    if is_city_wide:
+        return (
+            "CRITICAL LOCATION RULE:\n"
+            "- This is a CITY-WIDE global search across all of Edinburgh.\n"
+            "- DO NOT use ST_DWithin or any coordinate filters.\n"
+            "- DO NOT use ST_MakePoint."
+        )
+    if is_named_area:
+        return (
+            "CRITICAL LOCATION RULE:\n"
+            f"- This query is for the named neighbourhood/area '{location_name}'.\n"
+            "- YOU MUST use a spatial JOIN with the boundary polygon (see Examples).\n"
+            f"- Filter the boundary table using: boundary.name ILIKE '%{location_name}%'\n"
+            "- Do NOT use ST_DWithin or ST_MakePoint."
+        )
+    return (
+        "CRITICAL LOCATION RULE:\n"
+        f"- This query is localized near {location_name}.\n"
+        f"- YOU MUST use: ST_DWithin(way::geography, ST_MakePoint({lon:.6f},{lat:.6f})::geography, {search_radius})\n"
+        f"- Radius is pre-calculated as {search_radius}m — use exactly this value.\n"
+        f"- DO NOT add a filter like name = '{location_name}'. The spatial coordinates handle the location."
+    )
+
 def build_prompt(user_query, ontology_mappings, schema, location_name, lon, lat):
     ontology_section = ""
     if ontology_mappings:
