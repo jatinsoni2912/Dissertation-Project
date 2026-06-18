@@ -35,7 +35,7 @@ def build_location_rule(location_name, lon, lat, is_city_wide, is_named_area, se
         f"- This query is localized near {location_name}.\n"
         f"- YOU MUST use: ST_DWithin(way::geography, ST_MakePoint({lon:.6f},{lat:.6f})::geography, {search_radius})\n"
         f"- Radius is pre-calculated as {search_radius}m — use exactly this value.\n"
-        f"- DO NOT add a filter like name = '{location_name}'. The spatial coordinates handle the location."
+        f"- DO NOT add a filter like name = '{location_name}'. The spatial coordinates handle the location perfectly."
     )
 
 def build_prompt(user_query, dynamic_tag_hints, schema, location_name,
@@ -59,7 +59,7 @@ RULES:
 - Non-count queries: do NOT add LIMIT — return all results.
 - Sports pitches are ALWAYS in planet_osm_polygon with leisure='pitch'. NEVER use planet_osm_line for pitches.
 - For specific sports use: AND sport ILIKE '%football%' — sport is a plain text column, NOT an hstore tag.
-- Parks, gardens, swimming pools, sports centres are ALWAYS in planet_osm_polygon.
+- Parks, gardens, swimming pools, sports centres are ALWAYS in planet_osm_polygon. NEVER use planet_osm_line for these.
 - DEPRIVATION TABLE: edinburgh_deprivation has columns dzname, la_decile, la_rank, geom (EPSG:4326)
 - la_decile: 1=most deprived, 10=least deprived
 - For deprivation cross-queries JOIN edinburgh_deprivation d ON ST_Intersects(p.way, d.geom)
