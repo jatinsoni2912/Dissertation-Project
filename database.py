@@ -283,3 +283,14 @@ def get_available_tags(conn=None):
 
     return tag_cache
 
+def build_deprivation_clause(decile_max, decile_min, decile_exact):
+    parts = []
+    if decile_exact is not None:
+        parts.append(f"la_decile = {int(decile_exact)}")
+    else:
+        if decile_max is not None:
+            parts.append(f"la_decile <= {int(decile_max)}")
+        if decile_min is not None:
+            parts.append(f"la_decile >= {int(decile_min)}")
+    return ("WHERE " + " AND ".join(parts)) if parts else ""
+
