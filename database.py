@@ -210,3 +210,18 @@ def fetch_sports(cur):
     )
     return [r[0] for r in cur.fetchall() if r[0]]
 
+def fetch_amenities(cur):
+    cur.execute(
+        "SELECT amenity, COUNT(*) cnt FROM planet_osm_point "
+        "WHERE amenity IS NOT NULL GROUP BY amenity ORDER BY cnt DESC LIMIT 30"
+    )
+    return [r[0] for r in cur.fetchall()]
+
+
+def fetch_leisure_poly(cur):
+    cur.execute(
+        "SELECT leisure, COUNT(*) cnt FROM planet_osm_polygon "
+        "WHERE leisure IS NOT NULL GROUP BY leisure ORDER BY cnt DESC LIMIT 20"
+    )
+    return [r[0] for r in cur.fetchall()]
+
