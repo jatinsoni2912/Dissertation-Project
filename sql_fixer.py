@@ -129,3 +129,26 @@ class SqlFixer:
             self.note("Replaced ST_Intersects geography point with ST_DWithin 1000m")
 
         self.sql = sql
+    
+    def fix_sport_hstore(self):
+        sql = self.sql
+
+        def sport_eq(m):
+            return f"sport ILIKE '%{m.group(1)}%'"
+
+        def sport_in(m):
+            vals = re.findall(r"'([^']+)'", m.group(1))
+            return "(" + " OR ".join(f"sport ILIKE '%{v}%'" for v in vals) + ")"
+
+        for pat, fn in [
+            (r"tags->>'sport'\s*=\s*'([^']+)'",    sport_eq),
+            (r"tags->'sport'\s*=\s*'([^']+)'",     sport_eq),
+            (r"tags->>'sport'\s+IN\s*\(([^)]+)\)", sport_in),
+            (r"tags->'sport'\s+IN\s*\(([^)]+)\)",  sport_in),
+        ]:
+            updated = re.sub(pat, fn, sql, flags=re.IGNORECASE)
+            if updated != sql:
+                self.note("Replaced tags->>'sport' hstore with sport ILIKE column")
+                sql = updated
+
+        self.sql = sql
