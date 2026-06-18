@@ -294,3 +294,25 @@ def build_deprivation_clause(decile_max, decile_min, decile_exact):
             parts.append(f"la_decile >= {int(decile_min)}")
     return ("WHERE " + " AND ".join(parts)) if parts else ""
 
+def get_deprivation_zones(decile_max=None, decile_min=None, decile_exact=None):
+    
+    where = build_deprivation_clause(decile_max, decile_min, decile_exact)
+    conn = get_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute(f"""
+            SELECT dzname, la_decile, la_pct, la_rank,
+                   ST_AsGeoJSON(geom) AS geometry
+            FROM edinburgh_deprivation
+            {where}
+            ORDER BY la_decile
+        """)
+        rows = cur.fetchall()
+        columns = [d[0] for d in cur.description]
+        return {'success': True, 'results': rows, 'columns': columns}
+    except Exception as e:
+        return {'success': False, 'error': str(e)}
+    finally:
+        cur.close()
+        conn.close()
+
