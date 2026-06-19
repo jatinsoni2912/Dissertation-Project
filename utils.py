@@ -5,7 +5,7 @@ from database import geocode_location, execute_query
 from constants import (
     BLOCKED_KEYWORDS, SPORTS, SKIP_WORDS, SKIP_PREFIXES,
     CITY_WIDE_SIGNALS, EXAMPLES, ACTIVITY_FEATURE,
-    LANDUSE_CORRECTIONS, LEISURE_POLYGON_TAGS,
+    LANDUSE_CORRECTIONS, LEISURE_POLYGON_TAGS, CROSS_TAG_FIXES
 )
 
 def classify_query(terms, query):
@@ -386,3 +386,14 @@ def adjust_search_radius(result, sql, fixes):
             break
 
     return result
+
+def strip_location_name_filter(sql, location_name, is_city_wide):
+    if is_city_wide or location_name.lower() in ('edinburgh', 'city centre'):
+        return sql
+   
+    pattern = re.compile(
+        r"\s+AND\s+name\s+(?:ILIKE|LIKE|=)\s+'[^']*"
+        + re.escape(location_name.lower()) + r"[^']*'",
+        re.IGNORECASE
+    )
+    return pattern.sub('', sql)
