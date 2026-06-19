@@ -397,3 +397,17 @@ def strip_location_name_filter(sql, location_name, is_city_wide):
         re.IGNORECASE
     )
     return pattern.sub('', sql)
+
+def fix_cross_tag_keys(sql):
+    for pattern, replacement, target_table in CROSS_TAG_FIXES:
+        if re.search(pattern, sql, re.IGNORECASE):
+            
+            sql = re.sub(pattern, replacement, sql, flags=re.IGNORECASE)
+            
+            if target_table == 'planet_osm_line':
+                for table_name in ('planet_osm_polygon', 'planet_osm_point'):
+                    if table_name in sql.lower():
+                        sql = re.sub(rf'\b{table_name}\b', 'planet_osm_line', 
+                                     sql, flags=re.IGNORECASE, count=1)
+                        break
+    return sql
