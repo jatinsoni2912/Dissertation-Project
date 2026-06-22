@@ -1,6 +1,7 @@
 import re
 from database import execute_query
 from location_geocoder import geocode_location
+from typing import Tuple
 from constants import (
     BLOCKED_KEYWORDS, SPORTS, SKIP_WORDS, SKIP_PREFIXES,
     CITY_WIDE_SIGNALS, ACTIVITY_KEYWORDS
