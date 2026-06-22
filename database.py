@@ -1,7 +1,6 @@
 import psycopg2
 import os
 from dotenv import load_dotenv
-from constants import STREET_SUFFIXES, EXCLUDE_ROUTES_CLAUSE, ORDER_BY_NAME_MATCH
 
 load_dotenv()
 
@@ -14,63 +13,6 @@ def get_connection():
         password=os.getenv('DB_PASSWORD')
     )
 
-def get_schema():
-    return """
-    TABLE: planet_osm_point (points of interest, shops, amenities)
-    COLUMNS: osm_id, name, amenity, leisure, shop, tourism, 
-             highway, historic, way (geometry, EPSG:4326)
-    
-    TABLE: planet_osm_line (roads, paths, rivers)  
-    COLUMNS: osm_id, name, highway, leisure, waterway, 
-             route, way (geometry, EPSG:4326)
-    
-    TABLE: planet_osm_polygon (parks, buildings, land use areas)
-    COLUMNS: osm_id, name, amenity, leisure, landuse, 
-             building, shop, tourism, natural, way (geometry, EPSG:4326)
-    
-    TABLE: ontology_mappings (activity to OSM tag mappings)
-    COLUMNS: id, activity_term, osm_key, osm_value, source, verified
-
-    TABLE: edinburgh_deprivation (Scottish Index of Multiple Deprivation 2019)
-    COLUMNS: ogc_fid, dzname (data zone name), datazone (code),
-             la_rank (rank, lower=more deprived),
-             la_pct (percentile), la_decile (1=most deprived 10=least deprived),
-             geom (geometry, EPSG:4326)
-    NOTE: la_decile 1 = most deprived, 10 = least deprived
-    CROSS-QUERY PATTERN: JOIN edinburgh_deprivation d ON ST_Intersects(p.way, d.geom)
-    """
-
-def get_ontology_mappings(activity_terms, conn=None):
-    is_local_conn = False
-    if conn is None:
-        conn = get_connection()
-        is_local_conn = True
-        
-    cur = conn.cursor()
-    try:
-        cur.execute("""
-            SELECT activity_term, osm_key, osm_value
-            FROM ontology_mappings
-            WHERE activity_term = ANY(%s)
-            AND verified = TRUE
-            ORDER BY activity_term, osm_key
-        """, (activity_terms,))
-        results = cur.fetchall()
-    finally:
-        cur.close()
-        if is_local_conn:
-            conn.close()
-            
-    if not results:
-        return None
-        
-    mappings = {}
-    for term, key, value in results:
-        if term not in mappings:
-            mappings[term] = []
-        mappings[term].append(f"{key} = '{value}'")
-    return mappings   
-
 def execute_query(sql):
     conn = get_connection()
     cur = conn.cursor()
@@ -79,121 +21,6 @@ def execute_query(sql):
         results = cur.fetchall()
         columns = [desc[0] for desc in cur.description]
         return {'success': True, 'results': results, 'columns': columns}
-    except Exception as e:
-        return {'success': False, 'error': str(e)}
-    finally:
-        cur.close()
-        conn.close()
-
-tag_cache = {}
-
-def fetch_sports(cur):
-    cur.execute(
-        "SELECT DISTINCT sport FROM planet_osm_polygon "
-        "WHERE sport IS NOT NULL ORDER BY sport LIMIT 20"
-    )
-    return [r[0] for r in cur.fetchall() if r[0]]
-
-def fetch_amenities(cur):
-    cur.execute(
-        "SELECT amenity, COUNT(*) cnt FROM planet_osm_point "
-        "WHERE amenity IS NOT NULL GROUP BY amenity ORDER BY cnt DESC LIMIT 30"
-    )
-    return [r[0] for r in cur.fetchall()]
-
-
-def fetch_leisure_poly(cur):
-    cur.execute(
-        "SELECT leisure, COUNT(*) cnt FROM planet_osm_polygon "
-        "WHERE leisure IS NOT NULL GROUP BY leisure ORDER BY cnt DESC LIMIT 20"
-    )
-    return [r[0] for r in cur.fetchall()]
-
-def fetch_leisure_point(cur):
-    cur.execute(
-        "SELECT leisure, COUNT(*) cnt FROM planet_osm_point "
-        "WHERE leisure IS NOT NULL GROUP BY leisure ORDER BY cnt DESC LIMIT 10"
-    )
-    return [r[0] for r in cur.fetchall()]
-
-
-def fetch_highways(cur):
-    cur.execute(
-        "SELECT highway, COUNT(*) cnt FROM planet_osm_line "
-        "WHERE highway IS NOT NULL GROUP BY highway ORDER BY cnt DESC LIMIT 20"
-    )
-    return [r[0] for r in cur.fetchall()]
-
-def fetch_shops(cur):
-    cur.execute(
-        "SELECT shop, COUNT(*) cnt FROM planet_osm_point "
-        "WHERE shop IS NOT NULL GROUP BY shop ORDER BY cnt DESC LIMIT 15"
-    )
-    return [r[0] for r in cur.fetchall()]
-
-
-def fetch_tourism(cur):
-    cur.execute(
-        "SELECT tourism, COUNT(*) cnt FROM planet_osm_point "
-        "WHERE tourism IS NOT NULL GROUP BY tourism ORDER BY cnt DESC LIMIT 10"
-    )
-    return [r[0] for r in cur.fetchall()]
-
-
-def get_available_tags(conn=None):
-    global tag_cache
-    if tag_cache:
-        return tag_cache
-
-    is_local_conn = conn is None
-    if is_local_conn:
-        conn = get_connection()
-    cur = conn.cursor()
-
-    try:
-        tag_cache = {
-            'sport':         fetch_sports(cur),
-            'amenity':       fetch_amenities(cur),
-            'leisure_poly':  fetch_leisure_poly(cur),
-            'leisure_point': fetch_leisure_point(cur),
-            'highway':       fetch_highways(cur),
-            'shop':          fetch_shops(cur),
-            'tourism':       fetch_tourism(cur),
-        }
-    finally:
-        cur.close()
-        if is_local_conn:
-            conn.close()
-
-    return tag_cache
-
-def build_deprivation_clause(decile_max, decile_min, decile_exact):
-    parts = []
-    if decile_exact is not None:
-        parts.append(f"la_decile = {int(decile_exact)}")
-    else:
-        if decile_max is not None:
-            parts.append(f"la_decile <= {int(decile_max)}")
-        if decile_min is not None:
-            parts.append(f"la_decile >= {int(decile_min)}")
-    return ("WHERE " + " AND ".join(parts)) if parts else ""
-
-def get_deprivation_zones(decile_max=None, decile_min=None, decile_exact=None):
-
-    where = build_deprivation_clause(decile_max, decile_min, decile_exact)
-    conn = get_connection()
-    cur = conn.cursor()
-    try:
-        cur.execute(f"""
-            SELECT dzname, la_decile, la_pct, la_rank,
-                   ST_AsGeoJSON(geom) AS geometry
-            FROM edinburgh_deprivation
-            {where}
-            ORDER BY la_decile
-        """)
-        rows = cur.fetchall()
-        columns = [d[0] for d in cur.description]
-        return {'success': True, 'results': rows, 'columns': columns}
     except Exception as e:
         return {'success': False, 'error': str(e)}
     finally:
