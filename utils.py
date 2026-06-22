@@ -23,3 +23,22 @@ def extract_sql(llm_output: str) -> str:
         return generic_fence.group(1).strip()
 
     return clean_text
+
+def validate_sql(sql: str) -> Tuple[bool, str]:
+    
+    sql_upper = sql.upper().strip()
+
+    if not sql_upper.startswith('SELECT'):
+        return False, "Query must start with SELECT"
+
+    for keyword in BLOCKED_KEYWORDS:
+        if re.search(r'\b' + re.escape(keyword) + r'\b', sql_upper):
+            return False, f"Blocked keyword '{keyword}' found"
+
+    try:
+        check = execute_query(f"EXPLAIN {sql}")
+        if not check['success']:
+            return False, f"PostgreSQL error: {check.get('error', 'Syntax error')}"
+        return True, "Valid"
+    except Exception as e:
+        return False, f"Validation error: {str(e)}"
