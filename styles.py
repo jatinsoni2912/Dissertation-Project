@@ -71,5 +71,9 @@ h1, h2, h3 { font-family: 'DM Serif Display', serif; }
     box-shadow: 0 4px 12px rgba(201,168,76,0.35) !important;
 }
 
+.stSelectbox > div > div {
+    border-radius: 10px !important; border: 1.5px solid rgba(26,39,68,0.2) !important;
+}
+
 </style>
 """
