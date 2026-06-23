@@ -46,5 +46,17 @@ h1, h2, h3 { font-family: 'DM Serif Display', serif; }
     box-shadow: 0 2px 8px rgba(26,39,68,0.06); margin-bottom: 1rem;
 }
 
+.stTextInput > div > div > input {
+    font-family: 'DM Sans', sans-serif !important; font-size: 1rem !important;
+    border-radius: 10px !important; border: 1.5px solid rgba(26,39,68,0.2) !important;
+    padding: 0.65rem 1rem !important; background: white !important;
+    color: var(--edinburgh-navy) !important;
+}
+
+.stTextInput > div > div > input:focus {
+    border-color: var(--edinburgh-gold) !important;
+    box-shadow: 0 0 0 3px rgba(201,168,76,0.2) !important;
+}
+
 </style>
 """
