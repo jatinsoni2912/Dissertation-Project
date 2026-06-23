@@ -33,5 +33,12 @@ h1, h2, h3 { font-family: 'DM Serif Display', serif; }
     margin: 0 0 1.5rem 0; font-weight: 300;
 }
 
+.placeholder-box {
+    background: white; border: 1.5px dashed rgba(26,39,68,0.25);
+    border-radius: var(--radius); padding: 2rem; text-align: center;
+    color: var(--edinburgh-slate); font-size: 0.9rem; height: 400px;
+    display: flex; align-items: center; justify-content: center;
+}
+
 </style>
 """
