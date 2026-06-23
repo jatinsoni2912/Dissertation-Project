@@ -20,5 +20,18 @@ html, body, [class*="css"] {
 
 .block-container { padding: 1.5rem 2rem 2rem 2rem; max-width: 1400px; }
 h1, h2, h3 { font-family: 'DM Serif Display', serif; }
+
+.geoquery-header {
+    display: flex; align-items: center; gap: 1rem; margin-bottom: 0.25rem;
+}
+.geoquery-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.4rem; color: var(--edinburgh-navy); margin: 0; line-height: 1;
+}
+.geoquery-subtitle {
+    font-size: 0.95rem; color: var(--edinburgh-slate);
+    margin: 0 0 1.5rem 0; font-weight: 300;
+}
+
 </style>
 """
