@@ -1,3 +1,15 @@
+
+EXAMPLE_QUERIES = [
+    "Where can I go cycling in Edinburgh?",
+    "Find parks near the city centre",
+    "How many post offices are in Edinburgh?",
+    "Where can I walk my dog near Leith?",
+    "Find cafes within 500 metres of Princes Street",
+    "Show me swimming pools in Edinburgh",
+    "Find restaurants in Stockbridge",
+    "Where can I play football near Newington?",
+]
+
 APP_CSS = """
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
