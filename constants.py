@@ -66,3 +66,34 @@ ACTIVITY_KEYWORDS = {
         'low income': 'deprivation',    'high income': 'deprivation',
         'inequality': 'deprivation',    'socioeconomic': 'deprivation',
     }
+
+
+PROXIMITY_RADIUS = {
+    
+    # small point amenities — dense in cities, 500m is a short walk
+    'cafe':           500,
+    'pub':            500,
+    'bar':            500,
+    'restaurant':     750,
+    'pharmacy':       750,
+    'library':       1000,
+    'post_office':   1000,
+    'atm':            500,
+    
+    # larger destination amenities
+    'hotel':         2000,
+    'museum':        1500,
+    'attraction':    1500,
+    'supermarket':   1000,
+    
+    # leisure/sport — polygon features with larger footprints
+    'park':          1500,
+    'pitch':         3000,
+    'golf_course':   5000,
+    'swimming_pool': 2000,
+    'sports_centre': 2000,
+    'nature_reserve':3000,
+    
+    # default fallback
+    'default':       1000,
+}
