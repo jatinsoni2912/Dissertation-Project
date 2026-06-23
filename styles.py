@@ -40,5 +40,11 @@ h1, h2, h3 { font-family: 'DM Serif Display', serif; }
     display: flex; align-items: center; justify-content: center;
 }
 
+.query-card {
+    background: white; border-radius: var(--radius);
+    padding: 1.25rem 1.5rem; border: 1px solid rgba(26,39,68,0.1);
+    box-shadow: 0 2px 8px rgba(26,39,68,0.06); margin-bottom: 1rem;
+}
+
 </style>
 """
