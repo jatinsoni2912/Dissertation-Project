@@ -58,5 +58,18 @@ h1, h2, h3 { font-family: 'DM Serif Display', serif; }
     box-shadow: 0 0 0 3px rgba(201,168,76,0.2) !important;
 }
 
+.stButton > button {
+    background: var(--edinburgh-navy) !important; color: white !important;
+    border: none !important; border-radius: 10px !important;
+    font-family: 'DM Sans', sans-serif !important; font-weight: 500 !important;
+    font-size: 0.95rem !important; padding: 0.65rem 1.5rem !important;
+    width: 100% !important; transition: all 0.2s ease !important;
+}
+.stButton > button:hover {
+    background: var(--edinburgh-gold) !important;
+    color: var(--edinburgh-navy) !important; transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(201,168,76,0.35) !important;
+}
+
 </style>
 """
