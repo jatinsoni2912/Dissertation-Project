@@ -18,3 +18,19 @@ st.markdown("""
     Ask questions about Edinburgh in plain English — powered by a local LLM and OpenStreetMap data
 </p>
 """, unsafe_allow_html=True)
+
+
+col_left, col_right = st.columns([1, 1.7], gap="large")
+
+with col_left:
+    st.markdown(
+        '<div class="placeholder-box">Query panel will go here<br>'
+        '(input box, selectors, search button)</div>',
+        unsafe_allow_html=True,
+    )
+
+with col_right:
+    st.markdown(
+        '<div class="placeholder-box">Map will go here</div>',
+        unsafe_allow_html=True,
+    )
