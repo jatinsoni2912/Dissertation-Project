@@ -27,3 +27,12 @@ def render_query_panel() -> tuple[bool, str, str, str]:
 
     run_btn = st.button("🔍  Search", use_container_width=True)
     st.markdown("</div>", unsafe_allow_html=True)
+
+    st.markdown("**Try an example:**")
+    cols = st.columns(2)
+    for i, example in enumerate(EXAMPLE_QUERIES):
+        with cols[i % 2]:
+            label = example[:38] + ("…" if len(example) > 38 else "")
+            st.button(label, key=f"ex_{i}", use_container_width=True)
+
+    return run_btn, user_query, approach_choice, model_choice
