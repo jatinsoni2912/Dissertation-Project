@@ -24,3 +24,6 @@ def render_query_panel() -> tuple[bool, str, str, str]:
         placeholder="e.g. Where can I go cycling near Leith?",
         label_visibility="collapsed",
     )
+
+    run_btn = st.button("🔍  Search", use_container_width=True)
+    st.markdown("</div>", unsafe_allow_html=True)
