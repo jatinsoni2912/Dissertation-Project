@@ -61,11 +61,24 @@ def render_map(geojson_collection: dict, map_colour: str, height: int = 680,) ->
                         weight: 2, opacity: 1, fillOpacity: 0.85,
                     }});
                 }},
+
+                style: function(feature) {{
+                    var t = feature.geometry.type;
+                    if (t === 'LineString' || t === 'MultiLineString')
+                        return {{ color: highlightColour, weight: 4, opacity: 0.85 }};
+                    return {{ fillColor: highlightColour, color: highlightColour,
+                              weight: 2, fillOpacity: 0.45 }};
+                }},
+
+                    
+
+
             }}).addTo(map);
 
-            
+
 
                    }}
 
     </script>
+</body>   
 </html> """
