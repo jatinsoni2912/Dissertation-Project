@@ -19,3 +19,11 @@ def render_map(geojson_collection: dict, map_colour: str, height: int = 680,) ->
         .leaflet-popup-content {{ font-family: 'DM Sans', sans-serif; color: #1a2744; }}
     </style>
 </head>
+<body>
+    <div id="map"></div>
+    <script>
+        var edinburghBounds = L.latLngBounds(
+            L.latLng(55.85, -3.40), L.latLng(56.00, -3.00)
+        );
+    </script>
+</html> """
