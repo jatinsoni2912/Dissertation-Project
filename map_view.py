@@ -25,5 +25,12 @@ def render_map(geojson_collection: dict, map_colour: str, height: int = 680,) ->
         var edinburghBounds = L.latLngBounds(
             L.latLng(55.85, -3.40), L.latLng(56.00, -3.00)
         );
+
+        var map = L.map('map', {{
+            preferCanvas: true, maxBounds: edinburghBounds,
+            maxBoundsViscosity: 1.0, minZoom: 11, maxZoom: 18,
+            zoomSnap: 0.5, wheelPxPerZoomLevel: 120,
+        }}).setView([{center_lat}, {center_lon}], 13);
+        
     </script>
 </html> """
