@@ -50,5 +50,22 @@ def render_map(geojson_collection: dict, map_colour: str, height: int = 680,) ->
             null, {{ position: 'topright' }}
         ).addTo(map);
 
+        var geojsonData     = {geojson_str};
+        var highlightColour = "{map_colour}";
+
+        if (geojsonData && geojsonData.features && geojsonData.features.length > 0) {{
+            var featureLayer = L.geoJSON(geojsonData, {{
+                pointToLayer: function(feature, latlng) {{
+                    return L.circleMarker(latlng, {{
+                        radius: 8, fillColor: highlightColour, color: highlightColour,
+                        weight: 2, opacity: 1, fillOpacity: 0.85,
+                    }});
+                }},
+            }}).addTo(map);
+
+            
+
+                   }}
+
     </script>
 </html> """
