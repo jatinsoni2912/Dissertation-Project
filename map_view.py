@@ -31,6 +31,10 @@ def render_map(geojson_collection: dict, map_colour: str, height: int = 680,) ->
             maxBoundsViscosity: 1.0, minZoom: 11, maxZoom: 18,
             zoomSnap: 0.5, wheelPxPerZoomLevel: 120,
         }}).setView([{center_lat}, {center_lon}], 13);
+
+        map.on('zoomend', function() {{
+            if (map.getZoom() < 11) map.setZoom(11, {{ animate: false }});
+        }});
         
     </script>
 </html> """
