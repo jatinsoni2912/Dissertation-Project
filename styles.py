@@ -12,7 +12,7 @@ EXAMPLE_QUERIES = [
 
 EDINBURGH_CENTER = [55.9533, -3.1883]
 
-FEATURE_COLOURS = {
+FEATURE_COLOuRS = {
     'park':          '#2d6a4f',
     'garden':        '#40916c',
     'cycleway':      '#e07b39',

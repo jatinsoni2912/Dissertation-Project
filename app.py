@@ -1,7 +1,8 @@
 import streamlit as st
-from styles import APP_CSS, FEATURE_COLORS
-from sidebar      import render_sidebar
-from query_panel  import render_query_panel
+from styles import APP_CSS, FEATURE_COLOURS
+from sidebar import render_sidebar
+from query_panel import render_query_panel
+from map_view import render_map
 
 st.set_page_config(
     page_title="GeoQuery Edinburgh",
@@ -29,4 +30,8 @@ with col_left:
     run_btn, user_query, model_choice, approach_choice = render_query_panel()
 
 with col_right:
-    empty_json = {"type": "FeatureCollection", "features": []}
+    empty_geojson = {"type": "FeatureCollection", "features": []}
+    render_map(
+        geojson_collection = empty_geojson,
+        map_colour         = FEATURE_COLOURS['default'],
+    )
