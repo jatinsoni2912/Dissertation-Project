@@ -40,5 +40,10 @@ def render_map(geojson_collection: dict, map_colour: str, height: int = 680,) ->
             attribution: '© OpenStreetMap contributors'
         }}).addTo(map);
 
+        var cartoLight = L.tileLayer(
+            'https://{{s}}.basemaps.cartocdn.com/light_all/{{z}}/{{x}}/{{y}}{{r}}.png',
+            {{ attribution: '© CartoDB' }}
+        );
+
     </script>
 </html> """
