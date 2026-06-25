@@ -35,6 +35,10 @@ def render_map(geojson_collection: dict, map_colour: str, height: int = 680,) ->
         map.on('zoomend', function() {{
             if (map.getZoom() < 11) map.setZoom(11, {{ animate: false }});
         }});
-        
+
+        var osm = L.tileLayer('https://{{s}}.tile.openstreetmap.org/{{z}}/{{x}}/{{y}}.png', {{
+            attribution: '© OpenStreetMap contributors'
+        }}).addTo(map);
+
     </script>
 </html> """
