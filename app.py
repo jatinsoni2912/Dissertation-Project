@@ -1,5 +1,7 @@
 import streamlit as st
-from styles import APP_CSS
+from styles import APP_CSS, FEATURE_COLORS
+from sidebar      import render_sidebar
+from query_panel  import render_query_panel
 
 st.set_page_config(
     page_title="GeoQuery Edinburgh",
@@ -19,18 +21,12 @@ st.markdown("""
 </p>
 """, unsafe_allow_html=True)
 
+render_sidebar()
 
 col_left, col_right = st.columns([1, 1.7], gap="large")
 
 with col_left:
-    st.markdown(
-        '<div class="placeholder-box">Query panel will go here<br>'
-        '(input box, selectors, search button)</div>',
-        unsafe_allow_html=True,
-    )
+    run_btn, user_query, model_choice, approach_choice = render_query_panel()
 
 with col_right:
-    st.markdown(
-        '<div class="placeholder-box">Map will go here</div>',
-        unsafe_allow_html=True,
-    )
+    empty_json = {"type": "FeatureCollection", "features": []}
