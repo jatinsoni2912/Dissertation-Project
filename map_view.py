@@ -45,5 +45,10 @@ def render_map(geojson_collection: dict, map_colour: str, height: int = 680,) ->
             {{ attribution: '© CartoDB' }}
         );
 
+        L.control.layers(
+            {{ "OpenStreetMap": osm, "Light (CartoDB)": cartoLight }},
+            null, {{ position: 'topright' }}
+        ).addTo(map);
+
     </script>
 </html> """
