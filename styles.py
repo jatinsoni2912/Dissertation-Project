@@ -129,5 +129,10 @@ section[data-testid="stSidebar"] .stButton > button:hover {
     border-color: var(--edinburgh-gold) !important;
 }
 
+section[data-testid="stSidebar"] .stSelectbox > div > div {
+    background: rgba(255,255,255,0.1) !important;
+    border-color: rgba(255,255,255,0.3) !important; color: white !important;
+}
+
 </style>
 """
