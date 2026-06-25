@@ -110,5 +110,9 @@ h1, h2, h3 { font-family: 'DM Serif Display', serif; }
     border-radius: 10px !important; border: 1.5px solid rgba(26,39,68,0.2) !important;
 }
 
+section[data-testid="stSidebar"] {
+    background-color: var(--edinburgh-navy) !important; padding: 1rem 0.5rem;
+}
+
 </style>
 """
