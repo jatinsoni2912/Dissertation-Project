@@ -88,3 +88,5 @@ def render_map(geojson_collection: dict, map_colour: str, height: int = 680,) ->
     </script>
 </body>   
 </html> """
+    
+    components.html(html, height=height)
