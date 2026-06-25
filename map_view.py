@@ -70,8 +70,11 @@ def render_map(geojson_collection: dict, map_colour: str, height: int = 680,) ->
                               weight: 2, fillOpacity: 0.45 }};
                 }},
 
-                    
-
+                onEachFeature: function(feature, layer) {{
+                    var name = feature.properties.name || "Unnamed Feature";
+                    layer.bindTooltip(name);
+                    layer.bindPopup("<b>" + name + "</b>");
+                }},
 
             }}).addTo(map);
 
