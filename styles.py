@@ -10,6 +10,29 @@ EXAMPLE_QUERIES = [
     "Where can I play football near Newington?",
 ]
 
+EDINBURGH_CENTER = [55.9533, -3.1883]
+
+FEATURE_COLOURS = {
+    'park':          '#2d6a4f',
+    'garden':        '#40916c',
+    'cycleway':      '#e07b39',
+    'footway':       '#6b8f71',
+    'path':          '#6b8f71',
+    'cafe':          '#c9a84c',
+    'restaurant':    '#c9a84c',
+    'pub':           '#9b6b3a',
+    'post_office':   '#1a2744',
+    'library':       '#4a5568',
+    'museum':        '#7c5cbf',
+    'swimming_pool': '#3a86ff',
+    'pitch':         '#52b788',
+    'track':         '#52b788',
+    'sports_centre': '#52b788',
+    'golf_course':   '#95d5b2',
+    'parking':       '#adb5bd',
+    'default':       '#c9a84c',
+}
+
 APP_CSS = """
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
