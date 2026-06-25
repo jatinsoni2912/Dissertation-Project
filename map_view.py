@@ -78,9 +78,12 @@ def render_map(geojson_collection: dict, map_colour: str, height: int = 680,) ->
 
             }}).addTo(map);
 
-
-
-                   }}
+            try {{
+                var b = featureLayer.getBounds();
+                if (b.isValid()) map.fitBounds(b, {{ padding: [30, 30] }});
+            }} catch(e) {{ console.warn('fitBounds failed:', e); }}
+        
+        }}
 
     </script>
 </body>   
