@@ -114,5 +114,20 @@ section[data-testid="stSidebar"] {
     background-color: var(--edinburgh-navy) !important; padding: 1rem 0.5rem;
 }
 
+section[data-testid="stSidebar"] * { color: white !important; }
+
+section[data-testid="stSidebar"] .stButton > button {
+    background: rgba(255,255,255,0.1) !important;
+    border: 1px solid rgba(255,255,255,0.2) !important;
+    color: white !important; font-size: 0.85rem !important;
+    padding: 0.4rem 0.75rem !important; text-align: left !important;
+}
+
+section[data-testid="stSidebar"] .stButton > button:hover {
+    background: var(--edinburgh-gold) !important;
+    color: var(--edinburgh-navy) !important;
+    border-color: var(--edinburgh-gold) !important;
+}
+
 </style>
 """
