@@ -125,23 +125,63 @@ def render_followup_input(row_count, is_count):
             st.rerun()
 
     with col_new:
-        
+
         if st.button("✦  New query", key="new_query", use_container_width=True):
             reset_query_state()
             st.rerun()
     
 
-    def reset_query_state():
-        for k in ('query_result', 'show_on_map', 'selected_example',
+def reset_query_state():
+    for k in ('query_result', 'show_on_map', 'selected_example',
               'last_query', 'pending_asr', 'asr_transcript', 'context_history'):
-            st.session_state[k] = (None if k in ('query_result', 'show_on_map')
-            
+        
+        st.session_state[k] = (
+            None if k in ('query_result', 'show_on_map')
             else [] if k == 'context_history'
             else False if k == 'pending_asr'
             else ''
         )
     
     st.session_state.input_method = 'text'
+
+
+def render_technical_details(res, row_count, is_count):
+    with st.expander("🔧 Technical details", expanded=False):
+
+        if res.get('fixes'):
+            fixes_html = "".join(
+                f'<span class="fix-tag">{f}</span>' for f in res['fixes']
+            )
+            st.markdown(f"**Fixes applied:**<br>{fixes_html}", unsafe_allow_html=True)
+
+        st.markdown("**Generated SQL:**")
+        st.markdown(
+            f'<div class="sql-expander">{res.get("sql", "")}</div>',
+            unsafe_allow_html=True,
+        )
+
+        if res.get('results') and not is_count and row_count > 0:
+            render_results_table(res, row_count)
+
+
+def render_results_table(res, row_count):
+    st.markdown(f"**Results table** ({min(row_count, 10)} of {row_count}):")
+
+    display_rows = []
+    for row in res['results'][:10]:
+        dr = {
+            c: row[i]
+            for i, c in enumerate(res.get('columns', []))
+            if c not in ('geometry', 'st_asgeojson', 'geom', 'way')
+            and row[i] is not None
+        }
+        if dr:
+            display_rows.append(dr)
+
+    if display_rows:
+        st.dataframe(display_rows, use_container_width=True, hide_index=True)
+
+
 
 
 
