@@ -124,3 +124,8 @@ def add_message(
 
     save(username, conv)
     return conv
+
+def delete_conversation(username: str, conv_id: str):
+    path = conv_path(username, conv_id)
+    if os.path.exists(path):
+        os.remove(path)
