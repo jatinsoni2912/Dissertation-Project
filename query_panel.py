@@ -35,8 +35,9 @@ def render_conversational_summary(res, last_query):
         f'font-size:0.95rem;color:#1a2744;box-shadow:0 1px 4px rgba(26,39,68,0.07)">'
         f'🗺️ {msg}</div>', unsafe_allow_html=True,)
 
-
-
+def render_area_filter_notice():
+    if st.session_state.get('area_filter_active'):
+        st.info("📍 Results clipped to drawn area — clear filter to search all of Edinburgh.")
 
 
 
