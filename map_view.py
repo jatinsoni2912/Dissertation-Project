@@ -75,3 +75,17 @@ def add_point_layer(fg, points, colour, tooltip, popup):
         marker=folium.CircleMarker(radius=8, color=colour, fill_color=colour,weight=2, fill_opacity=0.85,),
         tooltip=tooltip, popup=popup,).add_to(fg)
 
+def add_line_layer(fg, lines, colour, tooltip, popup):
+    if not lines:
+        return
+
+    folium.GeoJson({"type": "FeatureCollection", "features": lines},name='Lines',
+        style_function=lambda f, c=colour: {'color': c, 'weight': 4, 'opacity': 0.85,}, tooltip=tooltip, popup=popup,).add_to(fg)
+
+def add_polygon_layer(fg, polygons, colour, tooltip, popup):
+    if not polygons:
+        return
+
+    folium.GeoJson({"type": "FeatureCollection", "features": polygons},name='Polygons',
+        style_function=lambda f, c=colour: {'fillColor': c, 'color': c, 'weight': 2, 'fillOpacity': 0.45,}, tooltip=tooltip, popup=popup,).add_to(fg)
+
