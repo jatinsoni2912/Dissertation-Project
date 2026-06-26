@@ -182,6 +182,25 @@ def render_results_table(res, row_count):
         st.dataframe(display_rows, use_container_width=True, hide_index=True)
 
 
+def show_result_panel(res, last_query):
+    row_count = res.get('row_count', 0)
+    is_count  = res.get('is_count', False)
+
+    render_error_if_any(res)
+    render_conversational_summary(res, last_query)
+    render_area_filter_notice()
+
+    render_info_pills(res)
+
+    render_map_prompt_or_status(res, row_count)
+
+    render_followup_suggestions(res, last_query)
+    render_followup_input(row_count, is_count)
+
+    render_technical_details(res, row_count, is_count)
+
+
+
 
 
 
