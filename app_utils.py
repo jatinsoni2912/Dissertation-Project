@@ -279,7 +279,19 @@ def fallback_suggestions(sql, is_city, location):
         f"How many {feat}s are in Edinburgh?"
     ]
 
+def apply_area_and_deprivation_rules(s, sql):
+    area_active = st.session_state.get('area_filter_active', False)
 
+    if area_active:
+        expand = f"Find {feature_label(sql)}s in Edinburgh"
+        if expand not in s:
+            s = s[:2] + [expand]
+        return s
+
+    if 'deprivation' not in ' '.join(s).lower() and 'deprivation' not in sql:
+        s.append(f"Find {feature_label(sql)}s in deprived areas of Edinburgh")
+
+    return s
 
 
 
