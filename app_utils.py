@@ -51,3 +51,26 @@ def parse_geojson(raw):
         return json.loads(raw)
     except (json.JSONDecodeError, TypeError):
         return None
+
+def prepare_geojson_collection(results, columns):
+    features = []
+    count = 0
+    geom_idx = next((i for i, c in enumerate(columns)
+                     if c in ('geometry', 'st_asgeojson', 'geom', 'way')), None)
+    name_idx = next((i for i, c in enumerate(columns) if c == 'name'), None)
+    if geom_idx is None:
+        return {"type": "FeatureCollection", "features": []}, 0
+
+    for row in results:
+        geojson = parse_geojson(row[geom_idx])
+        if not geojson:
+            continue
+        count += 1
+        name = row[name_idx] if name_idx is not None else f"Feature {count}"
+        props = {c: row[i] for i, c in enumerate(columns)
+                 if c not in ('geometry', 'st_asgeojson', 'geom', 'way')
+                 and row[i] is not None}
+        props.setdefault('name', name or f"Feature {count}")
+        features.append({"type": "Feature", "geometry": geojson, "properties": props})
+
+    return {"type": "FeatureCollection", "features": features}, count
