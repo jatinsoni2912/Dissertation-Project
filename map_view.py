@@ -89,3 +89,19 @@ def add_polygon_layer(fg, polygons, colour, tooltip, popup):
     folium.GeoJson({"type": "FeatureCollection", "features": polygons},name='Polygons',
         style_function=lambda f, c=colour: {'fillColor': c, 'color': c, 'weight': 2, 'fillOpacity': 0.45,}, tooltip=tooltip, popup=popup,).add_to(fg)
 
+def build_results_layer(geojson_collection, colour):
+    
+    fg = folium.FeatureGroup(name='Query results')
+    features = geojson_collection.get('features', [])
+
+    if not features:
+        return fg, False
+
+    points, lines, polygons = split_features_by_geometry(features)
+    tooltip, popup = build_interaction_elements()
+
+    add_point_layer(fg, points, colour, tooltip, popup)
+    add_line_layer(fg, lines, colour, tooltip, popup)
+    add_polygon_layer(fg, polygons, colour, tooltip, popup)
+
+    return fg, True
