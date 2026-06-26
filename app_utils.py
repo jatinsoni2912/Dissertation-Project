@@ -131,4 +131,36 @@ def count_message(row_count, feat, loc_phrase):
         "Would you like to see where they are, or explore something else?"
     )
 
+def normal_message(row_count, feat, loc_phrase, area_active):
+    
+    if row_count == 0:
+        if area_active:
+            return (
+                f"I couldn't find any {feat}s within your selected area. "
+                "Try clearing the area filter or drawing a larger area."
+            )
+        return (
+            f"I couldn't find any {feat}s matching that query. "
+            "Try broadening the area, or ask about a different feature."
+        )
+
+    if row_count == 1:
+        return (
+            f"I found 1 {feat} {loc_phrase}. "
+            "Would you like to see it on the map, or explore something nearby?"
+        )
+
+    plural = f"{feat}s" if not feat.endswith('s') else feat
+    cap = (
+        'You can show them on the map, or '
+        if row_count <= 1000 else
+        'There are quite a few — '
+    )
+
+    return (
+        f"I found {row_count} {plural} {loc_phrase}. "
+        f"{cap}ask a follow-up to narrow things down."
+    )
+
+
 
