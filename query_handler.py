@@ -45,3 +45,17 @@ def generate_sql(user_query: str, approach_choice: str, model_choice: str):
         label = "LLM only"
 
     return gen_result, label
+
+def build_base_metadata(gen_result: dict, approach_label: str, model_choice: str):
+    
+    return {
+        "sql": gen_result["sql"],
+        "ontology_used": gen_result.get("ontology_used", False),
+        "activity_terms": gen_result.get("activity_terms_found", []),
+        "location": gen_result.get("location_resolved", ""),
+        "approach": approach_label,
+        "fixes": gen_result.get("fixes_applied", []),
+        "classification": gen_result.get("classification"),
+        "model_used": model_choice,
+    }
+
