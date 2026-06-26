@@ -53,9 +53,9 @@ html, body, [class*="css"] { font-family: 'DM Sans', sans-serif; }
         
 .stApp { background: var(--cream); }
     
-.gq-header   { display:flex; align-items:center; gap:0.6rem; margin-bottom:0.25rem; }
-.gq-title    { font-family:'DM Serif Display',serif; font-size:2rem; color:var(--navy); margin:0; }
-.gq-subtitle { color:#4a5568; font-size:0.95rem; margin:0 0 1.2rem 0; }
+.geoquery-header   { display:flex; align-items:center; gap:0.6rem; margin-bottom:0.25rem; }
+.geoquery-title    { font-family:'DM Serif Display',serif; font-size:2rem; color:var(--navy); margin:0; }
+.geoquery-subtitle { color:#4a5568; font-size:0.95rem; margin:0 0 1.2rem 0; }
 
 .query-card {
     background: #fff;
