@@ -22,6 +22,7 @@ def render_sidebar() -> None:
                                      key="new_username_input")
             
             if st.button("Create", use_container_width=True, key="create_user_btn"):
+                
                 if name.strip():
                     create_user(name.strip())
                     st.session_state.current_user    = name.strip()
@@ -44,6 +45,7 @@ def render_sidebar() -> None:
         col_new, col_del = st.columns([3, 1])
 
         with col_new:
+
             if st.button("✏️ New chat", use_container_width=True, key="new_chat_btn"):
                 conv = new_conversation(st.session_state.current_user)
                 st.session_state.current_conv_id  = conv["id"]
@@ -52,6 +54,7 @@ def render_sidebar() -> None:
                 st.rerun()
                 
         with col_del:
+
             if st.session_state.current_conv_id and st.button(
                 "🗑️", key="del_chat_btn", help="Delete this conversation"):
                 
@@ -60,6 +63,28 @@ def render_sidebar() -> None:
                 st.session_state.current_conv_id = None
                 st.session_state.current_conv    = None
                 st.rerun()
+        
+        all_convs = get_all_conversations(st.session_state.current_user)
+        
+        if all_convs:
+
+            for cv in all_convs:
+                active = cv["id"] == st.session_state.current_conv_id
+                
+                ts = cv["updated_at"][:10] if cv["updated_at"] else ""
+                
+                label = f"{'▶ ' if active else ''}{cv['title']}"
+                
+                if st.button(label, key=f"conv_{cv['id']}", use_container_width=True, help=f"{ts} · {cv['msg_count']} message(s)", 
+                             type="primary" if active else "secondary"):
+                    
+                    st.session_state.current_conv_id = cv["id"]
+                    st.session_state.current_conv = load_conversation(st.session_state.current_user, cv["id"])
+                    st.rerun()
+        else:
+
+            st.caption("No conversations yet — click ✏️ New chat to start.")
+
 
 
 
