@@ -142,3 +142,10 @@ def render_area_filter_badge():
             'padding:5px 14px;border-radius:20px;font-size:13px;font-weight:600;'
             'margin-bottom:0.5rem;">📍 Area filter active — click Search to apply</div>',
             unsafe_allow_html=True,)
+
+def render_map(base_map, results_fg):
+    
+    return st_folium(
+        base_map, key=f"edinburgh_map_{st.session_state.map_reset_key}", height=680,
+        use_container_width=True, feature_group_to_add=results_fg, returned_objects=["last_active_drawing", "all_drawings"], return_on_hover=False,
+    )
