@@ -61,5 +61,17 @@ def split_features_by_geometry(features):
 
     return points, lines, polygons    
 
+def build_interaction_elements():
+    tooltip = folium.GeoJsonTooltip(fields=['name'], aliases=[''])
+    popup = folium.GeoJsonPopup(fields=['name'], aliases=[''])
 
+    return tooltip, popup
+
+def add_point_layer(fg, points, colour, tooltip, popup):
+    if not points:
+        return
+
+    folium.GeoJson({"type": "FeatureCollection", "features": points}, name='Points',
+        marker=folium.CircleMarker(radius=8, color=colour, fill_color=colour,weight=2, fill_opacity=0.85,),
+        tooltip=tooltip, popup=popup,).add_to(fg)
 
