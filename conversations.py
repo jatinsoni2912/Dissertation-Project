@@ -21,3 +21,8 @@ def load(username: str, conv_id: str) -> Optional[Dict]:
         return None
     with open(path, encoding="utf-8") as f:
         return json.load(f)
+
+def save(username: str, conv: dict):
+    path = conv_path(username, conv["id"])
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(conv, f, indent=2, ensure_ascii=False)
