@@ -134,3 +134,11 @@ def restore_area_filter(results_fg):
         folium.GeoJson({"type": "Feature", "geometry": st.session_state.area_filter_geojson},name='Selected area',
             style_function=lambda f: {'color': '#c9a84c','weight': 2,'fillColor': '#c9a84c','fillOpacity': 0.10,},).add_to(results_fg)
 
+def render_area_filter_badge():
+    if st.session_state.area_filter_active:
+        
+        st.markdown(
+            '<div style="display:inline-block;background:#c9a84c;color:#1a2744;'
+            'padding:5px 14px;border-radius:20px;font-size:13px;font-weight:600;'
+            'margin-bottom:0.5rem;">📍 Area filter active — click Search to apply</div>',
+            unsafe_allow_html=True,)
