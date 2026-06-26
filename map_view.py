@@ -47,14 +47,19 @@ def split_features_by_geometry(features):
 
     for feat in features:
         feat.setdefault('properties', {}).setdefault('name', 'Unnamed Feature')
+        
         t = feat.get('geometry', {}).get('type', '')
 
         if t == 'Point':
             points.append(feat)
+        
         elif t in ('LineString', 'MultiLineString'):
             lines.append(feat)
+        
         else:
             polygons.append(feat)
 
     return points, lines, polygons    
+
+
 
