@@ -97,3 +97,21 @@ def location_label(result):
     if not loc or loc.lower() in ('edinburgh', 'city centre', ''):
         return 'Edinburgh'
     return loc.title()
+
+def determine_location_phrase(user_query, location, is_city, area_active):
+    if area_active:
+        return 'within your selected area'
+
+    if is_city or location == 'Edinburgh':
+        return 'across Edinburgh'
+
+    q = user_query.lower()
+    loc_words = location.lower().split()
+
+    if any(f'near {w}' in q or f'close to {w}' in q for w in loc_words):
+        return f'near {location}'
+
+    if any(f'in {w}' in q for w in loc_words):
+        return f'in {location}'
+
+    return f'near {location}'
