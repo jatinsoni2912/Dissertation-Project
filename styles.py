@@ -1,4 +1,6 @@
 
+import streamlit as st
+
 EXAMPLE_QUERIES = [
     "Where can I go cycling in Edinburgh?",
     "Find parks near the city centre",
@@ -33,106 +35,71 @@ FEATURE_COLOuRS = {
     'default':       '#c9a84c',
 }
 
-APP_CSS = """
+def apply():
+    st.markdown("""
+
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
-
+    
+    @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
+        
 :root {
-    --edinburgh-navy:   #1a2744;
-    --edinburgh-gold:   #c9a84c;
-    --edinburgh-stone:  #f4f0e8;
-    --edinburgh-slate:  #4a5568;
-    --edinburgh-green:  #2d6a4f;
-    --edinburgh-red:    #9b2335;
-    --radius:           12px;
+    --navy:  #1a2744;
+    --gold:  #c9a84c;
+    --cream: #f4f0e8;
+            
 }
-
-html, body, [class*="css"] {
-    font-family: 'DM Sans', sans-serif;
-    background-color: var(--edinburgh-stone);
-    color: var(--edinburgh-navy);
-}
-
-.block-container { padding: 1.5rem 2rem 2rem 2rem; max-width: 1400px; }
-h1, h2, h3 { font-family: 'DM Serif Display', serif; }
-
-.geoquery-header {
-    display: flex; align-items: center; gap: 1rem; margin-bottom: 0.25rem;
-}
-.geoquery-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 2.4rem; color: var(--edinburgh-navy); margin: 0; line-height: 1;
-}
-.geoquery-subtitle {
-    font-size: 0.95rem; color: var(--edinburgh-slate);
-    margin: 0 0 1.5rem 0; font-weight: 300;
-}
-
-.placeholder-box {
-    background: white; border: 1.5px dashed rgba(26,39,68,0.25);
-    border-radius: var(--radius); padding: 2rem; text-align: center;
-    color: var(--edinburgh-slate); font-size: 0.9rem; height: 400px;
-    display: flex; align-items: center; justify-content: center;
-}
+        
+html, body, [class*="css"] { font-family: 'DM Sans', sans-serif; }
+        
+.stApp { background: var(--cream); }
+    
+.gq-header   { display:flex; align-items:center; gap:0.6rem; margin-bottom:0.25rem; }
+.gq-title    { font-family:'DM Serif Display',serif; font-size:2rem; color:var(--navy); margin:0; }
+.gq-subtitle { color:#4a5568; font-size:0.95rem; margin:0 0 1.2rem 0; }
 
 .query-card {
-    background: white; border-radius: var(--radius);
-    padding: 1.25rem 1.5rem; border: 1px solid rgba(26,39,68,0.1);
-    box-shadow: 0 2px 8px rgba(26,39,68,0.06); margin-bottom: 1rem;
+    background: #fff;
+    border-radius: 12px;
+    padding: 1.2rem 1.4rem;
+    box-shadow: 0 2px 12px rgba(26,39,68,0.08);
+    margin-bottom: 1rem;
 }
 
-.stTextInput > div > div > input {
-    font-family: 'DM Sans', sans-serif !important; font-size: 1rem !important;
-    border-radius: 10px !important; border: 1.5px solid rgba(26,39,68,0.2) !important;
-    padding: 0.65rem 1rem !important; background: white !important;
-    color: var(--edinburgh-navy) !important;
+.sql-expander {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    background: #f8f9fa;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 0.75rem;
+    white-space: pre-wrap;
+    color: #2d3748;
 }
 
-.stTextInput > div > div > input:focus {
-    border-color: var(--edinburgh-gold) !important;
-    box-shadow: 0 0 0 3px rgba(201,168,76,0.2) !important;
+.info-pill {
+    display: inline-block;
+    background: #eef2f7;
+    color: #1a2744;
+    font-size: 0.75rem;
+    padding: 2px 10px;
+    border-radius: 20px;
+    margin: 2px 3px 2px 0;
 }
 
-.stButton > button {
-    background: var(--edinburgh-navy) !important; color: white !important;
-    border: none !important; border-radius: 10px !important;
-    font-family: 'DM Sans', sans-serif !important; font-weight: 500 !important;
-    font-size: 0.95rem !important; padding: 0.65rem 1.5rem !important;
-    width: 100% !important; transition: all 0.2s ease !important;
-}
-.stButton > button:hover {
-    background: var(--edinburgh-gold) !important;
-    color: var(--edinburgh-navy) !important; transform: translateY(-1px) !important;
-    box-shadow: 0 4px 12px rgba(201,168,76,0.35) !important;
+.fix-tag {
+    display: inline-block;
+    background: #fef3cd;
+    color: #856404;
+    font-size: 0.78rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin: 2px 4px 2px 0;
 }
 
-.stSelectbox > div > div {
-    border-radius: 10px !important; border: 1.5px solid rgba(26,39,68,0.2) !important;
-}
-
-section[data-testid="stSidebar"] {
-    background-color: var(--edinburgh-navy) !important; padding: 1rem 0.5rem;
-}
-
-section[data-testid="stSidebar"] * { color: white !important; }
-
-section[data-testid="stSidebar"] .stButton > button {
-    background: rgba(255,255,255,0.1) !important;
-    border: 1px solid rgba(255,255,255,0.2) !important;
-    color: white !important; font-size: 0.85rem !important;
-    padding: 0.4rem 0.75rem !important; text-align: left !important;
-}
-
-section[data-testid="stSidebar"] .stButton > button:hover {
-    background: var(--edinburgh-gold) !important;
-    color: var(--edinburgh-navy) !important;
-    border-color: var(--edinburgh-gold) !important;
-}
-
-section[data-testid="stSidebar"] .stSelectbox > div > div {
-    background: rgba(255,255,255,0.1) !important;
-    border-color: rgba(255,255,255,0.3) !important; color: white !important;
-}
+.stButton > button {border-radius:8px; font-family:'DM Sans',sans-serif; font-weight:500; }
+.stTextInput > div > div > input {border-radius:8px; border-color:#c9a84c; }
+.stTextInput > div > div > input:focus {border-color:#1a2744; box-shadow:0 0 0 2px rgba(26,39,68,.15); }
 
 </style>
-"""
+                
+        """, unsafe_allow_html=True)
