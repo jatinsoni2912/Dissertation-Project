@@ -2,7 +2,8 @@ import streamlit as st
 import styles
 import sidebar
 from query_panel import render_query_panel
-from map_view import render_map
+from map_view import render
+from app_utils import EXAMPLE_QUERIES
 
 st.set_page_config(
     page_title="GeoQuery Edinburgh",
@@ -58,4 +59,30 @@ with col_left:
         value=st.session_state.selected_example,
         placeholder="e.g. Where can I go cycling near Leith?",
         label_visibility="collapsed",
+
     )
+
+    if st.session_state.area_filter_active:
+        colf, colc = st.columns([3, 1])
+        with colf:
+            st.info("📍 Area filter active — results will be clipped to drawn area")
+        with colc:
+            if st.button("✕ Clear", key="clear_area_btn", use_container_width=True):
+                st.session_state.area_filter_geojson = None
+                st.session_state.area_filter_active  = False
+                st.session_state.map_reset_key      += 1
+                st.rerun()
+
+    run_btn = st.button("🔍  Search", use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown("**Try an example:**")
+    cols = st.columns(2)
+    for i, example in enumerate(EXAMPLE_QUERIES):
+        with cols[i % 2]:
+            if st.button(example[:38] + ("…" if len(example) > 38 else ""),
+                         key=f"ex_{i}", use_container_width=True):
+                st.session_state.selected_example = example
+                st.rerun()
+
+render(col_right)
