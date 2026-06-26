@@ -7,7 +7,7 @@ from app_utils import prepare_geojson_collection
 from mcp_pipeline import generate_sql_with_mcp
 from llm_pipeline import generate_sql
 
-def inject_area_filter(sql):
+def apply_area_filter(sql):
     if not (st.session_state.area_filter_active
             and st.session_state.get('area_filter_geojson')):
         return sql
@@ -121,6 +121,24 @@ def handle_results(base: dict, sql: str, db_result: dict):
         return handle_count_query(base, sql, results, columns)
 
     return handle_feature_query(base, results, columns)
+
+def run_query(user_query: str, approach_choice: str, model_choice: str, area_filter_geojson: dict | None = None,) -> dict:
+    
+    gen_result, approach_label = generate_sql(user_query, approach_choice, model_choice)
+    base = build_base_metadata(gen_result, approach_label, model_choice)
+
+    if not gen_result["valid"]:
+        return handle_invalid_sql(base, gen_result)
+
+    sql = apply_area_filter(gen_result["sql"], area_filter_geojson)
+    base["sql"] = sql
+
+    db_result = execute_query(sql)
+    if not db_result["success"]:
+        return handle_db_error(base, db_result)
+
+    return handle_results(base, sql, db_result)
+
 
 
 
