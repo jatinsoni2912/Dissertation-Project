@@ -98,93 +98,19 @@ def render_user_stats():
         f"🎤 {stats['voice_queries']}"
     )
         
-
-def render_sidebar() -> None:
-    
+def render_sidebar():
     with st.sidebar:
         st.markdown("## 🗺️ GeoQuery")
 
-        existing = get_all_users()
-        opts = ["— select user —"] + existing + ["➕ New user…"]
-        sel_user = st.selectbox("User", opts, index=0, label_visibility="collapsed")
+        handle_user_selection()
 
-        
-        if sel_user == "➕ New user…":
-            name = st.text_input("Username",
-                                     placeholder="e.g. participant_01",
-                                     key="new_username_input")
-            
-            if st.button("Create", use_container_width=True, key="create_user_btn"):
-                
-                if name.strip():
-                    create_user(name.strip())
-                    st.session_state.current_user    = name.strip()
-                    st.session_state.current_conv_id = None
-                    st.session_state.current_conv    = None
-                    st.rerun()
-
-        elif sel_user != "— select user —":
-            if st.session_state.current_user != sel_user:
-                st.session_state.current_user    = sel_user
-                st.session_state.current_conv_id = None
-                st.session_state.current_conv    = None
-                st.rerun()
-        
         if not st.session_state.current_user:
             return
-        
-        st.markdown("---")
-
-        col_new, col_del = st.columns([3, 1])
-
-        with col_new:
-
-            if st.button("✏️ New chat", use_container_width=True, key="new_chat_btn"):
-                conv = new_conversation(st.session_state.current_user)
-                st.session_state.current_conv_id  = conv["id"]
-                st.session_state.current_conv     = conv
-                st.session_state.selected_example = ""
-                st.rerun()
-                
-        with col_del:
-
-            if st.session_state.current_conv_id and st.button(
-                "🗑️", key="del_chat_btn", help="Delete this conversation"):
-                
-                delete_conversation(st.session_state.current_user, st.session_state.current_conv_id)
-                
-                st.session_state.current_conv_id = None
-                st.session_state.current_conv    = None
-                st.rerun()
-        
-        all_convs = get_all_conversations(st.session_state.current_user)
-        
-        if all_convs:
-
-            for cv in all_convs:
-                active = cv["id"] == st.session_state.current_conv_id
-                ts = cv["updated_at"][:10] if cv["updated_at"] else ""
-                label = f"{'▶ ' if active else ''}{cv['title']}"
-                
-                if st.button(label, key=f"conv_{cv['id']}", use_container_width=True, help=f"{ts} · {cv['msg_count']} message(s)", 
-                             type="primary" if active else "secondary"):
-                    
-                    st.session_state.current_conv_id = cv["id"]
-                    st.session_state.current_conv = load_conversation(st.session_state.current_user, cv["id"])
-                    st.rerun()
-        else:
-
-            st.caption("No conversations yet — click ✏️ New chat to start.")
 
         st.markdown("---")
-
-        stats = get_user_stats(st.session_state.current_user)
-        
-        st.caption(f"**{st.session_state.current_user}**  ·  "
-            f"{stats['conversations']} chats  ·  "
-            f"{stats['total_queries']} queries  ·  "
-            f"🎤 {stats['voice_queries']}"
-        )
+        render_chat_controls()
+        render_conversation_list()
+        render_user_stats()
 
 
 
