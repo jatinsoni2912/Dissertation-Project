@@ -189,6 +189,97 @@ def zero_result_suggestions(sql):
         "Show me parks in Edinburgh"
     ]
 
+def count_query_suggestions(sql):
+    f = feature_label(sql)
+    return [
+        f"Where are the {f}s in Edinburgh?",
+        f"Find {f}s near the city centre",
+        f"Find {f}s in the most deprived areas"
+    ]
+
+def category_specific_suggestions(sql, loc, is_city, location):
+    if "amenity = 'cafe'" in sql or "amenity='cafe'" in sql:
+        return [
+            f"Find pubs near {loc}",
+            f"Find restaurants near {loc}",
+            "Find cafes in the most deprived areas in Edinburgh"
+        ]
+
+    if "amenity = 'pub'" in sql or "amenity='pub'" in sql:
+        return [
+            f"Find cafes near {loc}",
+            f"Find restaurants near {loc}",
+            f"Find parks near {loc}"
+        ]
+
+    if "amenity = 'restaurant'" in sql or "amenity='restaurant'" in sql:
+        return [
+            f"Find cafes near {loc}",
+            f"Find pubs near {loc}",
+            "How many restaurants are in Edinburgh?"
+        ]
+
+    if "leisure = 'park'" in sql or "leisure='park'" in sql:
+        return [
+            f"Find cafes near {loc}",
+            "Where can I go cycling in Edinburgh?" if is_city else f"Find cycle paths near {loc}",
+            "Are there parks in the least deprived areas in Edinburgh?"
+        ]
+
+    if "highway = 'cycleway'" in sql or "highway='cycleway'" in sql:
+        return [
+            "Where can I go running in Edinburgh?",
+            f"Find parks near {loc}",
+            "Show cycle paths in deprived neighbourhoods"
+        ]
+
+    if "leisure = 'pitch'" in sql or "leisure='pitch'" in sql:
+        return [
+            "How many sports pitches are there in Edinburgh?",
+            f"Find sports centres near {loc}",
+            "Where can I play tennis near Newington?"
+        ]
+
+    if "edinburgh_deprivation" in sql and "planet_osm" not in sql:
+        return [
+            "Find cafes in the most deprived areas in Edinburgh",
+            "Show cycle paths in deprived neighbourhoods",
+            "Are there parks in the least deprived areas in Edinburgh?"
+        ]
+
+    if "edinburgh_deprivation" in sql:
+        return [
+            "Show me the most deprived areas in Edinburgh",
+            "Are there parks in the least deprived areas in Edinburgh?",
+            "Find pubs in the most deprived parts in Edinburgh"
+        ]
+
+    if "tourism" in sql:
+        return [
+            "Find museums in Edinburgh",
+            f"Find cafes near {loc}",
+            "What tourist attractions are there near the Old Town?"
+        ]
+
+    return [] 
+
+def fallback_suggestions(sql, is_city, location):
+    feat = feature_label(sql)
+
+    if is_city:
+        return [
+            f"Find {feat}s in Leith",
+            f"Find {feat}s in Stockbridge",
+            "Show me parks in Edinburgh"
+        ]
+
+    return [
+        f"Find {feat}s in Edinburgh",
+        f"Find parks near {location}",
+        f"How many {feat}s are in Edinburgh?"
+    ]
+
+
 
 
 
