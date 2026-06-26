@@ -61,27 +61,16 @@ async def fetch_schema_from_mcp_server() -> str:
 
 
 def get_live_schema_via_mcp() -> str:
-   
-    try:
-        result = subprocess.run(
-            [
-                'npx', '@modelcontextprotocol/server-postgres',
-                DB_URL,
-                '--query', 'list-tables'
-            ],
-            capture_output=True,
-            text=True,
-            timeout=10
-        )
+    
+    print("[MCP] Attempting to fetch live schema via npx server...")
+    
+    live_schema = asyncio.run(fetch_schema_from_mcp_server())
+    
+    if live_schema:
+        print("[MCP] Successfully retrieved live schema.")
+        return live_schema
 
-        if result.returncode == 0 and result.stdout:
-            return result.stdout.strip()
-
-    except (subprocess.TimeoutExpired, FileNotFoundError):
-        pass
-
-    # Fallback — return static schema if MCP server is unavailable
-    print("[MCP] Server unavailable — falling back to static schema")
+    print("[MCP] Falling back to static schema.")
     return get_static_schema()
 
 
