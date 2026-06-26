@@ -135,32 +135,52 @@ def normal_message(row_count, feat, loc_phrase, area_active):
     
     if row_count == 0:
         if area_active:
-            return (
-                f"I couldn't find any {feat}s within your selected area. "
+            return (f"I couldn't find any {feat}s within your selected area. "
                 "Try clearing the area filter or drawing a larger area."
             )
-        return (
-            f"I couldn't find any {feat}s matching that query. "
+        return (f"I couldn't find any {feat}s matching that query. "
             "Try broadening the area, or ask about a different feature."
         )
 
     if row_count == 1:
-        return (
-            f"I found 1 {feat} {loc_phrase}. "
+        return (f"I found 1 {feat} {loc_phrase}. "
             "Would you like to see it on the map, or explore something nearby?"
         )
 
     plural = f"{feat}s" if not feat.endswith('s') else feat
-    cap = (
-        'You can show them on the map, or '
+    cap = ('You can show them on the map, or '
         if row_count <= 1000 else
         'There are quite a few — '
     )
 
-    return (
-        f"I found {row_count} {plural} {loc_phrase}. "
+    return (f"I found {row_count} {plural} {loc_phrase}. "
         f"{cap}ask a follow-up to narrow things down."
     )
+
+def conversational_response(result, user_query):
+    row_count   = result.get('row_count', 0)
+    is_count    = result.get('is_count', False)
+    sql         = result.get('sql', '')
+    feat        = feature_label(sql)
+    location    = location_label(result)
+    is_city     = result.get('is_city_wide', True)
+    area_active = st.session_state.get('area_filter_active', False)
+
+    loc_phrase = determine_location_phrase(
+        user_query=user_query,
+        location=location,
+        is_city=is_city,
+        area_active=area_active
+    )
+
+    if result.get('error'):
+        return error_message()
+
+    if is_count:
+        return count_message(row_count, feat, loc_phrase)
+
+    return normal_message(row_count, feat, loc_phrase, area_active)
+
 
 
 
