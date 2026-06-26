@@ -115,3 +115,10 @@ def determine_location_phrase(user_query, location, is_city, area_active):
         return f'in {location}'
 
     return f'near {location}'
+
+def error_message():
+    return (
+        "I wasn't able to generate a valid query for that. "
+        "Try rephrasing — mention a specific place or activity."
+    )
+
