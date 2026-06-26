@@ -87,6 +87,18 @@ def render_conversation_button(cv):
         )
         st.rerun()
 
+def render_user_stats():
+    st.markdown("---")
+    stats = get_user_stats(st.session_state.current_user)
+
+    st.caption(
+        f"**{st.session_state.current_user}**  ·  "
+        f"{stats['conversations']} chats  ·  "
+        f"{stats['total_queries']} queries  ·  "
+        f"🎤 {stats['voice_queries']}"
+    )
+        
+
 def render_sidebar() -> None:
     
     with st.sidebar:
