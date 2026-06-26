@@ -25,11 +25,23 @@ def build_base_map():
     map.options['wheelPxPerZoomLevel'] = 120
 
     folium.TileLayer(tiles='cartodbpositron', name='Light (CartoDB)', attr='© CartoDB', control=True, show=False,).add_to(map)
-    
     folium.TileLayer(tiles='OpenStreetMap', name='OpenStreetMap', attr='© OpenStreetMap contributors', control=True, show=True,).add_to(map)
-    
     folium.LayerControl(position='topright').add_to(map)
     
     return map
+
+def add_draw_controls(m):
+    Draw(position='topleft', 
+         draw_options={'polyline': False, 'circle': False, 'marker': False, 'circlemarker': False,
+                       
+                       'polygon': {
+                           'allowIntersection': False, 'showArea': True,
+                           'shapeOptions': {'color': '#c9a84c', 'fillOpacity': 0.15},},
+                        
+                        'rectangle': {'shapeOptions': {'color': '#c9a84c', 'fillOpacity': 0.15},},},
+        
+        edit_options={'edit': True, 'remove': True},).add_to(m)
+
+
     
 
