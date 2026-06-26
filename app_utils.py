@@ -117,8 +117,18 @@ def determine_location_phrase(user_query, location, is_city, area_active):
     return f'near {location}'
 
 def error_message():
-    return (
-        "I wasn't able to generate a valid query for that. "
+    
+    return ("I wasn't able to generate a valid query for that. "
         "Try rephrasing — mention a specific place or activity."
     )
+
+def count_message(row_count, feat, loc_phrase):
+    plural = f"{feat}s" if not feat.endswith('s') else feat
+    verb = "is" if row_count == 1 else "are"
+
+    return (
+        f"There {verb} {row_count} {plural} {loc_phrase}. "
+        "Would you like to see where they are, or explore something else?"
+    )
+
 
