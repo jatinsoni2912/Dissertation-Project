@@ -167,3 +167,23 @@ def handle_map_draw_events(map_state):
         st.session_state.area_filter_geojson = last['geometry']
         st.session_state.area_filter_active  = True
 
+def render(col):
+    with col:
+        colour, geojson_collection = initialise_map_state()
+        base_map = build_base_map()
+        add_draw_controls(base_map)
+
+        results_fg, has_data = build_results_layer(geojson_collection, colour)
+
+        if has_data:
+            fit_map_to_results(base_map, geojson_collection)
+
+        restore_area_filter(results_fg)
+        render_area_filter_badge()
+
+        map_state = render_map(base_map, results_fg)
+
+        if map_state is not None:
+            handle_map_draw_events(map_state)
+
+
