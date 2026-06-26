@@ -181,6 +181,15 @@ def conversational_response(result, user_query):
 
     return normal_message(row_count, feat, loc_phrase, area_active)
 
+def zero_result_suggestions(sql):
+    f = feature_label(sql)
+    return [
+        f"Find {f}s in Edinburgh",
+        f"Find {f}s near the city centre",
+        "Show me parks in Edinburgh"
+    ]
+
+
 
 
 
