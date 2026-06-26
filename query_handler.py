@@ -4,6 +4,8 @@ import streamlit as st
 
 from database import execute_query, get_feature_locations_for_count
 from app_utils import prepare_geojson_collection
+from mcp_pipeline import generate_sql_with_mcp
+from llm_pipeline import generate_sql
 
 def inject_area_filter(sql):
     if not (st.session_state.area_filter_active
@@ -31,3 +33,15 @@ def inject_area_filter(sql):
         return patched if cond in patched else sql.rstrip(';') + f' AND {cond};'
 
     return sql.rstrip(';') + f' WHERE {cond};'
+
+def generate_sql(user_query: str, approach_choice: str, model_choice: str):
+    
+    if "MCP" in approach_choice:
+        from mcp_pipeline import generate_sql_with_mcp
+        gen_result = generate_sql_with_mcp(user_query, model=model_choice)
+        label = "LLM + MCP"
+    else:
+        gen_result = generate_sql(user_query, model=model_choice)
+        label = "LLM only"
+
+    return gen_result, label
