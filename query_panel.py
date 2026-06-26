@@ -87,6 +87,21 @@ def render_map_status():
             st.session_state.show_on_map = None
             st.rerun()
 
+def render_followup_suggestions(res, last_query):
+    st.markdown("**You might also want to ask:**")
+    follow_ups = generate_follow_ups(res, last_query)
+
+    fu_cols = st.columns(len(follow_ups))
+    for i, sug in enumerate(follow_ups):
+        with fu_cols[i]:
+            lbl = sug[:40] + ("…" if len(sug) > 40 else "")
+            if st.button(lbl, key=f"fu_{i}", use_container_width=True, help=sug):
+                st.session_state.selected_example = sug
+                st.session_state.input_method     = 'text'
+                st.session_state.pending_asr      = False
+                st.session_state.asr_transcript   = ''
+                st.session_state.auto_run         = True
+                st.rerun()
 
 
 
