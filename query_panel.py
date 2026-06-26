@@ -1,6 +1,9 @@
 import streamlit as st
 from styles import EXAMPLE_QUERIES
 
+from app_utils import conversational_response, generate_follow_ups, feature_label
+
+
 def show_conversation_history():
     conv = st.session_state.get('current_conv')
     if not conv or not conv.get('messages'):
@@ -18,6 +21,128 @@ def show_conversation_history():
                 unsafe_allow_html=True,
             )
     st.markdown("---")
+
+def render_error_if_any(res):
+    if res.get('error'):
+        st.error(f"Database/Validation Error: {res['error']}")
+        
+
+def render_conversational_summary(res, last_query):
+    msg = conversational_response(res, last_query)
+    st.markdown(
+        f'<div style="background:white;border-left:4px solid #c9a84c;'
+        f'border-radius:0 10px 10px 0;padding:0.85rem 1rem;margin-bottom:0.75rem;'
+        f'font-size:0.95rem;color:#1a2744;box-shadow:0 1px 4px rgba(26,39,68,0.07)">'
+        f'🗺️ {msg}</div>', unsafe_allow_html=True,)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def render_query_panel() -> tuple[bool, str, str, str]:
     st.markdown('<div class="query-card">', unsafe_allow_html=True)
