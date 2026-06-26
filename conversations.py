@@ -45,3 +45,34 @@ def delete_user(username: str):
     path = os.path.join(CONV_DIR, username)
     if os.path.exists(path):
         shutil.rmtree(path)
+
+def new_conversation(username: str) -> Dict:
+    conv = {
+        "id":         uuid.uuid4().hex[:12],
+        "title":      "New conversation",
+        "created_at": datetime.now().isoformat(),
+        "updated_at": datetime.now().isoformat(),
+        "messages":   [],
+    }
+    save(username, conv)
+    return conv
+
+def get_all_conversations(username: str) -> List[Dict]:
+    udir = user_dir(username)
+    convs = []
+    for fname in os.listdir(udir):
+        if not fname.endswith(".json"):
+            continue
+        try:
+            with open(os.path.join(udir, fname), encoding="utf-8") as f:
+                c = json.load(f)
+            convs.append({
+                "id":         c["id"],
+                "title":      c.get("title", "Untitled"),
+                "created_at": c.get("created_at", ""),
+                "updated_at": c.get("updated_at", ""),
+                "msg_count":  len(c.get("messages", [])),
+            })
+        except Exception:
+            continue
+    return sorted(convs, key=lambda x: x["updated_at"], reverse=True)
