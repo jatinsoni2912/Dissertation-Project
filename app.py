@@ -4,6 +4,7 @@ import sidebar
 from query_panel import render_query_panel
 from map_view import render
 from app_utils import EXAMPLE_QUERIES
+from query_handler import run_query
 
 st.set_page_config(
     page_title="GeoQuery Edinburgh",
@@ -86,3 +87,17 @@ with col_left:
                 st.rerun()
 
 render(col_right)
+
+trigger = run_btn or st.session_state.get('auto_run', False)
+st.session_state.auto_run = False
+
+if trigger and user_query.strip():
+    st.session_state.show_on_map = None
+    with st.spinner("Generating SQL and querying Edinburgh database…"):
+        result, _ = run_query(
+            user_query, model_choice, approach_choice,
+            context_loc=None, pipeline_query=user_query,
+        )
+        st.session_state.query_result = result
+        st.session_state.last_query   = user_query
+    st.rerun()
