@@ -122,7 +122,15 @@ def initialise_map_state():
 def fit_map_to_results(base_map, geojson_collection):
     try:
         bounds = folium.GeoJson(geojson_collection).get_bounds()
+        
         if bounds and bounds[0][0] is not None:
             base_map.fit_bounds(bounds, padding=(30, 30))
+    
     except Exception:
         pass
+
+def restore_area_filter(results_fg):
+    if st.session_state.area_filter_active and st.session_state.get('area_filter_geojson'):
+        folium.GeoJson({"type": "Feature", "geometry": st.session_state.area_filter_geojson},name='Selected area',
+            style_function=lambda f: {'color': '#c9a84c','weight': 2,'fillColor': '#c9a84c','fillOpacity': 0.10,},).add_to(results_fg)
+
