@@ -293,6 +293,30 @@ def apply_area_and_deprivation_rules(s, sql):
 
     return s
 
+def generate_follow_ups(result, user_query):
+    sql       = result.get('sql', '').lower()
+    row_count = result.get('row_count', 0)
+    is_count  = result.get('is_count', False)
+    is_city   = result.get('is_city_wide', True)
+    location  = location_label(result)
+    loc       = location if not is_city else 'Edinburgh'
+
+    if row_count == 0:
+        return zero_result_suggestions(sql)
+
+    if is_count:
+        return count_query_suggestions(sql)
+
+    s = category_specific_suggestions(sql, loc, is_city, location)
+
+    if not s:
+        s = fallback_suggestions(sql, is_city, location)
+
+    s = apply_area_and_deprivation_rules(s, sql)
+
+    return s[:3]
+
+
 
 
 
