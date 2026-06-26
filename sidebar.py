@@ -40,6 +40,29 @@ def switch_user_if_needed(sel):
         st.session_state.current_conv    = None
         st.rerun()
 
+def render_chat_controls():
+    col_new, col_del = st.columns([3, 1])
+
+    with col_new:
+        if st.button("✏️ New chat", use_container_width=True, key="new_chat_btn"):
+            conv = new_conversation(st.session_state.current_user)
+            st.session_state.current_conv_id  = conv["id"]
+            st.session_state.current_conv     = conv
+            st.session_state.selected_example = ""
+            st.rerun()
+
+    with col_del:
+        if st.session_state.current_conv_id and st.button(
+            "🗑️", key="del_chat_btn", help="Delete this conversation"
+        ):
+            delete_conversation(
+                st.session_state.current_user,
+                st.session_state.current_conv_id
+            )
+            st.session_state.current_conv_id = None
+            st.session_state.current_conv    = None
+            st.rerun()        
+
 
 def render_sidebar() -> None:
     
