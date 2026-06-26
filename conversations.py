@@ -76,3 +76,6 @@ def get_all_conversations(username: str) -> List[Dict]:
         except Exception:
             continue
     return sorted(convs, key=lambda x: x["updated_at"], reverse=True)
+
+def load_conversation(username: str, conv_id: str) -> Optional[Dict]:
+    return load(username, conv_id)
