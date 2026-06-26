@@ -113,6 +113,14 @@ def handle_feature_query(base: dict, results: list, columns: list):
         "geojson_data": geojson,
     }
 
+def handle_results(base: dict, sql: str, db_result: dict):
+    results = db_result["results"]
+    columns = db_result["columns"]
+
+    if is_count_query(columns):
+        return handle_count_query(base, sql, results, columns)
+
+    return handle_feature_query(base, results, columns)
 
 
 
