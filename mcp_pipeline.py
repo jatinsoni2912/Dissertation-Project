@@ -1,9 +1,12 @@
 import os
 import re
-import subprocess
+import json
+import asyncio
 import ollama
-import psycopg2
 from dotenv import load_dotenv
+
+from mcp import ClientSession, StdioServerParameters
+from mcp.client.stdio import stdio_client
 
 from database import get_ontology_mappings
 
@@ -23,10 +26,43 @@ DB_URL = (
     f"@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
 )
 
+async def fetch_schema_from_mcp_server() -> str:
+    
+    server_params = StdioServerParameters(
+        command="npx",
+        args=["-y", "@modelcontextprotocol/server-postgres", DB_URL]
+    )
+
+    try:
+        async with stdio_client(server_params) as (read, write):
+            async with ClientSession(read, write) as session:
+                await session.initialize()
+                
+                schema_query = """
+                    SELECT table_name, string_agg(column_name, ', ') as columns
+                    FROM information_schema.columns
+                    WHERE table_schema = 'public' 
+                      AND table_name LIKE 'planet_osm_%'
+                    GROUP BY table_name;
+                """
+                
+                result = await session.call_tool("query", {"sql": schema_query})
+                
+                if result.content and len(result.content) > 0:
+                    raw_data = result.content[0].text
+                    rows = json.loads(raw_data)
+                    
+                    schema_lines = [f"TABLE: {row['table_name']} — {row['columns']}" for row in rows]
+                    return "\n".join(schema_lines)
+                    
+    except Exception as e:
+        print(f"[MCP] Server failed or timed out: {e}")
+        return None
+
+
 def get_live_schema_via_mcp() -> str:
    
     try:
-        # Attempt to call the Node.js MCP server via npx
         result = subprocess.run(
             [
                 'npx', '@modelcontextprotocol/server-postgres',
