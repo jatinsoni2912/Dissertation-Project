@@ -129,3 +129,19 @@ def delete_conversation(username: str, conv_id: str):
     path = conv_path(username, conv_id)
     if os.path.exists(path):
         os.remove(path)
+
+
+def get_user_stats(username: str) -> Dict:
+    convs_meta = get_all_conversations(username)
+    total_msgs = sum(c["msg_count"] for c in convs_meta)
+    voice = 0
+    for cm in convs_meta:
+        conv = load_conversation(username, cm["id"])
+        if conv:
+            voice += sum(1 for m in conv["messages"]
+                         if m.get("input_method") == "voice")
+    return {
+        "conversations": len(convs_meta),
+        "total_queries": total_msgs,
+        "voice_queries": voice,
+    }
