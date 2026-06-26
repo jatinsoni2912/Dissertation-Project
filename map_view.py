@@ -90,7 +90,7 @@ def add_polygon_layer(fg, polygons, colour, tooltip, popup):
         style_function=lambda f, c=colour: {'fillColor': c, 'color': c, 'weight': 2, 'fillOpacity': 0.45,}, tooltip=tooltip, popup=popup,).add_to(fg)
 
 def build_results_layer(geojson_collection, colour):
-    
+
     fg = folium.FeatureGroup(name='Query results')
     features = geojson_collection.get('features', [])
 
@@ -105,3 +105,18 @@ def build_results_layer(geojson_collection, colour):
     add_polygon_layer(fg, polygons, colour, tooltip, popup)
 
     return fg, True
+
+def initialise_map_state():
+    colour = FEATURE_COLOURS['default']
+    geojson_collection = {"type": "FeatureCollection", "features": []}
+
+    if st.session_state.query_result:
+        res = st.session_state.query_result
+        colour = get_feature_colour(res.get('sql', ''))
+        if st.session_state.show_on_map:
+            geojson_collection = res.get(
+                'geojson_data',
+                {"type": "FeatureCollection", "features": []}
+            )
+
+    return colour, geojson_collection
