@@ -9,12 +9,27 @@ from styles import EDINBURGH_CENTER
 EDINBURGH_BOUNDS = [[55.85, -3.40], [56.00, -3.00]]
 
 def build_base_map():
-    m = folium.Map(
+    map = folium.Map(
         location=EDINBURGH_CENTER,
         zoom_start=13,
         prefer_canvas=True,
         tiles=None,
         control_scale=False,
     )
+    
+    map.options['maxBounds']           = EDINBURGH_BOUNDS
+    map.options['maxBoundsViscosity']  = 1.0
+    map.options['minZoom']             = 11
+    map.options['maxZoom']             = 18
+    map.options['zoomSnap']            = 0.5
+    map.options['wheelPxPerZoomLevel'] = 120
 
+    folium.TileLayer(tiles='cartodbpositron', name='Light (CartoDB)', attr='© CartoDB', control=True, show=False,).add_to(map)
+    
+    folium.TileLayer(tiles='OpenStreetMap', name='OpenStreetMap', attr='© OpenStreetMap contributors', control=True, show=True,).add_to(map)
+    
+    folium.LayerControl(position='topright').add_to(map)
+    
+    return map
+    
 
