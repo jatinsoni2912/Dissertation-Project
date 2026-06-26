@@ -36,5 +36,23 @@ def render_sidebar() -> None:
                 st.session_state.current_conv    = None
                 st.rerun()
         
+        if not st.session_state.current_user:
+            return
         
+        st.markdown("---")
+
+        col_new, col_del = st.columns([3, 1])
+
+        with col_new:
+            if st.button("✏️ New chat", use_container_width=True, key="new_chat_btn"):
+                conv = new_conversation(st.session_state.current_user)
+                st.session_state.current_conv_id  = conv["id"]
+                st.session_state.current_conv     = conv
+                st.session_state.selected_example = ""
+                st.rerun()
+
+        
+
+
+
 
