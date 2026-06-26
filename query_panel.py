@@ -89,6 +89,7 @@ def render_map_status():
 
 def render_followup_suggestions(res, last_query):
     st.markdown("**You might also want to ask:**")
+    
     follow_ups = generate_follow_ups(res, last_query)
 
     fu_cols = st.columns(len(follow_ups))
@@ -102,6 +103,46 @@ def render_followup_suggestions(res, last_query):
                 st.session_state.asr_transcript   = ''
                 st.session_state.auto_run         = True
                 st.rerun()
+
+def render_followup_input(row_count, is_count):
+    st.markdown("")
+    
+    followup_val = st.text_input("Or ask a follow-up question…", value="",
+        placeholder="e.g. What about near Leith?",
+        key=f"followup_{row_count}_{is_count}",)
+
+    col_fu, col_new = st.columns([2, 1])
+
+    with col_fu:
+        if st.button("➤ Ask follow-up", key="ask_followup",
+                     use_container_width=True, disabled=not followup_val.strip()):
+            
+            st.session_state.selected_example = followup_val.strip()
+            st.session_state.input_method     = 'text'
+            st.session_state.pending_asr      = False
+            st.session_state.asr_transcript   = ''
+            st.session_state.auto_run         = True
+            st.rerun()
+
+    with col_new:
+        
+        if st.button("✦  New query", key="new_query", use_container_width=True):
+            reset_query_state()
+            st.rerun()
+    
+
+    def reset_query_state():
+        for k in ('query_result', 'show_on_map', 'selected_example',
+              'last_query', 'pending_asr', 'asr_transcript', 'context_history'):
+            st.session_state[k] = (None if k in ('query_result', 'show_on_map')
+            
+            else [] if k == 'context_history'
+            else False if k == 'pending_asr'
+            else ''
+        )
+    
+    st.session_state.input_method = 'text'
+
 
 
 
