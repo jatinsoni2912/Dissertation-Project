@@ -1,6 +1,6 @@
 import streamlit as st
-from styles import APP_CSS, FEATURE_COLOURS
-from sidebar import render_sidebar
+import styles
+import sidebar
 from query_panel import render_query_panel
 from map_view import render_map
 
@@ -10,7 +10,24 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
-st.markdown(APP_CSS, unsafe_allow_html=True)
+styles.apply()
+
+defaults = {
+    "query_result":        None,
+    "last_query":          "",
+    "selected_example":    "",
+    "auto_run":            False,
+    "show_on_map":         None,
+    "map_reset_key":       0,
+    "area_filter_active":  False,
+    "area_filter_geojson": None,
+    "current_user":        None,
+    "current_conv_id":     None,
+    "current_conv":        None,
+}
+for k, v in defaults.items():
+    if k not in st.session_state:
+        st.session_state[k] = v
 
 st.markdown("""
 <div class="geoquery-header">
@@ -22,16 +39,23 @@ st.markdown("""
 </p>
 """, unsafe_allow_html=True)
 
-render_sidebar()
+sidebar.render_sidebar()
 
 col_left, col_right = st.columns([1, 1.7], gap="large")
 
 with col_left:
-    run_btn, user_query, model_choice, approach_choice = render_query_panel()
-
-with col_right:
-    empty_geojson = {"type": "FeatureCollection", "features": []}
-    render_map(
-        geojson_collection = empty_geojson,
-        map_colour         = FEATURE_COLOURS['default'],
+    st.markdown('<div class="query-card">', unsafe_allow_html=True)
+    model_choice = st.selectbox(
+        "LLM Model", options=["qwen2.5-coder:1.5b"], index=0,
+    )
+    approach_choice = st.selectbox(
+        "Query Approach",
+        options=["Approach 1 — LLM only", "Approach 2 — LLM + MCP"],
+        index=0,
+    )
+    user_query = st.text_input(
+        "Ask a question about Edinburgh",
+        value=st.session_state.selected_example,
+        placeholder="e.g. Where can I go cycling near Leith?",
+        label_visibility="collapsed",
     )
