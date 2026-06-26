@@ -91,3 +91,9 @@ def feature_label(sql):
     if 'edinburgh_deprivation' in sql_l:
         return 'deprivation area'
     return 'result'
+
+def location_label(result):
+    loc = result.get('location', '')
+    if not loc or loc.lower() in ('edinburgh', 'city centre', ''):
+        return 'Edinburgh'
+    return loc.title()
