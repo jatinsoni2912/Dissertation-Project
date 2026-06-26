@@ -37,10 +37,17 @@ FEATURE_COLOURS = {
     'default':       '#c9a84c',
 }
 
-
 def get_feature_colour(sql):
     sql_l = sql.lower()
     for tag, colour in FEATURE_COLOURS.items():
         if f"'{tag}'" in sql_l or f'"{tag}"' in sql_l:
             return colour
     return FEATURE_COLOURS['default']
+
+def parse_geojson(raw):
+    if not raw:
+        return None
+    try:
+        return json.loads(raw)
+    except (json.JSONDecodeError, TypeError):
+        return None
