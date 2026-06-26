@@ -39,7 +39,23 @@ def render_area_filter_notice():
     if st.session_state.get('area_filter_active'):
         st.info("📍 Results clipped to drawn area — clear filter to search all of Edinburgh.")
 
+def render_info_pills(res):
+    pills = ""
 
+    if res.get('ontology_used'):
+        pills += '<span class="info-pill">🧠 Ontology</span>'
+
+    for term in res.get('activity_terms', []):
+        pills += f'<span class="info-pill">🏷 {term}</span>'
+
+    if res.get('location'):
+        pills += f'<span class="info-pill">📍 {res["location"]}</span>'
+
+    if res.get('approach'):
+        pills += f'<span class="info-pill">⚙ {res["approach"]}</span>'
+
+    if pills:
+        st.markdown(pills, unsafe_allow_html=True)
 
 
 
