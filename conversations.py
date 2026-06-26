@@ -79,3 +79,48 @@ def get_all_conversations(username: str) -> List[Dict]:
 
 def load_conversation(username: str, conv_id: str) -> Optional[Dict]:
     return load(username, conv_id)
+
+def add_message(
+    username:            str,
+    conv_id:             str,
+    query:               str,
+    sql:                 str,
+    approach:            str,
+    model:               str,
+    row_count:           int,
+    is_count:            bool,
+    fixes_applied:       list,
+    input_method:        str   = "text",
+    asr_transcript:      str   = None,
+    asr_confidence:      float = None,
+    area_filter_active:  bool  = False,
+    area_filter_geojson: dict  = None,
+) -> Dict:
+    
+    conv = load(username, conv_id)
+    if conv is None:
+        conv = new_conversation(username)
+
+    msg = {
+        "query":               query,
+        "sql":                 sql,
+        "approach":            approach,
+        "model":               model,
+        "row_count":           row_count,
+        "is_count":            is_count,
+        "fixes_applied":       fixes_applied or [],
+        "input_method":        input_method,
+        "asr_transcript":      asr_transcript,
+        "asr_confidence":      asr_confidence,
+        "area_filter_active":  area_filter_active,
+        "area_filter_geojson": area_filter_geojson,
+        "timestamp":           datetime.now().isoformat(),
+    }
+    conv["messages"].append(msg)
+    conv["updated_at"] = msg["timestamp"]
+
+    if len(conv["messages"]) == 1:
+        conv["title"] = query[:60] + ("…" if len(query) > 60 else "")
+
+    save(username, conv)
+    return conv
