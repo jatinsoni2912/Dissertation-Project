@@ -113,10 +113,16 @@ def initialise_map_state():
     if st.session_state.query_result:
         res = st.session_state.query_result
         colour = get_feature_colour(res.get('sql', ''))
+
         if st.session_state.show_on_map:
-            geojson_collection = res.get(
-                'geojson_data',
-                {"type": "FeatureCollection", "features": []}
-            )
+            geojson_collection = res.get('geojson_data', {"type": "FeatureCollection", "features": []})
 
     return colour, geojson_collection
+
+def fit_map_to_results(base_map, geojson_collection):
+    try:
+        bounds = folium.GeoJson(geojson_collection).get_bounds()
+        if bounds and bounds[0][0] is not None:
+            base_map.fit_bounds(bounds, padding=(30, 30))
+    except Exception:
+        pass
