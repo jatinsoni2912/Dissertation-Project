@@ -4,4 +4,8 @@ import sys
 import json
 import threading
 import re
-from typing import Any
+
+from mcp import ClientSession, StdioServerParameters
+from mcp.client.stdio import stdio_client
+
+MCP_AVAILABLE = True
