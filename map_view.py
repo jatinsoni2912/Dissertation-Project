@@ -149,3 +149,21 @@ def render_map(base_map, results_fg):
         base_map, key=f"edinburgh_map_{st.session_state.map_reset_key}", height=680,
         use_container_width=True, feature_group_to_add=results_fg, returned_objects=["last_active_drawing", "all_drawings"], return_on_hover=False,
     )
+
+def handle_map_draw_events(map_state):
+    last = map_state.get('last_active_drawing')
+    drawn = map_state.get('all_drawings')
+
+    if isinstance(drawn, list) and len(drawn) == 0:
+        if st.session_state.area_filter_active:
+            st.session_state.area_filter_geojson = None
+            st.session_state.area_filter_active  = False
+            st.session_state.map_reset_key      += 1
+            st.rerun()
+
+        return
+
+    if last and last.get('geometry'):
+        st.session_state.area_filter_geojson = last['geometry']
+        st.session_state.area_filter_active  = True
+
