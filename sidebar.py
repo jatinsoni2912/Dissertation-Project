@@ -6,6 +6,41 @@ from conversations import (
     load_conversation, delete_conversation, get_user_stats,
 )
 
+def handle_user_selection():
+    existing = get_all_users()
+    opts = ["— select user —"] + existing + ["➕ New user…"]
+
+    sel = st.selectbox("User", opts, index=0, label_visibility="collapsed")
+
+    if sel == "➕ New user…":
+        create_new_user_flow()
+        return
+
+    if sel != "— select user —":
+        switch_user_if_needed(sel)
+
+def create_new_user_flow():
+    name = st.text_input(
+        "Username",
+        placeholder="e.g. participant_01",
+        key="new_username_input"
+    )
+    if st.button("Create", use_container_width=True, key="create_user_btn"):
+        if name.strip():
+            create_user(name.strip())
+            st.session_state.current_user    = name.strip()
+            st.session_state.current_conv_id = None
+            st.session_state.current_conv    = None
+            st.rerun()
+
+def switch_user_if_needed(sel):
+    if st.session_state.current_user != sel:
+        st.session_state.current_user    = sel
+        st.session_state.current_conv_id = None
+        st.session_state.current_conv    = None
+        st.rerun()
+
+
 def render_sidebar() -> None:
     
     with st.sidebar:
@@ -70,9 +105,7 @@ def render_sidebar() -> None:
 
             for cv in all_convs:
                 active = cv["id"] == st.session_state.current_conv_id
-                
                 ts = cv["updated_at"][:10] if cv["updated_at"] else ""
-                
                 label = f"{'▶ ' if active else ''}{cv['title']}"
                 
                 if st.button(label, key=f"conv_{cv['id']}", use_container_width=True, help=f"{ts} · {cv['msg_count']} message(s)", 
