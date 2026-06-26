@@ -26,3 +26,12 @@ def save(username: str, conv: dict):
     path = conv_path(username, conv["id"])
     with open(path, "w", encoding="utf-8") as f:
         json.dump(conv, f, indent=2, ensure_ascii=False)
+
+
+def get_all_users() -> List[str]:
+    """Return all usernames (directory names under conversations/)."""
+    os.makedirs(CONV_DIR, exist_ok=True)
+    return sorted(
+        d for d in os.listdir(CONV_DIR)
+        if os.path.isdir(os.path.join(CONV_DIR, d))
+    )
