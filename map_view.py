@@ -42,6 +42,19 @@ def add_draw_controls(m):
         
         edit_options={'edit': True, 'remove': True},).add_to(m)
 
+def split_features_by_geometry(features):
+    points, lines, polygons = [], [], []
 
-    
+    for feat in features:
+        feat.setdefault('properties', {}).setdefault('name', 'Unnamed Feature')
+        t = feat.get('geometry', {}).get('type', '')
+
+        if t == 'Point':
+            points.append(feat)
+        elif t in ('LineString', 'MultiLineString'):
+            lines.append(feat)
+        else:
+            polygons.append(feat)
+
+    return points, lines, polygons    
 
