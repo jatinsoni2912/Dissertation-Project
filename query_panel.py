@@ -58,6 +58,37 @@ def render_info_pills(res):
         st.markdown(pills, unsafe_allow_html=True)
 
 
+def render_map_prompt_or_status(res, row_count):
+    if row_count > 0 and st.session_state.show_on_map is None:
+        render_map_prompt()
+   
+    elif st.session_state.show_on_map is True:
+        render_map_status()
+
+def render_map_prompt():
+    c1, c2 = st.columns(2)
+    with c1:
+        if st.button("🗺️ Show on map", key="show_yes", use_container_width=True):
+            st.session_state.show_on_map = True
+            st.rerun()
+    with c2:
+        if st.button("Skip map", key="show_no", use_container_width=True):
+            st.session_state.show_on_map = False
+            st.rerun()
+
+def render_map_status():
+    col_m, col_h = st.columns([3, 1])
+    
+    with col_m:
+        st.success("✓ Results shown on map")
+    
+    with col_h:
+        if st.button("Hide", key="hide_map", use_container_width=True):
+            st.session_state.show_on_map = None
+            st.rerun()
+
+
+
 
 
 
