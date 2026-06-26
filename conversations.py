@@ -1,6 +1,7 @@
 import json
 import os
 import uuid
+import shutil
 from datetime import datetime
 from typing import Optional, List, Dict
 
@@ -27,7 +28,6 @@ def save(username: str, conv: dict):
     with open(path, "w", encoding="utf-8") as f:
         json.dump(conv, f, indent=2, ensure_ascii=False)
 
-
 def get_all_users() -> List[str]:
     """Return all usernames (directory names under conversations/)."""
     os.makedirs(CONV_DIR, exist_ok=True)
@@ -35,3 +35,13 @@ def get_all_users() -> List[str]:
         d for d in os.listdir(CONV_DIR)
         if os.path.isdir(os.path.join(CONV_DIR, d))
     )
+
+
+def create_user(username: str):
+    user_dir(username.strip())
+
+
+def delete_user(username: str):
+    path = os.path.join(CONV_DIR, username)
+    if os.path.exists(path):
+        shutil.rmtree(path)
