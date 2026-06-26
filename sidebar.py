@@ -85,6 +85,16 @@ def render_sidebar() -> None:
 
             st.caption("No conversations yet — click ✏️ New chat to start.")
 
+        st.markdown("---")
+
+        stats = get_user_stats(st.session_state.current_user)
+        
+        st.caption(f"**{st.session_state.current_user}**  ·  "
+            f"{stats['conversations']} chats  ·  "
+            f"{stats['total_queries']} queries  ·  "
+            f"🎤 {stats['voice_queries']}"
+        )
+
 
 
 
