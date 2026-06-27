@@ -41,3 +41,33 @@ def execute_spatial_query(sql_query: str) -> str:
     except Exception as e:
         if conn: conn.close()
         return json.dumps({"success": False, "error": str(e)})
+
+@mcp.tool()
+def lookup_feature_tags(search_terms: list[str]) -> str:
+    
+    conn = None
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        results = []
+        
+        for term in search_terms:
+            cur.execute("""
+                SELECT osm_key, osm_value, osm_table 
+                FROM ontology_mappings 
+                WHERE activity_term ILIKE %s OR osm_value ILIKE %s OR activity_term = %s OR osm_key LIKE %s
+                LIMIT 3;
+            """, (f'%{term}%', f'%{term}%', term, f'{term}%'))
+            rows = cur.fetchall()
+            
+            if rows:
+                results.append({
+                    "query_term": term,
+                    "matches": [dict(r) for r in rows]})
+        
+        cur.close()
+        conn.close()
+        return json.dumps({"success": True, "results": results}, default=str)
+    except Exception as e:
+        if conn: conn.close()
+        return json.dumps({"success": False, "error": str(e)})
