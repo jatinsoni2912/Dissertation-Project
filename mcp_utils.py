@@ -63,5 +63,28 @@ def get_feature_radius(feature: str) -> int:
     
     return BASE_RADIUS['default']
 
+def return_explicit_search_radius(user_query: str, activity_terms: list[str] = None) -> tuple[int, bool]:
+    q = user_query.lower()
+
+    explicit = re.search(r'\bwithin\s+(\d+(?:\.\d+)?)\s*(metres?|meters?|km|kilometres?|miles?|yards?|yds?)\b', q, re.IGNORECASE)
+   
+    if explicit:
+        value = float(explicit.group(1))
+        unit = explicit.group(2).lower()
+        
+        if unit in ('km', 'kilometre', 'kilometres', 'kilometer', 'kilometers'):
+            return int(value * 1000), True
+        
+        elif unit in ('mile', 'miles'):
+            return int(value * 1609), True
+        
+        elif unit in ('yard', 'yards', 'yd', 'yds'):
+            return int(value * 0.9144), True
+        
+        else:
+            return int(value), True
+
+    return DEFAULT_NEAR_RADIUS, False
+
 
 
