@@ -213,4 +213,8 @@ def fetch_and_cache_schema() -> None:
     schema_cache = build_schema_from_mcp_result(raw)
     schema_is_live = True
 
+def start_prewarm() -> None:
+    if MCP_AVAILABLE and not schema_is_live:
+        fetch_and_cache_schema()
+
 
