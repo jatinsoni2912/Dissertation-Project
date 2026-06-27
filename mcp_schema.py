@@ -55,3 +55,44 @@ def run_mcp_query_sync(target_sql: str, timeout: int = 60) -> str:
     return submit_tool_call(
         "execute_spatial_query", {"sql_query": str(target_sql)}, timeout=timeout
     )
+
+def resolve_tags_via_mcp(activity_terms: list[str]) -> str:
+    if not MCP_AVAILABLE or not activity_terms:
+        return ""
+
+    SKIP_TERMS = {'deprivation', 'dog walking'}
+    
+    terms = [t for t in activity_terms if t.lower() not in SKIP_TERMS]
+    
+    if not terms:
+        return ""
+
+    raw = submit_tool_call("lookup_feature_tags", {"search_terms": terms}, timeout=15)
+    try:
+        data = json.loads(raw)
+        if not data.get("success") or not data.get("results"):
+            return ""
+        
+        lines = ["VERIFIED OSM TAGS (from live database — use these exact values):"]
+        
+        for entry in data["results"]:
+            term = entry["query_term"]
+            matches = entry.get("matches", [])
+            if not matches:
+                continue
+            best = matches[0]
+            lines.append(
+                f"  - '{term}' → {best['osm_table']}: "
+                f"{best['osm_key']} = '{best['osm_value']}'"
+            )
+            
+            for alt in matches[1:]:
+                if alt['osm_value'] != best['osm_value']:
+                    lines.append(
+                        f"    (also: {alt['osm_table']}: "
+                        f"{alt['osm_key']} = '{alt['osm_value']}')"
+                    )
+        return "\n".join(lines) + "\n" if len(lines) > 1 else ""
+    
+    except Exception:
+        return ""
