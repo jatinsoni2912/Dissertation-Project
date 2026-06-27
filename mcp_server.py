@@ -5,6 +5,8 @@ import psycopg2
 import psycopg2.extras
 from mcp.server.fastmcp import FastMCP
 from dotenv import load_dotenv
+from location_geocoder import geocode_location
+        
 
 mcp = FastMCP("Edinburgh-PostGIS-Discoverer")
 load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
@@ -91,7 +93,6 @@ def is_query_citywide(query: str) -> str:
 @mcp.tool()
 def geocode_place(location_name: str) -> str:
     try:
-        from location_geocoder import geocode_location
         result = geocode_location(location_name)
         if result:
             lon, lat, name = result
