@@ -38,4 +38,10 @@ FEATURE_CATEGORY = {
     'golf_course':     ('sport',   2.0),   
 }
 
+def get_feature_radius(feature: str) -> int:
+    if feature in FEATURE_CATEGORY:
+        category, multiplier = FEATURE_CATEGORY[feature]
+        return int(BASE_RADIUS[category] * multiplier)
+    
+    return BASE_RADIUS['default']
 
