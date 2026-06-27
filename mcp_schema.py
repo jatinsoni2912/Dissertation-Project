@@ -107,3 +107,17 @@ def check_citywide_via_mcp(user_query: str) -> bool:
     
     except Exception:
         return False
+
+def resolve_location_via_mcp(location_name: str) -> dict:
+    if not MCP_AVAILABLE:
+        return {"lon": -3.1883, "lat": 55.9533, "name": "Edinburgh"}
+    raw = submit_tool_call("geocode_place", {"location_name": location_name}, timeout=10)
+    
+    try:
+        data = json.loads(raw)
+        if data.get("success"):
+            return data
+    
+    except Exception:
+        pass
+    return {"lon": -3.1883, "lat": 55.9533, "name": "Edinburgh"}
