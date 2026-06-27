@@ -38,10 +38,30 @@ FEATURE_CATEGORY = {
     'golf_course':     ('sport',   2.0),   
 }
 
+TERM_TO_FEATURE = {
+    'cafe': 'cafe', 'pub': 'pub', 'bar': 'pub',
+    'restaurant': 'restaurant', 'eating': 'restaurant',
+    'pharmacy': 'pharmacy', 'library': 'library',
+    'hotel': 'hotel', 'accommodation': 'hotel',
+    'museum': 'museum', 'attraction': 'attraction',
+    'supermarket': 'supermarket', 'shopping': 'supermarket',
+    'park': 'park', 'dog walking': 'park', 'walking': 'park',
+    'football': 'pitch', 'soccer': 'pitch', 'tennis': 'pitch',
+    'cricket': 'pitch', 'rugby': 'pitch', 'basketball': 'pitch',
+    'bowls': 'pitch', 'hockey': 'pitch',
+    'golf': 'golf_course',
+    'swimming': 'swimming_pool',
+    'cycling': 'pitch',
+}
+
+DEFAULT_NEAR_RADIUS = 1000
+
 def get_feature_radius(feature: str) -> int:
     if feature in FEATURE_CATEGORY:
         category, multiplier = FEATURE_CATEGORY[feature]
         return int(BASE_RADIUS[category] * multiplier)
     
     return BASE_RADIUS['default']
+
+
 
