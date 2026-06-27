@@ -178,7 +178,17 @@ def build_schema_from_mcp_result(raw_result: str) -> str:
     
     except Exception:
         return (
-            
+            "LIVE DATABASE TABLE SCHEMAS:\n"
+            "1. planet_osm_point   -> Fields: name, amenity, shop, tourism, way (GEOMETRY Point SRID 4326)\n"
+            "   USE FOR: pubs (amenity=pub), cafes (amenity=cafe), restaurants (amenity=restaurant), libraries, supermarkets (shop=supermarket), pharmacies, tourist attractions (tourism=attraction)\n"
+            "2. planet_osm_polygon -> Fields: name, leisure, landuse, sport, way (GEOMETRY Polygon SRID 4326)\n"
+            "   USE FOR: parks (leisure=park), pitches (leisure=pitch, sport=...), golf courses (leisure=golf_course), swimming pools (leisure=swimming_pool), nature reserves (leisure=nature_reserve)\n"
+            "3. planet_osm_line    -> Fields: name, highway, route, way (GEOMETRY LineString SRID 4326)\n"
+            "   USE FOR: cycleways (highway=cycleway), footpaths (highway=footway OR path)\n"
+            "4. edinburgh_deprivation -> Fields: dzname, la_decile, geom (GEOMETRY MultiPolygon SRID 4326)\n"
+            "   CRITICAL: geometry column is 'geom' — NOT 'way', NOT 'geometry'. la_decile<=2 most deprived, >=9 least deprived\n\n"
+            "PROXIMITY: ST_DWithin(way::geography, ST_SetSRID(ST_MakePoint(lon,lat),4326)::geography, metres)\n"
+            "DEPRIVATION JOIN: ST_Intersects(p.way, d.geom) — table edinburgh_deprivation, geom column NOT way"
         )
 
 
