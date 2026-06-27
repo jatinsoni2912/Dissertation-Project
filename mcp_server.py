@@ -87,3 +87,18 @@ def is_query_citywide(query: str) -> str:
         is_citywide = True
         
     return json.dumps({"success": True, "is_citywide": is_citywide})
+
+@mcp.tool()
+def geocode_place(location_name: str) -> str:
+    try:
+        from location_geocoder import geocode_location
+        result = geocode_location(location_name)
+        if result:
+            lon, lat, name = result
+            return json.dumps({"success": True, "lon": lon, "lat": lat, "name": name})
+        return json.dumps({"success": False, "error": "Location not found"})
+    except ImportError:
+        return json.dumps({"success": False, "error": "Geocoder unavailable"})
+
+if __name__ == "__main__":
+    mcp.run()
