@@ -86,5 +86,19 @@ def return_explicit_search_radius(user_query: str, activity_terms: list[str] = N
 
     return DEFAULT_NEAR_RADIUS, False
 
+def extract_location_candidate(user_query: str) -> str:
+    within_match = re.search(r'\bwithin\s+\d+\s*(?:metres?|meters?|km|miles?)\s+of\s+(.+?)(?:\?|$)', user_query, re.IGNORECASE)
+    
+    if within_match:
+        return within_match.group(1).strip().strip('?.!,')
+
+    in_match = re.search(r'\b(?:near|in|around|close to|next to)\s+(?:the\s+)?([A-Za-z][a-z]+(?:\s+[A-Za-z][a-z]+){0,2})', user_query, re.IGNORECASE)
+    
+    if in_match:
+        return in_match.group(1).strip()
+
+    return 'Edinburgh'
+
+
 
 
