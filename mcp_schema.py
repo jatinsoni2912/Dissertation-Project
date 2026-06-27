@@ -33,3 +33,17 @@ async def call_tool_async(tool_name: str, arguments: dict) -> str:
                 return getattr(result.content[0], "text", "") or "{}"
             
             return json.dumps({"success": False, "error": f"Empty response from {tool_name}."})
+
+def submit_tool_call(tool_name: str, arguments: dict, timeout: int = 60) -> str:
+    if not MCP_AVAILABLE:
+        return json.dumps({"success": False, "error": "MCP library not installed."})
+    
+    try:
+        return asyncio.run(asyncio.wait_for(_call_tool_async(tool_name, arguments), timeout=timeout))
+    
+    except asyncio.TimeoutError:
+        return json.dumps({"success": False, "error": f"Tool call timed out after {timeout}s."})
+    
+    except Exception as e:
+        return json.dumps({"success": False, "error": f"Tool call '{tool_name}' failed: {str(e)}"})
+
