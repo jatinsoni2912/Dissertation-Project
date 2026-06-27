@@ -112,13 +112,8 @@ def expand_radius_if_empty(sql: str, was_explicit: bool, execute_fn) -> tuple[st
         return sql, None
 
     for multiplier in NEAR_EXPANSION_MULTIPLIERS:
-        expanded = re.sub(
-            r'(::geography\s*,\s*)(\d+)(\s*\))',
-            lambda m, mul=multiplier: (
-                m.group(1) + str(int(m.group(2)) * mul) + m.group(3)
-            ),
-            sql
-        )
+        expanded = re.sub(r'(::geography\s*,\s*)(\d+)(\s*\))',
+            lambda m, mul=multiplier: (m.group(1) + str(int(m.group(2)) * mul) + m.group(3)), sql)
         
         result = execute_fn(expanded)
         
