@@ -191,5 +191,26 @@ def build_schema_from_mcp_result(raw_result: str) -> str:
             "DEPRIVATION JOIN: ST_Intersects(p.way, d.geom) — table edinburgh_deprivation, geom column NOT way"
         )
 
+def get_live_schema_via_mcp() -> tuple[str, bool]:
+    global schema_cache, schema_is_live
+    
+    if schema_is_live and schema_cache:
+        return schema_cache, True
+    fetch_and_cache_schema()
+    
+    return schema_cache, schema_is_live
+
+def fetch_and_cache_schema() -> None:
+    global schema_cache, schema_is_live
+    
+    schema_query = """
+        SELECT table_name, column_name, data_type
+        FROM information_schema.columns
+        WHERE table_schema = 'public'
+        ORDER BY table_name, ordinal_position;
+    """
+    raw = run_mcp_query_sync(schema_query, timeout=30)
+    schema_cache = build_schema_from_mcp_result(raw)
+    schema_is_live = True
 
 
