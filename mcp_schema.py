@@ -39,7 +39,7 @@ def submit_tool_call(tool_name: str, arguments: dict, timeout: int = 60) -> str:
         return json.dumps({"success": False, "error": "MCP library not installed."})
     
     try:
-        return asyncio.run(asyncio.wait_for(_call_tool_async(tool_name, arguments), timeout=timeout))
+        return asyncio.run(asyncio.wait_for(call_tool_async(tool_name, arguments), timeout=timeout))
     
     except asyncio.TimeoutError:
         return json.dumps({"success": False, "error": f"Tool call timed out after {timeout}s."})
@@ -47,3 +47,11 @@ def submit_tool_call(tool_name: str, arguments: dict, timeout: int = 60) -> str:
     except Exception as e:
         return json.dumps({"success": False, "error": f"Tool call '{tool_name}' failed: {str(e)}"})
 
+
+def run_mcp_query_sync(target_sql: str, timeout: int = 60) -> str:
+    if READ_ONLY_GUARD.search(target_sql):
+        return json.dumps({"success": False, "error": "Write operations blocked."})
+    
+    return submit_tool_call(
+        "execute_spatial_query", {"sql_query": str(target_sql)}, timeout=timeout
+    )
