@@ -99,6 +99,34 @@ def extract_location_candidate(user_query: str) -> str:
 
     return 'Edinburgh'
 
+NEAR_EXPANSION_MULTIPLIERS = [3, 5]
+
+def expand_radius_if_empty(sql: str, was_explicit: bool, execute_fn) -> tuple[str, int | None]:
+    if was_explicit:
+        return sql, None
+    if 'ST_DWITHIN' not in sql.upper():
+        return sql, None
+    if 'COUNT(' in sql.upper():
+        return sql, None
+    if 'EDINBURGH_DEPRIVATION' in sql.upper():
+        return sql, None
+
+    for multiplier in NEAR_EXPANSION_MULTIPLIERS:
+        expanded = re.sub(
+            r'(::geography\s*,\s*)(\d+)(\s*\))',
+            lambda m, mul=multiplier: (
+                m.group(1) + str(int(m.group(2)) * mul) + m.group(3)
+            ),
+            sql
+        )
+        
+        result = execute_fn(expanded)
+        
+        if result.get('success') and len(result.get('results', [])) > 0:
+            return expanded, multiplier
+
+    return sql, None
+
 
 
 
