@@ -96,3 +96,14 @@ def resolve_tags_via_mcp(activity_terms: list[str]) -> str:
     
     except Exception:
         return ""
+    
+def check_citywide_via_mcp(user_query: str) -> bool:
+    if not MCP_AVAILABLE:
+        return False
+    raw = submit_tool_call("is_query_citywide", {"query": user_query}, timeout=5)
+    
+    try:
+        return json.loads(raw).get("is_citywide", False)
+    
+    except Exception:
+        return False
