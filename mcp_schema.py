@@ -140,24 +140,6 @@ def build_schema_from_mcp_result(raw_result: str) -> str:
         "edinburgh_deprivation": "USE FOR: deprivation queries — geometry column is 'geom' (NOT 'way'). la_decile<=2 = most deprived, la_decile>=9 = least deprived",
     }
 
-    def _build_schema_from_mcp_result(raw_result: str) -> str:
-        
-        SPATIAL_INSTRUCTIONS = (
-            "CRITICAL POSTGIS SPATIAL INSTRUCTIONS:\n"
-            "- All coordinates are in WGS84 degrees (SRID 4326).\n"
-            "- PROXIMITY (near a location): ALWAYS use ST_DWithin with actual numeric coordinates:\n"
-            "  ST_DWithin(way::geography, ST_SetSRID(ST_MakePoint(-3.188267, 55.953251), 4326)::geography, 500)\n"
-            "  CRITICAL: NEVER use ST_Intersects for proximity/near queries. NEVER output literal 'lon' or 'lat'.\n"
-            "- Deprivation JOIN: use ST_Intersects(p.way, d.geom) — table is edinburgh_deprivation.\n"
-            "- edinburgh_deprivation geometry column is 'geom', NOT 'way' and NOT 'geometry'."
-            )
-        
-        SCHEMA_USE_HINTS = {
-            "planet_osm_point":      "USE FOR: pubs (amenity=pub), cafes (amenity=cafe), restaurants, libraries, supermarkets (shop=supermarket), pharmacies (amenity=pharmacy), post offices, tourist attractions",
-            "planet_osm_polygon":    "USE FOR: parks (leisure=park), pitches (leisure=pitch, sport=...), golf courses, swimming pools, sports centres",
-            "planet_osm_line":       "USE FOR: cycleways (highway=cycleway), walking/footpaths (highway=footway OR path)",
-            "edinburgh_deprivation": "USE FOR: deprivation queries — geometry column is 'geom' (NOT 'way'). la_decile<=2 = most deprived, la_decile>=9 = least deprived",
-            }
     try:
         data = json.loads(raw_result)
         if not data.get("success") or not data.get("results"):
