@@ -58,6 +58,28 @@ def assemble_context(user_query: str, context_location: tuple):
     )
 
 
+def generate_sql(user_query, model, schema, loc_data, tag_hints, is_city_wide, search_radius):
+    prompt = build_prompt(
+        user_query=user_query,
+        schema=schema,
+        location_name=loc_data.get('name', 'Edinburgh'),
+        lon=loc_data.get('lon', -3.1883),
+        lat=loc_data.get('lat', 55.9533),
+        tag_hints=tag_hints,
+        is_city_wide=is_city_wide,
+        search_radius=search_radius,
+    )
+
+    response = ollama.chat(
+        model=model,
+        messages=[{'role': 'user', 'content': prompt}],
+        options={'temperature': 0, 'num_predict': 512}
+    )
+
+    return extract_sql(response['message']['content'].strip())
+
+
+
 MCP_SERVER_HOST = os.getenv('MCP_HOST', 'localhost')
 MCP_SERVER_PORT = int(os.getenv('MCP_PORT', '5432'))
 
