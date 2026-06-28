@@ -16,7 +16,6 @@ from llm_pipeline import (
     validate_sql
 )
 
-
 from mcp_schema import (
     get_live_schema_via_mcp,
     run_mcp_query_sync,
@@ -31,6 +30,33 @@ from utils import extract_activity_terms, extract_sql
 
 
 load_dotenv()
+start_prewarm()
+
+def assemble_context(user_query: str, context_location: tuple):
+    is_city_wide = check_citywide_via_mcp(user_query)
+    loc_word = 'Edinburgh' if is_city_wide else extract_location_candidate(user_query)
+    loc_data = resolve_location_via_mcp(loc_word)
+
+    if context_location:
+        name, lon, lat = context_location
+        loc_data = {'name': name, 'lon': lon, 'lat': lat}
+        is_city_wide = False
+
+    schema, _ = get_live_schema_via_mcp()
+    activity_terms = extract_activity_terms(user_query)
+    tag_hints = resolve_tags_via_mcp(activity_terms)
+    search_radius, was_explicit = resolve_search_radius(user_query, activity_terms)
+
+    return (
+        is_city_wide,
+        loc_data,
+        activity_terms,
+        tag_hints,
+        schema,
+        search_radius,
+        was_explicit,
+    )
+
 
 MCP_SERVER_HOST = os.getenv('MCP_HOST', 'localhost')
 MCP_SERVER_PORT = int(os.getenv('MCP_PORT', '5432'))
