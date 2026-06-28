@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 
-from database import get_ontology_mappings
+from database import get_ontology_mappings, execute_query
 
 from llm_pipeline import (
     extract_activity_terms,
@@ -78,6 +78,35 @@ def generate_sql(user_query, model, schema, loc_data, tag_hints, is_city_wide, s
 
     return extract_sql(response['message']['content'].strip())
 
+def execute_and_expand_sql(generated_sql: str, search_radius: int, was_explicit: bool):
+    try:
+        raw = run_mcp_query_sync(generated_sql)
+        data = json.loads(raw.strip())
+        is_valid = data.get("success", False)
+        validation_message = "Valid" if is_valid else data.get("error", "Execution failed")
+        final_sql = data.get("query_executed", generated_sql)
+        actual_rows = data.get("results", [])
+    
+    except Exception as e:
+        return generated_sql, [], False, f"MCP execution error: {str(e)}", []
+
+    if is_valid and not was_explicit and len(actual_rows) == 0:
+        
+        expanded_sql, multiplier = expand_radius_if_empty(final_sql, was_explicit, execute_query)
+
+        if multiplier:
+            expanded_result = execute_query(expanded_sql)
+            if expanded_result.get('success'):
+                
+                return (
+                    expanded_sql,
+                    expanded_result.get('results', []),
+                    True,
+                    "Valid",
+                    [f"Expanded radius {multiplier}x to {search_radius * multiplier}m"]
+                )
+
+    return final_sql, actual_rows, is_valid, validation_message, []
 
 
 MCP_SERVER_HOST = os.getenv('MCP_HOST', 'localhost')
