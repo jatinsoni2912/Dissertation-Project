@@ -16,6 +16,20 @@ from llm_pipeline import (
     validate_sql
 )
 
+
+from mcp_schema import (
+    get_live_schema_via_mcp,
+    run_mcp_query_sync,
+    start_prewarm,
+    resolve_tags_via_mcp,
+    check_citywide_via_mcp,
+    resolve_location_via_mcp,
+)
+from mcp_utils import extract_location_candidate, resolve_search_radius, expand_radius_if_empty
+from prompt import build_prompt
+from utils import extract_activity_terms, extract_sql
+
+
 load_dotenv()
 
 MCP_SERVER_HOST = os.getenv('MCP_HOST', 'localhost')
