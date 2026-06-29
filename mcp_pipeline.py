@@ -108,6 +108,39 @@ def execute_and_expand_sql(generated_sql: str, search_radius: int, was_explicit:
 
     return final_sql, actual_rows, is_valid, validation_message, []
 
+def generate_sql_with_mcp(user_query: str, model: str = None, context_location: tuple = None) -> dict:
+    model = model or os.getenv('OLLAMA_MODEL', 'qwen2.5-coder:1.5b')
+    
+    is_city_wide, loc_data, activity_terms, tag_hints, schema, search_radius, was_explicit = assemble_context(user_query, context_location)
+
+    generated_sql = generate_sql(user_query, model, schema, loc_data, tag_hints, is_city_wide, search_radius)
+
+    final_sql, actual_rows, is_valid, validation_message, radius_fix = execute_and_expand_sql(generated_sql, search_radius, was_explicit)
+
+    sql_lower = final_sql.lower()
+    is_dep = 'edinburgh_deprivation' in sql_lower
+    query_mode = (
+        'deprivation' if (is_dep and 'planet_osm' not in sql_lower)
+        else 'cross' if is_dep
+        else 'osm'
+    )
+
+    return {
+        'sql': final_sql,
+        'valid': is_valid,
+        'validation_message': validation_message,
+        'fixes_applied': radius_fix,
+        'ontology_used': True,
+        'activity_terms_found': activity_terms,
+        'location_resolved': loc_data.get('name', 'Edinburgh'),
+        'is_city_wide': is_city_wide,
+        'model_used': model,
+        'query_mode': query_mode,
+        'approach': 'Approach 2 - MCP + LLM SQL Generation',
+        'mcp_results': actual_rows,
+    }
+
+
 
 MCP_SERVER_HOST = os.getenv('MCP_HOST', 'localhost')
 MCP_SERVER_PORT = int(os.getenv('MCP_PORT', '5432'))
