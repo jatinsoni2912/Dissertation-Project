@@ -3,7 +3,11 @@ import os
 from dotenv import load_dotenv
 from database import get_schema, get_connection, get_available_tags
 from prompt import build_prompt
+from constants import CITY_WIDE_SIGNALS
+from location_geocoder import geocode_location
 from sql_fixer import validate_and_fix
+from mcp_utils import resolve_search_radius, extract_location_candidate, expand_radius_if_empty
+from utils import extract_activity_terms, extract_sql
 from utils import (
     extract_activity_terms,
     extract_location,
@@ -22,6 +26,47 @@ from utils import (
 load_dotenv()
 
 schema_cache: str = ''
+
+def create_baseline_context(user_query: str, context_location: tuple):
+    q = user_query.lower()
+
+    is_city_wide = any(sig in q for sig in CITY_WIDE_SIGNALS)
+    if not is_city_wide and 'edinburgh' in q and not any(
+        ind in q for ind in ['near ', 'in ', 'around ', 'within ']
+    ):
+        is_city_wide = True
+
+    location_name = 'Edinburgh'
+    lon, lat = -3.1883, 55.9533
+
+    if not is_city_wide:
+        candidate = extract_location_candidate(user_query)
+        if candidate and candidate.lower() != 'edinburgh':
+            conn = get_connection()
+            try:
+                result = geocode_location(candidate, conn=conn)
+                if result:
+                    lon, lat, location_name = result
+            finally:
+                conn.close()
+
+    if context_location is not None:
+        location_name, lon, lat = context_location
+        is_city_wide = False
+
+    activity_terms = extract_activity_terms(user_query)
+    search_radius, was_explicit = resolve_search_radius(user_query, activity_terms)
+
+    return (
+        location_name,
+        lon,
+        lat,
+        is_city_wide,
+        activity_terms,
+        search_radius,
+        was_explicit,
+    )
+
 
 def generate_sql(user_query, model=None):
     if model is None:
