@@ -1,3 +1,5 @@
+import re
+
 PATTERNS = {
     'count': (
         "Count features city-wide",
@@ -125,3 +127,29 @@ PATTERNS = {
         "LIMIT {limit};"
     ),
 }
+
+def get_deprivation_pattern(q: str) -> list[str] | None:
+    is_deprivation = any(w in q for w in ['deprived', 'deprivation', 'decile'])
+    if not is_deprivation:
+        return None
+
+    is_line_cross = any(w in q for w in ['cycle', 'cycling', 'path', 'walk', 'footway'])
+    is_polygon_cross = any(w in q for w in ['park', 'pitch', 'golf', 'swim', 'playground'])
+
+    is_point_cross = bool(re.search(
+        r'\b(cafes?|pubs?|bars?|shops?|librar(y|ies)|pharmacies?|restaurants?|schools?|'
+        r'hospitals?|doctors?|gp|supermarkets?|hotels?|museums?|churches?|atms?|banks?|post office)\b',
+        q
+    ))
+
+    if is_line_cross:
+        return ['deprivation_cross_line']
+    elif is_polygon_cross:
+        return ['deprivation_cross_polygon']
+    elif is_point_cross:
+        return ['deprivation_cross']
+    else:
+        return ['deprivation_only']
+
+
+
