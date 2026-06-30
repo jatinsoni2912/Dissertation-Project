@@ -1,7 +1,7 @@
 import ollama
 import os
 from dotenv import load_dotenv
-from database import get_schema, get_connection, get_available_tags
+from database import get_schema, get_connection, get_available_tags, execute_query
 from prompt import build_prompt
 from constants import CITY_WIDE_SIGNALS
 from location_geocoder import geocode_location
@@ -89,6 +89,33 @@ def generate_sql_baseline(user_query, model, location_name, lon, lat, is_city_wi
     
     except Exception:
         return ''
+    
+
+def execute_and_expand_baseline_sql(raw_sql: str, search_radius: int, was_explicit: bool):
+    if not raw_sql.strip().upper().startswith('SELECT'):
+        return raw_sql, {'results': []}, False, 'invalid SQL', []
+
+    db_result = execute_query(raw_sql)
+    is_valid = db_result.get('success', False)
+    validation_message = 'Valid' if is_valid else db_result.get('error', 'Execution failed')
+
+    radius_fix = []
+
+    if is_valid and len(db_result.get('results', [])) == 0:
+        expanded_sql, multiplier = expand_radius_if_empty(raw_sql, was_explicit, execute_query)
+        if multiplier:
+            expanded_result = execute_query(expanded_sql)
+            if expanded_result.get('success'):
+                return (
+                    expanded_sql,
+                    expanded_result,
+                    True,
+                    'Valid',
+                    [f'Expanded radius {multiplier}x to {search_radius * multiplier}m']
+                )
+
+    return raw_sql, db_result, is_valid, validation_message, radius_fix
+
 
 
 
