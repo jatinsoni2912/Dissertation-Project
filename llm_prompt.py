@@ -187,3 +187,30 @@ def detect_city_or_proximity_pattern(q: str, is_city_wide: bool) -> list[str]:
                 return ['proximity_point', 'named_area_point']
 
 
+def select_patterns(user_query: str, is_city_wide: bool) -> list[str]:
+    q = user_query.lower()
+
+    if any(w in q for w in ['how many', 'count']):
+        return ['count']
+
+    deprivation = get_deprivation_pattern(q)
+    
+    if deprivation:
+        return deprivation
+
+    if re.search(r'\b(show|find|give)\s+me\s+(\d+)\b', q):
+        return ['explicit_limit']
+
+    is_sport = any(w in q for w in [
+        'football', 'soccer', 'tennis', 'cricket', 'rugby', 'pitch',
+        'basketball', 'bowls', 'bowling', 'hockey', 'netball',
+        'volleyball', 'badminton', 'squash'
+    ])
+    
+    if is_sport:
+        return ['city_wide_sport'] if is_city_wide else ['sport_proximity']
+
+    return detect_city_or_proximity_pattern(q, is_city_wide)
+
+
+
