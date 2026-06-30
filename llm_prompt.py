@@ -128,8 +128,9 @@ PATTERNS = {
     ),
 }
 
-def get_deprivation_pattern(q: str) -> list[str] | None:
+def get_deprivation_pattern(q: str) -> list[str]:
     is_deprivation = any(w in q for w in ['deprived', 'deprivation', 'decile'])
+    
     if not is_deprivation:
         return None
 
@@ -138,9 +139,7 @@ def get_deprivation_pattern(q: str) -> list[str] | None:
 
     is_point_cross = bool(re.search(
         r'\b(cafes?|pubs?|bars?|shops?|librar(y|ies)|pharmacies?|restaurants?|schools?|'
-        r'hospitals?|doctors?|gp|supermarkets?|hotels?|museums?|churches?|atms?|banks?|post office)\b',
-        q
-    ))
+        r'hospitals?|doctors?|gp|supermarkets?|hotels?|museums?|churches?|atms?|banks?|post office)\b',q))
 
     if is_line_cross:
         return ['deprivation_cross_line']
@@ -151,5 +150,40 @@ def get_deprivation_pattern(q: str) -> list[str] | None:
     else:
         return ['deprivation_only']
 
+def detect_city_or_proximity_pattern(q: str, is_city_wide: bool) -> list[str]:
+    is_running = bool(re.search(r'\b(running|run|jog|jogging)\b', q))
+    is_line    = bool(re.search(r'\b(cycling|cycle|walking|walk|paths?|footway|biking|bike)\b', q))
+    is_polygon = bool(re.search(
+        r'\b(parks?|golf|swimming|swim|pitches?|sports?\s+centres?|'
+        r'playground|playgrounds?|nature\s+reserves?)\b', q
+    ))
+    has_proximity = bool(re.search(
+        r'\b(near|within\s+\d+\s*(metres?|meters?|km|miles?|yards?))\b', q
+    ))
+
+    if is_city_wide:
+        if is_running:
+            return ['city_wide_running']
+        elif re.search(r'\b(cycling|cycle|bike|biking)\b', q):
+            return ['city_wide_line']
+        elif re.search(r'\b(walking|walk|paths?|footway)\b', q):
+            return ['city_wide_walking']
+        elif is_line:
+            return ['city_wide_line']
+        elif is_polygon:
+            return ['city_wide_polygon']
+        else:
+            return ['city_wide_point']
+
+    else:
+        if has_proximity:
+            return ['proximity_polygon'] if (is_line or is_polygon or is_running) else ['proximity_point']
+        else:
+            if is_running or is_line:
+                return ['proximity_polygon', 'named_area_polygon']
+            elif is_polygon:
+                return ['proximity_polygon', 'named_area_polygon']
+            else:
+                return ['proximity_point', 'named_area_point']
 
 
