@@ -67,6 +67,30 @@ def create_baseline_context(user_query: str, context_location: tuple):
         was_explicit,
     )
 
+def generate_sql_baseline(user_query, model, location_name, lon, lat, is_city_wide, search_radius):
+    
+    prompt = build_prompt(
+        user_query=user_query,
+        schema=None,  
+        location_name=location_name,
+        lon=lon,
+        lat=lat,
+        is_city_wide=is_city_wide,
+        search_radius=search_radius,
+    )
+
+    try:
+        response = ollama.chat(
+            model=model,
+            messages=[{'role': 'user', 'content': prompt}],
+            options={'temperature': 0, 'num_predict': 256},
+        )
+        return extract_sql(response['message']['content'].strip())
+    
+    except Exception:
+        return ''
+
+
 
 def generate_sql(user_query, model=None):
     if model is None:
