@@ -116,6 +116,38 @@ def execute_and_expand_baseline_sql(raw_sql: str, search_radius: int, was_explic
 
     return raw_sql, db_result, is_valid, validation_message, radius_fix
 
+def generate_sql(user_query: str, model: str = None, context_location: tuple = None) -> dict:
+    if model is None:
+        model = os.getenv('OLLAMA_MODEL', 'qwen2.5-coder:1.5b')
+
+    location_name, lon, lat, is_city_wide, activity_terms, search_radius, was_explicit = create_baseline_context(user_query, context_location)
+
+    raw_sql = generate_sql_baseline(user_query, model, location_name, lon, lat, is_city_wide, search_radius)
+
+    sql_lower = raw_sql.lower()
+    is_dep = 'edinburgh_deprivation' in sql_lower
+    query_mode = (
+        'deprivation' if (is_dep and 'planet_osm' not in sql_lower)
+        else 'cross' if is_dep
+        else 'osm'
+    )
+
+    final_sql, db_result, is_valid, validation_message, radius_fix = execute_and_expand_baseline_sql(raw_sql, search_radius, was_explicit)
+
+    return {
+        'sql': final_sql,
+        'valid': is_valid,
+        'validation_message': validation_message,
+        'fixes_applied': radius_fix,
+        'ontology_used': False,
+        'activity_terms_found': activity_terms,
+        'location_resolved': location_name,
+        'is_city_wide': is_city_wide,
+        'model_used': model,
+        'query_mode': query_mode,
+        'approach': 'Approach 1 — LLM Baseline (static schema, no MCP)',
+        'mcp_results': db_result.get('results', []),
+    }
 
 
 
