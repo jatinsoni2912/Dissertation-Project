@@ -5,6 +5,7 @@ from query_panel import render_query_panel
 from map_view import render
 from app_utils import EXAMPLE_QUERIES
 from query_handler import run_query
+from conversations import add_message
 
 st.set_page_config(
     page_title="GeoQuery Edinburgh",
@@ -99,5 +100,23 @@ if trigger and user_query.strip():
             context_loc=None, pipeline_query=user_query,
         )
         st.session_state.query_result = result
-        st.session_state.last_query   = user_query
+        st.session_state.last_query   = user_query#
+
+        if st.session_state.get('current_user') and st.session_state.get('current_conv_id'):
+            updated = add_message(
+                username       = st.session_state.current_user,
+                conv_id        = st.session_state.current_conv_id,
+                query          = user_query,
+                sql            = result.get('sql', ''),
+                approach       = result.get('approach', approach_choice),
+                model          = result.get('model_used', model_choice),
+                row_count      = result.get('row_count', 0),
+                is_count       = result.get('is_count', False),
+                fixes_applied  = result.get('fixes', []),
+                input_method   = st.session_state.input_method,
+                asr_transcript = None,
+                asr_confidence = None,
+            )
+            st.session_state.current_conv = updated
+
     st.rerun()
