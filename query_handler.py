@@ -55,6 +55,7 @@ def build_base_metadata(gen_result: dict, approach_label: str, model_choice: str
         "location": gen_result.get("location_resolved", ""),
         "approach": approach_label,
         "fixes": gen_result.get("fixes_applied", []),
+        "is_city_wide": gen_result.get("is_city_wide", True),
         "classification": gen_result.get("classification"),
         "model_used": model_choice,
     }
