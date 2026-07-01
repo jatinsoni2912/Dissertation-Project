@@ -6,6 +6,7 @@ from database import execute_query, get_feature_locations_for_count
 from app_utils import prepare_geojson_collection
 from mcp_pipeline import generate_sql_with_mcp
 from llm_pipeline import generate_sql
+        
 
 def apply_area_filter(sql):
     if not (st.session_state.area_filter_active
@@ -34,14 +35,13 @@ def apply_area_filter(sql):
 
     return sql.rstrip(';') + f' WHERE {cond};'
 
-def generate_sql(user_query: str, approach_choice: str, model_choice: str):
+def generate_sql(user_query, approach_choice, model_choice, context_loc):
     
     if "MCP" in approach_choice:
-        from mcp_pipeline import generate_sql_with_mcp
-        gen_result = generate_sql_with_mcp(user_query, model=model_choice)
+        gen_result = generate_sql_with_mcp(user_query, model=model_choice, context_loction=context_loc)
         label = "LLM + MCP"
     else:
-        gen_result = generate_sql(user_query, model=model_choice)
+        gen_result = generate_sql(user_query, model=model_choice, context_location=context_loc)
         label = "LLM only"
 
     return gen_result, label
@@ -122,7 +122,7 @@ def handle_results(base: dict, sql: str, db_result: dict):
 
     return handle_feature_query(base, results, columns)
 
-def run_query(user_query: str, approach_choice: str, model_choice: str, area_filter_geojson: dict | None = None,) -> dict:
+def run_query(user_query: str, approach_choice: str, model_choice: str, area_filter_geojson: dict):
     
     gen_result, approach_label = generate_sql(user_query, approach_choice, model_choice)
     base = build_base_metadata(gen_result, approach_label, model_choice)
@@ -134,6 +134,7 @@ def run_query(user_query: str, approach_choice: str, model_choice: str, area_fil
     base["sql"] = sql
 
     db_result = execute_query(sql)
+    
     if not db_result["success"]:
         return handle_db_error(base, db_result)
 
