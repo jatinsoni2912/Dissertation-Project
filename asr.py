@@ -7,7 +7,7 @@ whisper_model = None
 whisper_model_size = None
 
 
-def load_whisper(model_size: str = "base"):
+def load_whisper(model_size="base"):
     
     global whisper_model, whisper_model_size
 
@@ -23,7 +23,7 @@ def load_whisper(model_size: str = "base"):
 
     return whisper_model
 
-def transcribe(audio_bytes: bytes, model_size: str = "base"):
+def transcribe(audio_bytes, model_size="base"):
     
     model = load_whisper(model_size)
 
