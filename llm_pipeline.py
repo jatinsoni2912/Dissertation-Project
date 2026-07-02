@@ -27,7 +27,7 @@ load_dotenv()
 
 schema_cache: str = ''
 
-def create_baseline_context(user_query: str, context_location: tuple):
+def create_baseline_context(user_query, context_location):
     q = user_query.lower()
 
     is_city_wide = any(sig in q for sig in CITY_WIDE_SIGNALS)
@@ -91,7 +91,7 @@ def generate_sql_baseline(user_query, model, location_name, lon, lat, is_city_wi
         return ''
     
 
-def execute_and_expand_baseline_sql(raw_sql: str, search_radius: int, was_explicit: bool):
+def execute_and_expand_baseline_sql(raw_sql, search_radius, was_explicit):
     if not raw_sql.strip().upper().startswith('SELECT'):
         return raw_sql, {'results': []}, False, 'invalid SQL', []
 
@@ -116,7 +116,7 @@ def execute_and_expand_baseline_sql(raw_sql: str, search_radius: int, was_explic
 
     return raw_sql, db_result, is_valid, validation_message, radius_fix
 
-def generate_sql(user_query: str, model: str = None, context_location: tuple = None) -> dict:
+def generate_sql(user_query, model, context_location):
     if model is None:
         model = os.getenv('OLLAMA_MODEL', 'qwen2.5-coder:1.5b')
 

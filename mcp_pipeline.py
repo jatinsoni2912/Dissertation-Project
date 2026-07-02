@@ -10,12 +10,6 @@ from mcp.client.stdio import stdio_client
 
 from database import get_ontology_mappings, execute_query
 
-from llm_pipeline import (
-    extract_activity_terms,
-    extract_location,
-    validate_sql
-)
-
 from mcp_schema import (
     get_live_schema_via_mcp,
     run_mcp_query_sync,
@@ -32,7 +26,7 @@ from utils import extract_activity_terms, extract_sql
 load_dotenv()
 start_prewarm()
 
-def assemble_context(user_query: str, context_location: tuple):
+def assemble_context(user_query, context_location):
     is_city_wide = check_citywide_via_mcp(user_query)
     loc_word = 'Edinburgh' if is_city_wide else extract_location_candidate(user_query)
     loc_data = resolve_location_via_mcp(loc_word)
@@ -78,7 +72,7 @@ def generate_sql(user_query, model, schema, loc_data, tag_hints, is_city_wide, s
 
     return extract_sql(response['message']['content'].strip())
 
-def execute_and_expand_sql(generated_sql: str, search_radius: int, was_explicit: bool):
+def execute_and_expand_sql(generated_sql, search_radius, was_explicit):
     try:
         raw = run_mcp_query_sync(generated_sql)
         data = json.loads(raw.strip())
@@ -108,7 +102,7 @@ def execute_and_expand_sql(generated_sql: str, search_radius: int, was_explicit:
 
     return final_sql, actual_rows, is_valid, validation_message, []
 
-def generate_sql_with_mcp(user_query: str, model: str = None, context_location: tuple = None) -> dict:
+def generate_sql_with_mcp(user_query, model, context_location):
     model = model or os.getenv('OLLAMA_MODEL', 'qwen2.5-coder:1.5b')
     
     is_city_wide, loc_data, activity_terms, tag_hints, schema, search_radius, was_explicit = assemble_context(user_query, context_location)

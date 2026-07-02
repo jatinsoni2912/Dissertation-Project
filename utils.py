@@ -7,12 +7,12 @@ from constants import (
     CITY_WIDE_SIGNALS, ACTIVITY_KEYWORDS
 )
 
-def extract_activity_terms(user_query: str) -> list[str]:
+def extract_activity_terms(user_query):
     q = user_query.lower()
     sorted_keywords = sorted(ACTIVITY_KEYWORDS.keys(), key=len, reverse=True)
     return list({ACTIVITY_KEYWORDS[kw] for kw in sorted_keywords if kw in q})
 
-def extract_sql(llm_output: str) -> str:
+def extract_sql(llm_output):
     clean_text = llm_output.strip()
 
     markdown_match = re.search(r'```sql\s*(.*?)\s*```', clean_text, re.DOTALL | re.IGNORECASE)
@@ -25,7 +25,7 @@ def extract_sql(llm_output: str) -> str:
 
     return clean_text
 
-def validate_sql(sql: str) -> Tuple[bool, str]:
+def validate_sql(sql):
     
     sql_upper = sql.upper().strip()
 

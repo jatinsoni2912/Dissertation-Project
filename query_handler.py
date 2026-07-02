@@ -46,7 +46,7 @@ def generate_sql(user_query, approach_choice, model_choice, context_loc):
 
     return gen_result, label
 
-def build_base_metadata(gen_result: dict, approach_label: str, model_choice: str):
+def build_base_metadata(gen_result, approach_label, model_choice):
     
     return {
         "sql": gen_result["sql"],
@@ -60,7 +60,7 @@ def build_base_metadata(gen_result: dict, approach_label: str, model_choice: str
         "model_used": model_choice,
     }
 
-def handle_invalid_sql(base: dict, gen_result: dict):
+def handle_invalid_sql(base, gen_result):
     return {
         **base,
         "row_count": 0,
@@ -69,7 +69,7 @@ def handle_invalid_sql(base: dict, gen_result: dict):
         "geojson_data": {"type": "FeatureCollection", "features": []},
     }
 
-def handle_db_error(base: dict, db_result: dict):
+def handle_db_error(base, db_result):
     return {
         **base,
         "row_count": 0,
@@ -78,13 +78,13 @@ def handle_db_error(base: dict, db_result: dict):
         "geojson_data": {"type": "FeatureCollection", "features": []},
     }
 
-def is_count_query(columns: list[str]):
+def is_count_query(columns):
     if not columns:
         return False
     col = columns[0].lower()
     return col in ("count", "total", "count_big") or "count" in col
 
-def handle_count_query(base: dict, sql: str, results: list, columns: list):
+def handle_count_query(base, sql, results, columns):
     count_value = results[0][0] if results else 0
 
     loc_rows = get_feature_locations_for_count(sql)
@@ -103,7 +103,7 @@ def handle_count_query(base: dict, sql: str, results: list, columns: list):
         "geojson_data": geojson,
     }
 
-def handle_feature_query(base: dict, results: list, columns: list):
+def handle_feature_query(base, results, columns):
     geojson, feature_count = prepare_geojson_collection(results, columns)
     return {
         **base,
@@ -114,7 +114,7 @@ def handle_feature_query(base: dict, results: list, columns: list):
         "geojson_data": geojson,
     }
 
-def handle_results(base: dict, sql: str, db_result: dict):
+def handle_results(base, sql, db_result):
     results = db_result["results"]
     columns = db_result["columns"]
 
@@ -123,7 +123,7 @@ def handle_results(base: dict, sql: str, db_result: dict):
 
     return handle_feature_query(base, results, columns)
 
-def run_query(user_query: str, approach_choice: str, model_choice: str, area_filter_geojson: dict):
+def run_query(user_query, approach_choice, model_choice, area_filter_geojson):
     
     gen_result, approach_label = generate_sql(user_query, approach_choice, model_choice)
     base = build_base_metadata(gen_result, approach_label, model_choice)

@@ -21,7 +21,7 @@ SERVER_PATH = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "mcp_server.py")
 )
 
-async def call_tool_async(tool_name: str, arguments: dict) -> str:
+async def call_tool_async(tool_name, arguments):
     server_params = StdioServerParameters(command=sys.executable, args=[SERVER_PATH])
    
     async with stdio_client(server_params) as (read, write):
@@ -34,7 +34,7 @@ async def call_tool_async(tool_name: str, arguments: dict) -> str:
             
             return json.dumps({"success": False, "error": f"Empty response from {tool_name}."})
 
-def submit_tool_call(tool_name: str, arguments: dict, timeout: int = 60) -> str:
+def submit_tool_call(tool_name, arguments, timeout=60):
     if not MCP_AVAILABLE:
         return json.dumps({"success": False, "error": "MCP library not installed."})
     
@@ -48,7 +48,7 @@ def submit_tool_call(tool_name: str, arguments: dict, timeout: int = 60) -> str:
         return json.dumps({"success": False, "error": f"Tool call '{tool_name}' failed: {str(e)}"})
 
 
-def run_mcp_query_sync(target_sql: str, timeout: int = 60) -> str:
+def run_mcp_query_sync(target_sql, timeout=60):
     if READ_ONLY_GUARD.search(target_sql):
         return json.dumps({"success": False, "error": "Write operations blocked."})
     
@@ -56,7 +56,7 @@ def run_mcp_query_sync(target_sql: str, timeout: int = 60) -> str:
         "execute_spatial_query", {"sql_query": str(target_sql)}, timeout=timeout
     )
 
-def resolve_tags_via_mcp(activity_terms: list[str]) -> str:
+def resolve_tags_via_mcp(activity_terms):
     if not MCP_AVAILABLE or not activity_terms:
         return ""
 
@@ -97,7 +97,7 @@ def resolve_tags_via_mcp(activity_terms: list[str]) -> str:
     except Exception:
         return ""
     
-def check_citywide_via_mcp(user_query: str) -> bool:
+def check_citywide_via_mcp(user_query):
     if not MCP_AVAILABLE:
         return False
     raw = submit_tool_call("is_query_citywide", {"query": user_query}, timeout=5)
@@ -108,7 +108,7 @@ def check_citywide_via_mcp(user_query: str) -> bool:
     except Exception:
         return False
 
-def resolve_location_via_mcp(location_name: str) -> dict:
+def resolve_location_via_mcp(location_name):
     if not MCP_AVAILABLE:
         return {"lon": -3.1883, "lat": 55.9533, "name": "Edinburgh"}
     raw = submit_tool_call("geocode_place", {"location_name": location_name}, timeout=10)
@@ -122,7 +122,7 @@ def resolve_location_via_mcp(location_name: str) -> dict:
         pass
     return {"lon": -3.1883, "lat": 55.9533, "name": "Edinburgh"}
 
-def build_schema_from_mcp_result(raw_result: str) -> str:
+def build_schema_from_mcp_result(raw_result):
     SPATIAL_INSTRUCTIONS = (
         "CRITICAL POSTGIS SPATIAL INSTRUCTIONS:\n"
         "- All coordinates are in WGS84 degrees (SRID 4326).\n"
@@ -173,7 +173,7 @@ def build_schema_from_mcp_result(raw_result: str) -> str:
             "DEPRIVATION JOIN: ST_Intersects(p.way, d.geom) — table edinburgh_deprivation, geom column NOT way"
         )
 
-def get_live_schema_via_mcp() -> tuple[str, bool]:
+def get_live_schema_via_mcp():
     global schema_cache, schema_is_live
     
     if schema_is_live and schema_cache:
@@ -182,7 +182,7 @@ def get_live_schema_via_mcp() -> tuple[str, bool]:
     
     return schema_cache, schema_is_live
 
-def fetch_and_cache_schema() -> None:
+def fetch_and_cache_schema():
     global schema_cache, schema_is_live
     
     schema_query = """
@@ -195,7 +195,7 @@ def fetch_and_cache_schema() -> None:
     schema_cache = build_schema_from_mcp_result(raw)
     schema_is_live = True
 
-def start_prewarm() -> None:
+def start_prewarm():
     if MCP_AVAILABLE and not schema_is_live:
         fetch_and_cache_schema()
 

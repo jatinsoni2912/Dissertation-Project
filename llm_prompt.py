@@ -128,7 +128,7 @@ PATTERNS = {
     ),
 }
 
-def get_deprivation_pattern(q: str) -> list[str]:
+def get_deprivation_pattern(q):
     is_deprivation = any(w in q for w in ['deprived', 'deprivation', 'decile'])
     
     if not is_deprivation:
@@ -150,7 +150,7 @@ def get_deprivation_pattern(q: str) -> list[str]:
     else:
         return ['deprivation_only']
 
-def detect_city_or_proximity_pattern(q: str, is_city_wide: bool) -> list[str]:
+def detect_city_or_proximity_pattern(q, is_city_wide):
     is_running = bool(re.search(r'\b(running|run|jog|jogging)\b', q))
     is_line    = bool(re.search(r'\b(cycling|cycle|walking|walk|paths?|footway|biking|bike)\b', q))
     is_polygon = bool(re.search(
@@ -187,7 +187,7 @@ def detect_city_or_proximity_pattern(q: str, is_city_wide: bool) -> list[str]:
                 return ['proximity_point', 'named_area_point']
 
 
-def select_patterns(user_query: str, is_city_wide: bool) -> list[str]:
+def select_patterns(user_query, is_city_wide):
     q = user_query.lower()
 
     if any(w in q for w in ['how many', 'count']):

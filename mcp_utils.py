@@ -56,14 +56,14 @@ TERM_TO_FEATURE = {
 
 DEFAULT_NEAR_RADIUS = 1000
 
-def get_feature_radius(feature: str) -> int:
+def get_feature_radius(feature):
     if feature in FEATURE_CATEGORY:
         category, multiplier = FEATURE_CATEGORY[feature]
         return int(BASE_RADIUS[category] * multiplier)
     
     return BASE_RADIUS['default']
 
-def return_explicit_search_radius(user_query: str, activity_terms: list[str] = None) -> tuple[int, bool]:
+def return_explicit_search_radius(user_query, activity_terms):
     q = user_query.lower()
 
     explicit = re.search(r'\bwithin\s+(\d+(?:\.\d+)?)\s*(metres?|meters?|km|kilometres?|miles?|yards?|yds?)\b', q, re.IGNORECASE)
@@ -86,7 +86,7 @@ def return_explicit_search_radius(user_query: str, activity_terms: list[str] = N
 
     return DEFAULT_NEAR_RADIUS, False
 
-def extract_location_candidate(user_query: str) -> str:
+def extract_location_candidate(user_query):
     within_match = re.search(r'\bwithin\s+\d+\s*(?:metres?|meters?|km|miles?)\s+of\s+(.+?)(?:\?|$)', user_query, re.IGNORECASE)
     
     if within_match:
@@ -101,7 +101,7 @@ def extract_location_candidate(user_query: str) -> str:
 
 NEAR_EXPANSION_MULTIPLIERS = [3, 5]
 
-def expand_radius_if_empty(sql: str, was_explicit: bool, execute_fn) -> tuple[str, int | None]:
+def expand_radius_if_empty(sql, was_explicit, execute_fn):
     if was_explicit:
         return sql, None
     if 'ST_DWITHIN' not in sql.upper():

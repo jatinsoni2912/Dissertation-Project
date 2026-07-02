@@ -21,7 +21,7 @@ def get_db_connection():
     )
 
 @mcp.tool()
-def execute_spatial_query(sql_query: str) -> str:
+def execute_spatial_query(sql_query):
     
     if any(kw in sql_query.upper() for kw in ["DROP", "DELETE", "UPDATE", "INSERT", "TRUNCATE", "ALTER"]):
         return json.dumps({"success": False, "error": "Write operations blocked."})
@@ -45,7 +45,7 @@ def execute_spatial_query(sql_query: str) -> str:
         return json.dumps({"success": False, "error": str(e)})
 
 @mcp.tool()
-def lookup_feature_tags(search_terms: list[str]) -> str:
+def lookup_feature_tags(search_terms):
     
     conn = None
     try:
@@ -76,7 +76,7 @@ def lookup_feature_tags(search_terms: list[str]) -> str:
     
     
 @mcp.tool()    
-def is_query_citywide(query: str) -> str:
+def is_query_citywide(query):
     
     CITY_WIDE_SIGNALS = {
         'in edinburgh', 'across edinburgh', 'throughout edinburgh',
@@ -91,7 +91,7 @@ def is_query_citywide(query: str) -> str:
     return json.dumps({"success": True, "is_citywide": is_citywide})
 
 @mcp.tool()
-def geocode_place(location_name: str) -> str:
+def geocode_place(location_name):
     try:
         result = geocode_location(location_name)
         if result:
