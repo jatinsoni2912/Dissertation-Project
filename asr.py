@@ -43,6 +43,7 @@ def transcribe(audio_bytes: bytes, model_size: str = "base"):
         if segments:
             avg_logprob = sum(s.avg_logprob for s in segments) / len(segments)
             confidence = max(0.0, min(1.0, 1.0 + avg_logprob / 2.0))
+        
         else:
             confidence = 0.0
 
@@ -52,7 +53,7 @@ def transcribe(audio_bytes: bytes, model_size: str = "base"):
             "language": info.language,
             "duration_s": round(duration, 2),
             "segments": [{"start": s.start, "end": s.end, "text": s.text.strip(),} for s in segments],
-}
+            }
 
     finally:
         os.unlink(tmp_path)
