@@ -1,27 +1,12 @@
 import ollama
 import os
 from dotenv import load_dotenv
-from database import get_schema, get_connection, get_available_tags, execute_query
+from database import get_connection, execute_query
 from prompt import build_prompt
 from constants import CITY_WIDE_SIGNALS
 from location_geocoder import geocode_location
-from sql_fixer import validate_and_fix
 from mcp_utils import resolve_search_radius, extract_location_candidate, expand_radius_if_empty
 from utils import extract_activity_terms, extract_sql
-from utils import (
-    extract_activity_terms,
-    extract_location,
-    validate_sql,
-    get_search_radius,
-    get_dynamic_tags_from_db,
-    select_examples,
-    is_district,
-    determine_query_type,
-    fix_deprivation_columns,
-    check_activity_filter,
-    handle_search_fallback,
-    adjust_search_radius,
-)
 
 load_dotenv()
 
