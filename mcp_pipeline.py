@@ -5,9 +5,6 @@ import asyncio
 import ollama
 from dotenv import load_dotenv
 
-from mcp import ClientSession, StdioServerParameters
-from mcp.client.stdio import stdio_client
-
 from database import execute_query
 
 from mcp_schema import (
