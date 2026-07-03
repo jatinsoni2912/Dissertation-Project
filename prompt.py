@@ -219,6 +219,85 @@ def select_patterns(user_query, is_city_wide):
     return detect_city_or_proximity_pattern(q, is_city_wide)
 
 
+def render_pattern(key, location_name, lon, lat, search_radius=1000):
+    label, sql = PATTERNS[key]
+    label = label.format(location_name=location_name)
+    sql = sql.format(
+        location_name=location_name,
+        lon=f"{lon:.4f}",
+        lat=f"{lat:.4f}",
+        radius=search_radius,
+    )
+    return f"-- {label}\n{sql}"
+
+
+def build_prompt(user_query, schema, location_name, lon, lat, tag_hints="", is_city_wide=False, search_radius=1000):
+
+    pattern_keys = select_patterns(user_query, is_city_wide)
+    patterns_text = "\n\n".join(
+        render_pattern(k, location_name, lon, lat, search_radius)
+        for k in pattern_keys if k in PATTERNS
+    )
+
+    tag_section = (
+        f"VERIFIED OSM TAGS (live from database):\n{tag_hints}\n"
+        if tag_hints.strip() else ""
+    )
+
+    q_lower = user_query.lower()
+    has_near = bool(re.search(r'\b(near|within\s+\d+\s*(metres?|meters?|km|miles?))\b', q_lower))
+
+    if is_city_wide:
+        location_context = ("LOCATION: City-wide Edinburgh — no ST_DWithin, no boundary JOIN, no LIMIT.")
+    
+    elif has_near:
+        location_context = (
+            f"LOCATION: near '{location_name}' (lon={lon:.4f}, lat={lat:.4f}).\n"
+            f"USE ST_DWithin with radius {search_radius} metres — do NOT use boundary JOIN or ST_Intersects for proximity.")
+    else:
+        location_context = (
+            f"LOCATION: '{location_name}' suburb (lon={lon:.4f}, lat={lat:.4f}).\n"
+            f"For suburb queries use this exact JOIN pattern:\n"
+            f"JOIN planet_osm_polygon boundary ON ST_Intersects(p.way, boundary.way)\n"
+            f"WHERE boundary.name ILIKE '%{location_name}%'\n"
+            f"AND boundary.place IN ('suburb','neighbourhood','quarter','village')\n"
+            f"CRITICAL: boundary table is planet_osm_polygon — write it exactly as shown above.")
+
+    return f"""You are a PostGIS SQL expert. Output ONLY raw SQL. No markdown.
+
+SCHEMA:
+{schema}
+
+{tag_section}
+RULES:
+- Alias table as p. Use p.name, p.way, p.amenity, p.leisure, p.highway, p.shop, p.tourism etc.
+- Always ST_AsGeoJSON(p.way) — never raw p.way
+- NEVER use ST_MakeBox3D — it is not a valid PostGIS function for these queries
+- Deprivation: column is geom not way. la_decile<=2 most deprived, >=9 least deprived.
+- No deprivation JOIN unless query mentions deprived areas.
+- Deprivation table is edinburgh_deprivation
+- TAG REFERENCE:
+  * libraries → amenity='library'
+  * restaurants → amenity='restaurant'
+  * supermarkets → shop='supermarket'
+  * hotels → tourism='hotel'
+  * museums → tourism='museum'
+  * tourist attractions → tourism='attraction'
+  * swimming pools → leisure='swimming_pool'
+  * nature reserves → leisure='nature_reserve'
+  * sports centres → leisure='sports_centre'
+  * cycleways → highway='cycleway' on planet_osm_line
+  * football pitches → leisure='pitch' AND (sport ILIKE '%football%' OR sport ILIKE '%soccer%')
+  * all other sport pitches → leisure='pitch' AND sport ILIKE '%<sport>%'
+- ALWAYS use ST_SetSRID with ST_MakePoint — NEVER output literal 'lon' or 'lat' in SQL
+
+RELEVANT PATTERN:
+{patterns_text}
+
+{location_context}
+
+Q: {user_query}
+SQL:"""
 
 
 def build_tag_section(available_tags):
