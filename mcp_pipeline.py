@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 
-from database import get_ontology_mappings, execute_query
+from database import execute_query
 
 from mcp_schema import (
     get_live_schema_via_mcp,
@@ -102,7 +102,7 @@ def execute_and_expand_sql(generated_sql, search_radius, was_explicit):
 
     return final_sql, actual_rows, is_valid, validation_message, []
 
-def generate_sql_with_mcp(user_query, model, context_location):
+def generate_sql_with_mcp(user_query, model=None, context_location=None):
     model = model or os.getenv('OLLAMA_MODEL', 'qwen2.5-coder:1.5b')
     
     is_city_wide, loc_data, activity_terms, tag_hints, schema, search_radius, was_explicit = assemble_context(user_query, context_location)
