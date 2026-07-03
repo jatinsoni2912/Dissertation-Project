@@ -27,3 +27,29 @@ def execute_query(sql):
         cur.close()
         conn.close()
 
+def get_schema():
+    return """
+    TABLE: planet_osm_point (points of interest, shops, amenities)
+    COLUMNS: osm_id, name, amenity, leisure, shop, tourism, 
+             highway, historic, way (geometry, EPSG:4326)
+    
+    TABLE: planet_osm_line (roads, paths, rivers)  
+    COLUMNS: osm_id, name, highway, leisure, waterway, 
+             route, way (geometry, EPSG:4326)
+    
+    TABLE: planet_osm_polygon (parks, buildings, land use areas)
+    COLUMNS: osm_id, name, amenity, leisure, landuse, 
+             building, shop, tourism, natural, way (geometry, EPSG:4326)
+    
+    TABLE: ontology_mappings (activity to OSM tag mappings)
+    COLUMNS: id, activity_term, osm_key, osm_value, source, verified
+
+    TABLE: edinburgh_deprivation (Scottish Index of Multiple Deprivation 2019)
+    COLUMNS: ogc_fid, dzname (data zone name), datazone (code),
+             la_rank (rank, lower=more deprived),
+             la_pct (percentile), la_decile (1=most deprived 10=least deprived),
+             geom (geometry, EPSG:4326)
+    NOTE: la_decile 1 = most deprived, 10 = least deprived
+    CROSS-QUERY PATTERN: JOIN edinburgh_deprivation d ON ST_Intersects(p.way, d.geom)
+    """
+
