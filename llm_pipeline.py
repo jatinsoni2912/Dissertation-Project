@@ -25,8 +25,6 @@ from utils import (
 
 load_dotenv()
 
-schema_cache: str = ''
-
 def create_baseline_context(user_query, context_location):
     q = user_query.lower()
 
@@ -69,15 +67,7 @@ def create_baseline_context(user_query, context_location):
 
 def generate_sql_baseline(user_query, model, location_name, lon, lat, is_city_wide, search_radius):
     
-    prompt = build_prompt(
-        user_query=user_query,
-        schema=None,  
-        location_name=location_name,
-        lon=lon,
-        lat=lat,
-        is_city_wide=is_city_wide,
-        search_radius=search_radius,
-    )
+    prompt = build_prompt(user_query, location_name, lon, lat, is_city_wide, search_radius)
 
     try:
         response = ollama.chat(
@@ -99,24 +89,24 @@ def execute_and_expand_baseline_sql(raw_sql, search_radius, was_explicit):
     is_valid = db_result.get('success', False)
     validation_message = 'Valid' if is_valid else db_result.get('error', 'Execution failed')
 
-    radius_fix = []
+    fixes = []
 
     if is_valid and len(db_result.get('results', [])) == 0:
+        print(f'[Radius] No results at {search_radius}m — trying expansion...')
         expanded_sql, multiplier = expand_radius_if_empty(raw_sql, was_explicit, execute_query)
         if multiplier:
             expanded_result = execute_query(expanded_sql)
             if expanded_result.get('success'):
-                return (
-                    expanded_sql,
-                    expanded_result,
-                    True,
-                    'Valid',
-                    [f'Expanded radius {multiplier}x to {search_radius * multiplier}m']
-                )
+                n = len(expanded_result.get('results', []))
+                print(f'[Radius] Expanded {multiplier}x ({search_radius}m → {search_radius * multiplier}m) — {n} results found')
+                fixes = [f'No results at {search_radius}m — expanded radius {multiplier}x to {search_radius * multiplier}m, found {n} results']
+                return expanded_sql, expanded_result, True, 'Valid', fixes
+        else:
+            print('[Radius] No results even after expansion — area may be genuinely empty')
 
-    return raw_sql, db_result, is_valid, validation_message, radius_fix
+    return raw_sql, db_result, is_valid, validation_message, fixes
 
-def generate_sql(user_query, model, context_location):
+def generate_sql(user_query, model=None, context_location=None):
     if model is None:
         model = os.getenv('OLLAMA_MODEL', 'qwen2.5-coder:1.5b')
 
