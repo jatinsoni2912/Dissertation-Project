@@ -122,8 +122,104 @@ PATTERNS = {
         "WHERE p.amenity = 'cafe'\n"
         "AND ST_DWithin(p.way::geography, ST_SetSRID(ST_MakePoint({lon},{lat}),4326)::geography, {radius})\n"
         "LIMIT 5;"
-    ),
+    )
 }
+
+import re
+
+def get_deprivation_pattern(q):
+    """Return deprivation pattern key if query mentions deprivation."""
+    is_deprivation = any(w in q for w in ['deprived', 'deprivation', 'decile'])
+    if not is_deprivation:
+        return None
+
+    is_line_cross = any(w in q for w in ['cycle', 'cycling', 'path', 'walk', 'footway'])
+    is_polygon_cross = any(w in q for w in ['park', 'pitch', 'golf', 'swim', 'playground'])
+    is_point_cross = bool(re.search(
+        r'\b(cafes?|pubs?|bars?|shops?|librar(y|ies)|pharmacies?|restaurants?|schools?|'
+        r'hospitals?|doctors?|gp|supermarkets?|hotels?|museums?|churches?|atms?|banks?|post office)\b',
+        q
+    ))
+
+    if is_line_cross:
+        return ['deprivation_cross_line']
+    elif is_polygon_cross:
+        return ['deprivation_cross_polygon']
+    elif is_point_cross:
+        return ['deprivation_cross']
+    else:
+        return ['deprivation_only']
+
+
+def detect_city_or_proximity_pattern(q, is_city_wide):
+    is_running = bool(re.search(r'\b(running|run|jog|jogging)\b', q))
+    is_line = bool(re.search(r'\b(cycling|cycle|walking|walk|paths?|footway|biking|bike)\b', q))
+    is_polygon = bool(re.search(
+        r'\b(parks?|golf|swimming|swim|pitches?|sports?\s+centres?|playground|playgrounds?|'
+        r'nature\s+reserves?|sports_centre)\b', q
+    ))
+    is_point = bool(re.search(
+        r'\b(cafes?|pubs?|bars?|pharmacies|pharmacy|librar(y|ies)|restaurants?|supermarkets?|'
+        r'shops?|attractions?|tourist|post office)\b', q
+    ))
+
+    has_explicit_proximity = bool(re.search(
+        r'\b(near|within\s+\d+\s*(metres?|meters?|km|miles?))\b', q
+    ))
+
+    if is_city_wide:
+        if is_running:
+            return ['city_wide_running']
+        elif bool(re.search(r'\b(cycling|cycle|bike|biking)\b', q)):
+            return ['city_wide_line']
+        elif bool(re.search(r'\b(walking|walk|paths?|footway)\b', q)):
+            return ['city_wide_walking']
+        elif is_line:
+            return ['city_wide_line']
+        elif is_polygon:
+            return ['city_wide_polygon']
+        else:
+            return ['city_wide_point']
+
+    if has_explicit_proximity:
+        if is_line or is_polygon or is_running:
+            return ['proximity_polygon']
+        else:
+            return ['proximity_point']
+
+    if is_running or is_line:
+        return ['proximity_polygon', 'named_area_polygon']
+    elif is_polygon:
+        return ['proximity_polygon', 'named_area_polygon']
+    else:
+        return ['proximity_point', 'named_area_point']
+
+
+def select_patterns(user_query, is_city_wide):
+    q = user_query.lower()
+
+    if any(w in q for w in ['how many', 'count']):
+        return ['count']
+
+    deprivation = get_deprivation_pattern(q)
+    if deprivation:
+        return deprivation
+
+    if re.search(r'\b(show|find|give)\s+me\s+\d+\b', q):
+        return ['explicit_limit']
+
+    is_sport = any(w in q for w in [
+        'football', 'soccer', 'tennis', 'cricket', 'rugby', 'pitch',
+        'basketball', 'bowls', 'bowling', 'hockey', 'netball',
+        'volleyball', 'badminton', 'squash'
+    ])
+    if is_sport:
+        return ['city_wide_sport'] if is_city_wide else ['sport_proximity']
+
+    return detect_city_or_proximity_pattern(q, is_city_wide)
+
+
+
 
 def build_tag_section(available_tags):
     if not available_tags:
