@@ -5,7 +5,7 @@ from database import get_connection, execute_query
 from prompt import build_prompt
 from constants import CITY_WIDE_SIGNALS
 from location_geocoder import geocode_location
-from mcp_utils import resolve_search_radius, extract_location_candidate, expand_radius_if_empty
+from mcp_utils import return_explicit_search_radius, extract_location_candidate, expand_radius_if_empty
 from utils import extract_activity_terms, extract_sql
 
 load_dotenv()
@@ -38,7 +38,7 @@ def create_baseline_context(user_query, context_location):
         is_city_wide = False
 
     activity_terms = extract_activity_terms(user_query)
-    search_radius, was_explicit = resolve_search_radius(user_query, activity_terms)
+    search_radius, was_explicit = return_explicit_search_radius(user_query, activity_terms)
 
     return (
         location_name,

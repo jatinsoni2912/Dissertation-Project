@@ -15,7 +15,7 @@ from mcp_schema import (
     check_citywide_via_mcp,
     resolve_location_via_mcp,
 )
-from mcp_utils import extract_location_candidate, resolve_search_radius, expand_radius_if_empty
+from mcp_utils import extract_location_candidate, return_explicit_search_radius, expand_radius_if_empty
 from prompt import build_prompt
 from utils import extract_activity_terms, extract_sql
 
@@ -36,7 +36,7 @@ def assemble_context(user_query, context_location):
     schema, _ = get_live_schema_via_mcp()
     activity_terms = extract_activity_terms(user_query)
     tag_hints = resolve_tags_via_mcp(activity_terms)
-    search_radius, was_explicit = resolve_search_radius(user_query, activity_terms)
+    search_radius, was_explicit = return_explicit_search_radius(user_query, activity_terms)
 
     return (
         is_city_wide,
