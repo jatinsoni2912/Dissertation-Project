@@ -33,6 +33,55 @@ BLOCKED_KEYWORDS = [
     'ALTER', 'TRUNCATE', 'GRANT', 'REVOKE', 'EXECUTE',
 ]
 
+SPORTS = {
+    'football', 'soccer', 'cricket', 'tennis', 'rugby',
+    'basketball', 'bowls', 'hockey', 'netball', 'volleyball',
+}
+
+SKIP_WORDS = {
+    'me', 'the', 'a', 'an', 'some', 'any', 'good', 'nice', 'best',
+    'nearest', 'closest', 'find', 'show', 'where', 'can', 'go', 'get',
+    'are', 'there', 'parks', 'cafes', 'restaurants', 'cycling', 'walking',
+    'swimming', 'running', 'hiking', 'football', 'tennis', 'within',
+    'metres', 'meters', 'kilometers', 'km', 'miles', 'around', 'along',
+    'want', 'like', 'need', 'looking', 'place', 'places', 'area',
+    'edinburgh', 'city', 'centre', 'near', 'in', 'at', 'of',
+    'my', 'dog', 'pub', 'bar', 'cafe', 'shop', 'store',
+    'of edinburgh', 'the most', 'the least', 'most deprived', 'least deprived',
+    'deprived areas', 'deprived neighbourhoods', 'deprived parts',
+}
+
+SKIP_PREFIXES = ('of ', 'the ', 'in the ', 'at the ')
+
+LANDUSE_CORRECTIONS = {
+    'park': ('leisure', 'park', 'planet_osm_polygon'),
+    'recreation_ground': ('leisure', 'park', 'planet_osm_polygon'),
+    'pitch': ('leisure', 'pitch', 'planet_osm_polygon'),
+    'garden': ('leisure', 'garden', 'planet_osm_polygon'),
+    'golf_course': ('leisure', 'golf_course', 'planet_osm_polygon'),
+    'swimming_pool': ('leisure', 'swimming_pool', 'planet_osm_polygon'),
+    'sports_centre': ('leisure', 'sports_centre', 'planet_osm_polygon'),
+    'track': ('leisure', 'track', 'planet_osm_polygon'),
+    'nature_reserve': ('leisure', 'nature_reserve', 'planet_osm_polygon'),
+    'playground': ('leisure', 'playground', 'planet_osm_polygon'),
+    'cycleway': ('highway', 'cycleway', 'planet_osm_line'),
+    'footway': ('highway', 'footway', 'planet_osm_line'),
+    'path': ('highway', 'path', 'planet_osm_line'),
+    'cycling': ('highway', 'cycleway', 'planet_osm_line'),
+}
+
+LEISURE_POLYGON_TAGS = [
+    'swimming_pool', 'sports_centre', 'golf_course',
+    'track', 'garden', 'park', 'nature_reserve', 'playground',
+]
+
+CROSS_TAG_FIXES = [
+    ('amenity', 'cycleway', 'highway', 'cycleway', 'planet_osm_line'),
+    ('amenity', 'footway',  'highway', 'footway',  'planet_osm_line'),
+    ('amenity', 'path',     'highway', 'path',     'planet_osm_line'),
+    ('amenity', 'park',     'leisure', 'park',     'planet_osm_polygon'),
+]
+
 ACTIVITY_KEYWORDS = {
     'walking': 'walking', 'walk': 'walking', 'stroll': 'walking', 'strolling': 'walking',
     'path': 'walking', 'paths': 'walking', 'footpath': 'walking', 'footpaths': 'walking',
@@ -118,29 +167,46 @@ ACTIVITY_KEYWORDS = {
 PROXIMITY_RADIUS = {
     
     # small point amenities — dense in cities, 500m is a short walk
-    'cafe':           500,
-    'pub':            500,
-    'bar':            500,
-    'restaurant':     750,
-    'pharmacy':       750,
-    'library':       1000,
-    'post_office':   1000,
-    'atm':            500,
+    'cafe': 500,
+    'pub': 500,
+    'bar': 500,
+    'restaurant': 750,
+    'pharmacy': 750,
+    'library': 1000,
+    'post_office': 1000,
+    'atm': 500,
     
     # larger destination amenities
-    'hotel':         2000,
-    'museum':        1500,
-    'attraction':    1500,
-    'supermarket':   1000,
+    'hotel': 2000,
+    'museum': 1500,
+    'attraction': 1500,
+    'supermarket': 1000,
     
     # leisure/sport — polygon features with larger footprints
-    'park':          1500,
-    'pitch':         3000,
-    'golf_course':   5000,
+    'park': 1500,
+    'pitch': 3000,
+    'golf_course': 5000,
     'swimming_pool': 2000,
     'sports_centre': 2000,
-    'nature_reserve':3000,
+    'nature_reserve': 3000,
     
     # default fallback
-    'default':       1000,
+    'default': 1000,
 }
+
+STATIC_SCHEMA = (
+    "LIVE DATABASE TABLE SCHEMAS:\n"
+    "1. planet_osm_point   -> Fields: name (text), amenity (text), shop (text), tourism (text), way (GEOMETRY Point SRID 4326)\n"
+    "   USE FOR: pubs (amenity=pub), cafes (amenity=cafe), libraries (amenity=library),\n"
+    "   supermarkets (shop=supermarket), pharmacies (amenity=pharmacy), post offices (amenity=post_office),\n"
+    "   restaurants (amenity=restaurant), hotels (tourism=hotel), museums (tourism=museum), attractions (tourism=attraction)\n"
+    "2. planet_osm_polygon -> Fields: name (text), leisure (text), landuse (text), sport (text), way (GEOMETRY Polygon SRID 4326)\n"
+    "   USE FOR: parks (leisure=park), pitches (leisure=pitch, sport=...), golf courses (leisure=golf_course),\n"
+    "   swimming pools (leisure=swimming_pool), sports centres (leisure=sports_centre),\n"
+    "   nature reserves (leisure=nature_reserve), playgrounds (leisure=playground)\n"
+    "3. planet_osm_line    -> Fields: name (text), highway (text), route (text), way (GEOMETRY LineString SRID 4326)\n"
+    "   USE FOR: cycleways (highway=cycleway), walking/footpaths (highway=footway OR path)\n"
+    "4. edinburgh_deprivation -> Fields: dzname (text), la_decile (integer), geom (GEOMETRY MultiPolygon SRID 4326)\n"
+    "   CRITICAL: geometry column is 'geom' NOT 'way'. la_decile<=2 most deprived, la_decile>=9 least deprived.\n"
+    "SPATIAL: ST_DWithin(way::geography, ST_SetSRID(ST_MakePoint(lon,lat),4326)::geography, radius_metres)"
+)
