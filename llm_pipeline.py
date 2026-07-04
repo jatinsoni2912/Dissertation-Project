@@ -2,7 +2,7 @@ import ollama
 import os
 from dotenv import load_dotenv
 from database import get_connection, execute_query
-from prompt import build_prompt
+from llm_prompt import build_prompt
 from constants import CITY_WIDE_SIGNALS
 from location_geocoder import geocode_location
 from mcp_utils import return_explicit_search_radius, extract_location_candidate, expand_radius_if_empty
