@@ -252,6 +252,27 @@ def render_asr():
             st.session_state.input_method = "text"
             st.rerun()
 
+def render_voice_input(asr_enabled, transcribe_fn):
+    if not asr_enabled:
+        return
+
+    st.markdown("**Or speak your query:**")
+
+    audio_bytes = capture_audio_bytes()
+
+    if audio_bytes:
+        with st.spinner("Transcribing..."):
+            result = transcribe_fn(audio_bytes)
+
+        if result.get("text"):
+            st.session_state.asr_transcript = result["text"]
+            st.session_state.asr_confidence = result["confidence"]
+            st.session_state.pending_asr = True
+            st.session_state.input_method = "voice"
+
+    if st.session_state.get("pending_asr"):
+        render_asr()
+
 def render_query_panel():
     st.markdown('<div class="query-card">', unsafe_allow_html=True)
 
