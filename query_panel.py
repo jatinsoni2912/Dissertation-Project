@@ -2,7 +2,7 @@ import streamlit as st
 from styles import EXAMPLE_QUERIES
 
 from app_utils import conversational_response, generate_follow_ups, feature_label
-
+from audio_recorder_streamlit import audio_recorder
 
 def show_conversation_history():
     conv = st.session_state.get('current_conv')
@@ -199,115 +199,22 @@ def show_result_panel(res, last_query):
 
     render_technical_details(res, row_count, is_count)
 
+def render_area_filter_controls():
+    if st.session_state.get("area_filter_active"):
+        colf, colc = st.columns([3, 1])
 
+        with colf:
+            st.info("📍 Area filter active — results will be clipped to drawn area")
 
+        with colc:
+            if st.button("✕ Clear", key="clear_area_btn", use_container_width=True):
+                st.session_state.area_filter_geojson = None
+                st.session_state.area_filter_active = False
+                st.session_state.map_reset_key += 1
+                st.rerun()
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def render_query_panel() -> tuple[bool, str, str, str]:
+def render_query_panel():
     st.markdown('<div class="query-card">', unsafe_allow_html=True)
 
     model_choice = st.selectbox(
