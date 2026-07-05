@@ -225,6 +225,33 @@ def capture_audio_bytes():
 
     return None
 
+def render_asr():
+    conf = st.session_state.asr_confidence
+    color = "#2d8a4e" if conf >= 0.7 else "#c47a1a"
+
+    st.markdown(
+        f'<div style="background:#f0f4f0;border-left:3px solid {color};'
+        f'padding:8px;border-radius:4px;margin:6px 0">'
+        f'<b>Heard:</b> {st.session_state.asr_transcript}<br>'
+        f'<small style="color:{color}">Confidence: {conf:.0%}</small></div>',
+        unsafe_allow_html=True,
+    )
+
+    col_a, col_b = st.columns(2)
+
+    with col_a:
+        if st.button("✓ Use this", use_container_width=True):
+            st.session_state.selected_example = st.session_state.asr_transcript
+            st.session_state.pending_asr = False
+            st.rerun()
+
+    with col_b:
+        if st.button("✗ Discard", use_container_width=True):
+            st.session_state.asr_transcript = ""
+            st.session_state.pending_asr = False
+            st.session_state.input_method = "text"
+            st.rerun()
+
 def render_query_panel():
     st.markdown('<div class="query-card">', unsafe_allow_html=True)
 
