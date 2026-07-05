@@ -213,6 +213,17 @@ def render_area_filter_controls():
                 st.session_state.map_reset_key += 1
                 st.rerun()
 
+def capture_audio_bytes():
+    try:
+        audio_bytes = audio_recorder(text="", icon_size="2x", recording_color="#e84e4e", neutral_color="#6aa36f", key="mic_recorder")
+
+        if audio_bytes and len(audio_bytes) > 1000:
+            return audio_bytes
+
+    except ImportError:
+        st.caption("Install audio-recorder-streamlit to enable voice input.")
+
+    return None
 
 def render_query_panel():
     st.markdown('<div class="query-card">', unsafe_allow_html=True)
