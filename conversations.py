@@ -77,25 +77,10 @@ def get_all_conversations(username):
             continue
     return sorted(convs, key=lambda x: x["updated_at"], reverse=True)
 
-def load_conversation(username: str, conv_id: str) -> Optional[Dict]:
+def load_conversation(username, conv_id):
     return load(username, conv_id)
 
-def add_message(
-    username:            str,
-    conv_id:             str,
-    query:               str,
-    sql:                 str,
-    approach:            str,
-    model:               str,
-    row_count:           int,
-    is_count:            bool,
-    fixes_applied:       list,
-    input_method:        str   = "text",
-    asr_transcript:      str   = None,
-    asr_confidence:      float = None,
-    area_filter_active:  bool  = False,
-    area_filter_geojson: dict  = None,
-) -> Dict:
+def add_message(username, conv_id, query, sql, approach, model, row_count, is_count, fixes_applied, input_method= "text", asr_transcript= None, asr_confidence= None, area_filter_active=False, area_filter_geojson=None):
     
     conv = load(username, conv_id)
     if conv is None:

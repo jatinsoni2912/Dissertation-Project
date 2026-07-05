@@ -157,8 +157,8 @@ def handle_map_draw_events(map_state):
     if isinstance(drawn, list) and len(drawn) == 0:
         if st.session_state.area_filter_active:
             st.session_state.area_filter_geojson = None
-            st.session_state.area_filter_active  = False
-            st.session_state.map_reset_key      += 1
+            st.session_state.area_filter_active = False
+            st.session_state.map_reset_key += 1
             st.rerun()
 
         return

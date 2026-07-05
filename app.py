@@ -114,9 +114,11 @@ if trigger and user_query.strip():
                 is_count       = result.get('is_count', False),
                 fixes_applied  = result.get('fixes', []),
                 input_method   = st.session_state.input_method,
-                asr_transcript = None,
-                asr_confidence = None,
+                asr_transcript = st.session_state.asr_transcript or None,
+                asr_confidence = st.session_state.asr_confidence or None,
             )
             st.session_state.current_conv = updated
+            st.session_state.input_method   = 'text'
+            st.session_state.asr_transcript = ''
 
     st.rerun()
