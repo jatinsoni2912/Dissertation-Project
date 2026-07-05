@@ -273,7 +273,7 @@ def render_voice_input(asr_enabled, transcribe_fn):
     if st.session_state.get("pending_asr"):
         render_asr()
 
-def render_query_panel():
+def render_query_panel(asr_enabled=False, transcribe_fn=None):
     st.markdown('<div class="query-card">', unsafe_allow_html=True)
 
     model_choice = st.selectbox(
@@ -296,6 +296,11 @@ def render_query_panel():
         placeholder="e.g. Where can I go cycling near Leith?",
         label_visibility="collapsed",
     )
+
+    if asr_enabled:
+        render_voice_input(asr_enabled, transcribe_fn)
+
+    render_area_filter_controls()
 
     run_btn = st.button("🔍  Search", use_container_width=True)
     st.markdown("</div>", unsafe_allow_html=True)
