@@ -74,3 +74,17 @@ def resolve_location_history(query):
         if entry.get('lon') is not None:
             return entry.get('location_name', 'previous location'), entry['lon'], entry['lat']
     return None
+
+def build_context_note(query):
+    history = st.session_state.get('context_history', [])
+    
+    if not history or not has_reference(query):
+        return query
+    
+    last = history[-1]
+    ref  = last.get('result_name') or last.get('location_name', '')
+    prev = last.get('query', '')
+    
+    if ref:
+        return f"[Context: previous query was '{prev}', top result was '{ref}'] {query}"
+    return query
