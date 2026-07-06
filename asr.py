@@ -57,3 +57,11 @@ def transcribe(audio_bytes, model_size="base"):
 
     finally:
         os.unlink(tmp_path)
+
+def asr_available():
+    try:
+        import faster_whisper
+        return True
+    
+    except ImportError:
+        return False
