@@ -88,3 +88,20 @@ def build_context_note(query):
     if ref:
         return f"[Context: previous query was '{prev}', top result was '{ref}'] {query}"
     return query
+
+def update_context_history(user_query, location_resolved, results, columns, is_count):
+    coords = extract_coordinates(results if not is_count else [],columns if not is_count else [])
+    
+    entry = {
+        'query':         user_query,
+        'location_name': location_resolved,
+        'lon':           None,
+        'lat':           None,
+        'result_name':   coords[2] if coords else None,
+        'result_lon':    coords[0] if coords else None,
+        'result_lat':    coords[1] if coords else None,
+    }
+    
+    history = st.session_state.get('context_history', [])
+    history.append(entry)
+    st.session_state.context_history = history[-3:]
