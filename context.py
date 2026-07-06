@@ -1,4 +1,6 @@
 import re
+import json
+import streamlit as st
 
 PATTERNS = [
     r'\b(that|the)\s+(hospital|clinic|cafe|pub|restaurant|hotel|museum|park|school|'
@@ -14,3 +16,6 @@ COMPILED = [re.compile(p, re.IGNORECASE) for p in PATTERNS]
 
 def has_reference(query):
     return any(p.search(query) for p in COMPILED)
+
+def extract_coordinates(results, columns):
+    
