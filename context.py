@@ -90,7 +90,7 @@ def build_context_note(query):
     return query
 
 def update_context_history(user_query, location_resolved, results, columns, is_count):
-    coords = extract_coordinates(results if not is_count else [],columns if not is_count else [])
+    coords = extract_coordinates(results if not is_count else [], columns if not is_count else [])
     
     entry = {
         'query':         user_query,
