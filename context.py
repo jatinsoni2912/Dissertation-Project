@@ -33,7 +33,29 @@ def extract_coordinates(results, columns):
             if col.lower() == "name":
                 name_idx = i
                 break
-            
+
+        if geom_idx is None:
+            return None
+        
+        row = results[0]
+        geojson = json.loads(row[geom_idx])
+        coords = geojson.get('coordinates', [])
+        gtype = geojson.get('type', '')
+        name = row[name_idx] if name_idx is not None else None
+        
+        if gtype == 'Point':
+            return float(coords[0]), float(coords[1]), name
+        
+        if gtype in ('Polygon', 'MultiPolygon'):
+            flat = coords[0] if gtype == 'Polygon' else coords[0][0]
+            lons = [c[0] for c in flat]
+            lats = [c[1] for c in flat]
+            return sum(lons) / len(lons), sum(lats) / len(lats), name
+        
+        if gtype == 'LineString':
+            mid = len(coords) // 2
+            return float(coords[mid][0]), float(coords[mid][1]), name
+        
     except Exception:
         pass
     return None
