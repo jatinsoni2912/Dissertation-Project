@@ -59,3 +59,18 @@ def extract_coordinates(results, columns):
     except Exception:
         pass
     return None
+
+def resolve_location_history(query):
+    history = st.session_state.get('context_history', [])
+    
+    if not history or not has_reference(query):
+        return None
+    
+    for entry in reversed(history):
+        if entry.get('result_lon') is not None:
+            name = entry.get('result_name') or entry.get('location_name', 'previous result')
+            return name, entry['result_lon'], entry['result_lat']
+        
+        if entry.get('lon') is not None:
+            return entry.get('location_name', 'previous location'), entry['lon'], entry['lat']
+    return None
