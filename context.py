@@ -18,4 +18,11 @@ def has_reference(query):
     return any(p.search(query) for p in COMPILED)
 
 def extract_coordinates(results, columns):
+    if not results or not columns:
+        return None
+    try:
+        
     
+    except Exception:
+        pass
+    return None
