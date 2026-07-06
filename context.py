@@ -22,7 +22,18 @@ def extract_coordinates(results, columns):
         return None
     try:
         
-    
+        geom_idx = None
+        for i, col in enumerate(columns):
+            if col.lower() in ("st_asgeojson", "geometry", "geom"):
+                geom_idx = i
+                break
+        
+        name_idx = None
+        for i, col in enumerate(columns):
+            if col.lower() == "name":
+                name_idx = i
+                break
+            
     except Exception:
         pass
     return None
