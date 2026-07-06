@@ -11,3 +11,6 @@ PATTERNS = [
     r'\b(close\s+by|nearby)\b',
 ]
 COMPILED = [re.compile(p, re.IGNORECASE) for p in PATTERNS]
+
+def has_reference(query):
+    return any(p.search(query) for p in COMPILED)
