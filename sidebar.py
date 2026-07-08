@@ -20,11 +20,8 @@ def handle_user_selection():
         switch_user_if_needed(sel)
 
 def create_new_user_flow():
-    name = st.text_input(
-        "Username",
-        placeholder="e.g. participant_01",
-        key="new_username_input"
-    )
+    name = st.text_input("Username", placeholder="e.g. participant_01", key="new_username_input")
+    
     if st.button("Create", use_container_width=True, key="create_user_btn"):
         if name.strip():
             create_user(name.strip())
@@ -71,20 +68,12 @@ def render_conversation_list():
 
 def render_conversation_button(cv):
     active = cv["id"] == st.session_state.current_conv_id
-    ts     = cv["updated_at"][:10] if cv["updated_at"] else ""
-    label  = f"{'▶ ' if active else ''}{cv['title']}"
+    ts = cv["updated_at"][:10] if cv["updated_at"] else ""
+    label = f"{'▶ ' if active else ''}{cv['title']}"
 
-    if st.button(
-        label,
-        key=f"conv_{cv['id']}",
-        use_container_width=True,
-        help=f"{ts} · {cv['msg_count']} message(s)",
-        type="primary" if active else "secondary"
-    ):
+    if st.button(label, key=f"conv_{cv['id']}", use_container_width=True, help=f"{ts} · {cv['msg_count']} message(s)", type="primary" if active else "secondary"):
         st.session_state.current_conv_id = cv["id"]
-        st.session_state.current_conv = load_conversation(
-            st.session_state.current_user, cv["id"]
-        )
+        st.session_state.current_conv = load_conversation(st.session_state.current_user, cv["id"])
         st.rerun()
 
 def render_user_stats():
