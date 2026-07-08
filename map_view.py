@@ -9,13 +9,7 @@ from styles import EDINBURGH_CENTER
 EDINBURGH_BOUNDS = [[55.85, -3.40], [56.00, -3.00]]
 
 def build_base_map():
-    map = folium.Map(
-        location=EDINBURGH_CENTER,
-        zoom_start=13,
-        prefer_canvas=True,
-        tiles=None,
-        control_scale=False,
-    )
+    map = folium.Map(location=EDINBURGH_CENTER, zoom_start=13, prefer_canvas=True, tiles=None, control_scale=False)
     
     map.options['maxBounds']           = EDINBURGH_BOUNDS
     map.options['maxBoundsViscosity']  = 1.0
@@ -132,23 +126,21 @@ def fit_map_to_results(base_map, geojson_collection):
 def restore_area_filter(results_fg):
     if st.session_state.area_filter_active and st.session_state.get('area_filter_geojson'):
         folium.GeoJson({"type": "Feature", "geometry": st.session_state.area_filter_geojson},name='Selected area',
-            style_function=lambda f: {'color': '#c9a84c','weight': 2,'fillColor': '#c9a84c','fillOpacity': 0.10,},).add_to(results_fg)
+            style_function=lambda f: {'color': '#c9a84c','weight': 2,'fillColor': '#c9a84c','fillOpacity': 0.10,}).add_to(results_fg)
 
 def render_area_filter_badge():
     if st.session_state.area_filter_active:
         
-        st.markdown(
-            '<div style="display:inline-block;background:#c9a84c;color:#1a2744;'
+        st.markdown('<div style="display:inline-block;background:#c9a84c;color:#1a2744;'
             'padding:5px 14px;border-radius:20px;font-size:13px;font-weight:600;'
             'margin-bottom:0.5rem;">📍 Area filter active — click Search to apply</div>',
-            unsafe_allow_html=True,)
+            unsafe_allow_html=True)
 
 def render_map(base_map, results_fg):
     
     return st_folium(
         base_map, key=f"edinburgh_map_{st.session_state.map_reset_key}", height=680,
-        use_container_width=True, feature_group_to_add=results_fg, returned_objects=["last_active_drawing", "all_drawings"], return_on_hover=False,
-    )
+        use_container_width=True, feature_group_to_add=results_fg, returned_objects=["last_active_drawing", "all_drawings"], return_on_hover=False)
 
 def handle_map_draw_events(map_state):
     last = map_state.get('last_active_drawing')
