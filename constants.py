@@ -15,12 +15,6 @@ EXCLUDE_ROUTES_CLAUSE = (
     " AND highway IS NOT NULL"
 )
 
-ORDER_BY_NAME_MATCH = """
-    ORDER BY (LOWER(name) = LOWER(%s)) DESC, 
-             (name ~* ('\\y' || %s || '\\y')) DESC, 
-             LENGTH(name) ASC
-"""
-
 CITY_WIDE_SIGNALS = {
     'in edinburgh', 'across edinburgh', 'throughout edinburgh',
     'all edinburgh', 'edinburgh wide', 'city wide', 'citywide',
