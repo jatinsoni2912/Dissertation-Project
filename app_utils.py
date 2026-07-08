@@ -119,59 +119,47 @@ def determine_location_phrase(user_query, location, is_city, area_active):
 def error_message():
     
     return ("I wasn't able to generate a valid query for that. "
-        "Try rephrasing — mention a specific place or activity."
-    )
+        "Try rephrasing — mention a specific place or activity.")
 
 def count_message(row_count, feat, loc_phrase):
     plural = f"{feat}s" if not feat.endswith('s') else feat
     verb = "is" if row_count == 1 else "are"
 
-    return (
-        f"There {verb} {row_count} {plural} {loc_phrase}. "
-        "Would you like to see where they are, or explore something else?"
-    )
+    return (f"There {verb} {row_count} {plural} {loc_phrase}. "
+        "Would you like to see where they are, or explore something else?")
 
 def normal_message(row_count, feat, loc_phrase, area_active):
     
     if row_count == 0:
         if area_active:
             return (f"I couldn't find any {feat}s within your selected area. "
-                "Try clearing the area filter or drawing a larger area."
-            )
+                "Try clearing the area filter or drawing a larger area.")
+        
         return (f"I couldn't find any {feat}s matching that query. "
-            "Try broadening the area, or ask about a different feature."
-        )
+            "Try broadening the area, or ask about a different feature.")
 
     if row_count == 1:
         return (f"I found 1 {feat} {loc_phrase}. "
-            "Would you like to see it on the map, or explore something nearby?"
-        )
+            "Would you like to see it on the map, or explore something nearby?")
 
     plural = f"{feat}s" if not feat.endswith('s') else feat
     cap = ('You can show them on the map, or '
         if row_count <= 1000 else
-        'There are quite a few — '
-    )
+        'There are quite a few — ')
 
     return (f"I found {row_count} {plural} {loc_phrase}. "
-        f"{cap}ask a follow-up to narrow things down."
-    )
+        f"{cap}ask a follow-up to narrow things down.")
 
 def conversational_response(result, user_query):
-    row_count   = result.get('row_count', 0)
-    is_count    = result.get('is_count', False)
-    sql         = result.get('sql', '')
-    feat        = feature_label(sql)
-    location    = location_label(result)
-    is_city     = result.get('is_city_wide', True)
+    row_count = result.get('row_count', 0)
+    is_count = result.get('is_count', False)
+    sql = result.get('sql', '')
+    feat = feature_label(sql)
+    location = location_label(result)
+    is_city = result.get('is_city_wide', True)
     area_active = st.session_state.get('area_filter_active', False)
 
-    loc_phrase = determine_location_phrase(
-        user_query=user_query,
-        location=location,
-        is_city=is_city,
-        area_active=area_active
-    )
+    loc_phrase = determine_location_phrase(user_query=user_query, location=location, is_city=is_city, area_active=area_active)
 
     if result.get('error'):
         return error_message()
@@ -183,101 +171,49 @@ def conversational_response(result, user_query):
 
 def zero_result_suggestions(sql):
     f = feature_label(sql)
-    return [
-        f"Find {f}s in Edinburgh",
-        f"Find {f}s near the city centre",
-        "Show me parks in Edinburgh"
-    ]
+    return [f"Find {f}s in Edinburgh", f"Find {f}s near the city centre", "Show me parks in Edinburgh"]
 
 def count_query_suggestions(sql):
     f = feature_label(sql)
-    return [
-        f"Where are the {f}s in Edinburgh?",
-        f"Find {f}s near the city centre",
-        f"Find {f}s in the most deprived areas"
-    ]
+    return [f"Where are the {f}s in Edinburgh?", f"Find {f}s near the city centre", f"Find {f}s in the most deprived areas"]
 
 def category_specific_suggestions(sql, loc, is_city, location):
     if "amenity = 'cafe'" in sql or "amenity='cafe'" in sql:
-        return [
-            f"Find pubs near {loc}",
-            f"Find restaurants near {loc}",
-            "Find cafes in the most deprived areas in Edinburgh"
-        ]
+        return [f"Find pubs near {loc}", f"Find restaurants near {loc}", "Find cafes in the most deprived areas in Edinburgh"]
 
     if "amenity = 'pub'" in sql or "amenity='pub'" in sql:
-        return [
-            f"Find cafes near {loc}",
-            f"Find restaurants near {loc}",
-            f"Find parks near {loc}"
-        ]
+        return [f"Find cafes near {loc}", f"Find restaurants near {loc}", f"Find parks near {loc}"]
 
     if "amenity = 'restaurant'" in sql or "amenity='restaurant'" in sql:
-        return [
-            f"Find cafes near {loc}",
-            f"Find pubs near {loc}",
-            "How many restaurants are in Edinburgh?"
-        ]
+        return [f"Find cafes near {loc}", f"Find pubs near {loc}", "How many restaurants are in Edinburgh?"]
 
     if "leisure = 'park'" in sql or "leisure='park'" in sql:
-        return [
-            f"Find cafes near {loc}",
-            "Where can I go cycling in Edinburgh?" if is_city else f"Find cycle paths near {loc}",
-            "Are there parks in the least deprived areas in Edinburgh?"
-        ]
+        return [f"Find cafes near {loc}", "Where can I go cycling in Edinburgh?" if is_city else f"Find cycle paths near {loc}", "Are there parks in the least deprived areas in Edinburgh?"]
 
     if "highway = 'cycleway'" in sql or "highway='cycleway'" in sql:
-        return [
-            "Where can I go running in Edinburgh?",
-            f"Find parks near {loc}",
-            "Show cycle paths in deprived neighbourhoods"
-        ]
+        return ["Where can I go running in Edinburgh?", f"Find parks near {loc}", "Show cycle paths in deprived neighbourhoods"]
 
     if "leisure = 'pitch'" in sql or "leisure='pitch'" in sql:
-        return [
-            "How many sports pitches are there in Edinburgh?",
-            f"Find sports centres near {loc}",
-            "Where can I play tennis near Newington?"
-        ]
+        return ["How many sports pitches are there in Edinburgh?", f"Find sports centres near {loc}", "Where can I play tennis near Newington?"]
 
     if "edinburgh_deprivation" in sql and "planet_osm" not in sql:
-        return [
-            "Find cafes in the most deprived areas in Edinburgh",
-            "Show cycle paths in deprived neighbourhoods",
-            "Are there parks in the least deprived areas in Edinburgh?"
-        ]
+        return ["Find cafes in the most deprived areas in Edinburgh", "Show cycle paths in deprived neighbourhoods", "Are there parks in the least deprived areas in Edinburgh?"]
 
     if "edinburgh_deprivation" in sql:
-        return [
-            "Show me the most deprived areas in Edinburgh",
-            "Are there parks in the least deprived areas in Edinburgh?",
-            "Find pubs in the most deprived parts in Edinburgh"
-        ]
+        return ["Show me the most deprived areas in Edinburgh", "Are there parks in the least deprived areas in Edinburgh?", "Find pubs in the most deprived parts in Edinburgh"]
 
     if "tourism" in sql:
-        return [
-            "Find museums in Edinburgh",
-            f"Find cafes near {loc}",
-            "What tourist attractions are there near the Old Town?"
-        ]
-
+        return ["Find museums in Edinburgh", f"Find cafes near {loc}","What tourist attractions are there near the Old Town?"]
+ 
     return [] 
 
 def fallback_suggestions(sql, is_city, location):
     feat = feature_label(sql)
 
     if is_city:
-        return [
-            f"Find {feat}s in Leith",
-            f"Find {feat}s in Stockbridge",
-            "Show me parks in Edinburgh"
-        ]
+        return [f"Find {feat}s in Leith", f"Find {feat}s in Stockbridge", "Show me parks in Edinburgh"]
 
-    return [
-        f"Find {feat}s in Edinburgh",
-        f"Find parks near {location}",
-        f"How many {feat}s are in Edinburgh?"
-    ]
+    return [f"Find {feat}s in Edinburgh", f"Find parks near {location}", f"How many {feat}s are in Edinburgh?"]
 
 def apply_area_and_deprivation_rules(s, sql):
     area_active = st.session_state.get('area_filter_active', False)
@@ -294,12 +230,12 @@ def apply_area_and_deprivation_rules(s, sql):
     return s
 
 def generate_follow_ups(result, user_query):
-    sql       = result.get('sql', '').lower()
+    sql = result.get('sql', '').lower()
     row_count = result.get('row_count', 0)
     is_count  = result.get('is_count', False)
-    is_city   = result.get('is_city_wide', True)
-    location  = location_label(result)
-    loc       = location if not is_city else 'Edinburgh'
+    is_city = result.get('is_city_wide', True)
+    location = location_label(result)
+    loc = location if not is_city else 'Edinburgh'
 
     if row_count == 0:
         return zero_result_suggestions(sql)
