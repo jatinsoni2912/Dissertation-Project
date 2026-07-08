@@ -10,8 +10,8 @@ def show_conversation_history():
         return
     with st.container():
         for msg in conv['messages']:
-            badge  = "🎤" if msg.get('input_method') == 'voice' else "⌨️"
-            rc     = msg.get('row_count', 0)
+            badge = "🎤" if msg.get('input_method') == 'voice' else "⌨️"
+            rc = msg.get('row_count', 0)
             rc_txt = f"COUNT: {rc}" if msg.get('is_count') else f"{rc} result(s)"
             st.markdown(
                 f'<div style="background:#f7f7f7;border-left:3px solid #6aa36f;'
@@ -149,9 +149,8 @@ def render_technical_details(res, row_count, is_count):
     with st.expander("🔧 Technical details", expanded=False):
 
         if res.get('fixes'):
-            fixes_html = "".join(
-                f'<span class="fix-tag">{f}</span>' for f in res['fixes']
-            )
+            fixes_html = "".join(f'<span class="fix-tag">{f}</span>' for f in res['fixes'])
+            
             st.markdown(f"**Fixes applied:**<br>{fixes_html}", unsafe_allow_html=True)
 
         st.markdown("**Generated SQL:**")
