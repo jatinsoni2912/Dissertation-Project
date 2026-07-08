@@ -55,9 +55,9 @@ def parse_geojson(raw):
 def prepare_geojson_collection(results, columns):
     features = []
     count = 0
-    geom_idx = next((i for i, c in enumerate(columns)
-                     if c in ('geometry', 'st_asgeojson', 'geom', 'way')), None)
+    geom_idx = next((i for i, c in enumerate(columns) if c in ('geometry', 'st_asgeojson', 'geom', 'way')), None)
     name_idx = next((i for i, c in enumerate(columns) if c == 'name'), None)
+    
     if geom_idx is None:
         return {"type": "FeatureCollection", "features": []}, 0
 

@@ -35,13 +35,13 @@ def apply_area_filter(sql):
 
     return sql.rstrip(';') + f' WHERE {cond};'
 
-def generate_sql(user_query, approach_choice, model_choice, context_loc):
+def generate_sql(pipeline_query, model_choice, approach_choice, context_loc):
     
     if "MCP" in approach_choice:
-        gen_result = generate_sql_with_mcp(user_query, model=model_choice, context_loction=context_loc)
+        gen_result = generate_sql_with_mcp(pipeline_query, model=model_choice, context_loction=context_loc)
         label = "LLM + MCP"
     else:
-        gen_result = generate_sql(user_query, model=model_choice, context_location=context_loc)
+        gen_result = generate_sql(pipeline_query, model=model_choice, context_location=context_loc)
         label = "LLM only"
 
     return gen_result, label
@@ -123,15 +123,15 @@ def handle_results(base, sql, db_result):
 
     return handle_feature_query(base, results, columns)
 
-def run_query(user_query, approach_choice, model_choice, area_filter_geojson):
+def run_query(user_query, model_choice, approach_choice, pipeline_query):
     
-    gen_result, approach_label = generate_sql(user_query, approach_choice, model_choice)
+    gen_result, approach_label = generate_sql(pipeline_query, approach_choice, model_choice)
     base = build_base_metadata(gen_result, approach_label, model_choice)
 
     if not gen_result["valid"]:
         return handle_invalid_sql(base, gen_result)
 
-    sql = apply_area_filter(gen_result["sql"], area_filter_geojson)
+    sql = apply_area_filter(gen_result["sql"])
     base["sql"] = sql
 
     db_result = execute_query(sql)
