@@ -40,15 +40,7 @@ def create_baseline_context(user_query, context_location):
     activity_terms = extract_activity_terms(user_query)
     search_radius, was_explicit = return_explicit_search_radius(user_query, activity_terms)
 
-    return (
-        location_name,
-        lon,
-        lat,
-        is_city_wide,
-        activity_terms,
-        search_radius,
-        was_explicit,
-    )
+    return (location_name, lon, lat, is_city_wide, activity_terms, search_radius, was_explicit)
 
 def generate_sql_baseline(user_query, model, location_name, lon, lat, is_city_wide, search_radius):
     
