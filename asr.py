@@ -47,13 +47,11 @@ def transcribe(audio_bytes, model_size="base"):
         else:
             confidence = 0.0
 
-        return {
-            "text": text,
+        return {"text": text,
             "confidence": round(confidence, 2),
             "language": info.language,
             "duration_s": round(duration, 2),
-            "segments": [{"start": s.start, "end": s.end, "text": s.text.strip(),} for s in segments],
-            }
+            "segments": [{"start": s.start, "end": s.end, "text": s.text.strip(),} for s in segments]}
 
     finally:
         os.unlink(tmp_path)
