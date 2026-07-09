@@ -95,22 +95,28 @@ html, body, [class*="css"] {
 .sql-expander {
     font-family: 'DM Mono', monospace;
     font-size: 0.78rem;
-    background: #f8f9fa;
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    padding: 0.75rem;
+    background: #f8f6f0;
+    border: 1px solid rgba(26,39,68,0.08);            
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
     white-space: pre-wrap;
-    color: #2d3748;
+    color: var(--edinburgh-navy);
+    word-break: break-all;
 }
 
 .info-pill {
-    display: inline-block;
-    background: #eef2f7;
-    color: #1a2744;
-    font-size: 0.75rem;
-    padding: 2px 10px;
-    border-radius: 20px;
-    margin: 2px 3px 2px 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: rgba(201,168,76,0.15);
+    color: var(--edinburgh-navy);
+    border: 1px solid rgba(201,168,76,0.4);
+    border-radius: 999px;
+    padding: 0.2rem 0.65rem;
+    font-size: 0.78rem;
+    font-weight: 500;
+    margin-right: 0.4rem;
+    margin-bottom: 0.4rem;
 }
 
 .fix-tag {
