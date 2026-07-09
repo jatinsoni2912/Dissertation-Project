@@ -233,7 +233,7 @@ def render_asr():
         f'padding:8px;border-radius:4px;margin:6px 0">'
         f'<b>Heard:</b> {st.session_state.asr_transcript}<br>'
         f'<small style="color:{color}">Confidence: {conf:.0%}</small></div>',
-        unsafe_allow_html=True,
+        unsafe_allow_html=True
     )
 
     col_a, col_b = st.columns(2)
