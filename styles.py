@@ -118,6 +118,52 @@ html, body, [class*="css"] {
     margin-right: 0.4rem;
     margin-bottom: 0.4rem;
 }
+                
+.stTextInput > div > div > input {
+    font-family: 'DM Sans', sans-serif !important;
+    font-size: 1rem !important;
+    border-radius: 10px !important;
+    border: 1.5px solid rgba(26,39,68,0.2) !important;
+    padding: 0.65rem 1rem !important;
+    background: white !important;
+    color: var(--edinburgh-navy) !important;
+}
+
+.stTextInput > div > div > input:focus {
+    border-color: var(--edinburgh-gold) !important;
+    box-shadow: 0 0 0 3px rgba(201,168,76,0.2) !important;
+}
+
+.stButton > button {
+    background: var(--edinburgh-navy) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 10px !important;
+    font-family: 'DM Sans', sans-serif !important;
+    font-weight: 500 !important;
+    font-size: 0.95rem !important;
+    padding: 0.65rem 1.5rem !important;
+    width: 100% !important;
+    transition: all 0.2s ease !important;
+}
+
+.stButton > button:hover {
+    background: var(--edinburgh-gold) !important;
+    color: var(--edinburgh-navy) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(201,168,76,0.35) !important;
+}
+
+.stSelectbox > div > div {
+    border-radius: 10px !important;
+    border: 1.5px solid rgba(26,39,68,0.2) !important;
+}
+
+div[data-testid="stExpander"] {
+    border: 1px solid rgba(26,39,68,0.1) !important;
+    border-radius: 10px !important;
+    background: white !important;
+}
 
 .fix-tag {
     display: inline-block;
