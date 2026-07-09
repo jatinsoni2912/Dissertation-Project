@@ -85,4 +85,36 @@ def extract_and_clean_where_clause(sql, table):
 
     return where_clause or None
 
+def get_feature_locations_for_count(sql):
+   if 'COUNT(' not in sql.upper():
+        return []
+   
+   sql = sql.lower()
+   
+   table, geom_col, name_col = detect_table_and_columns(sql)
+   
+   where_clause = extract_and_clean_where_clause(sql, table)
+   
+   if not where_clause:
+       return []
+   
+   loc_sql = (
+        f"SELECT {name_col}, ST_AsGeoJSON({geom_col}) AS geometry "
+        f"FROM {table} WHERE {where_clause} LIMIT 500")
+   
+   conn = get_connection()
+   cur  = conn.cursor()
+   
+   try:
+    cur.execute(loc_sql)
+    return cur.fetchall()
+   
+   except Exception:
+        return []
+   
+   finally:
+        cur.close()
+        conn.close()
+
+
 
