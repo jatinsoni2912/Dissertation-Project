@@ -61,22 +61,10 @@ def build_base_metadata(gen_result, approach_label, model_choice):
     }
 
 def handle_invalid_sql(base, gen_result):
-    return {
-        **base,
-        "row_count": 0,
-        "is_count": False,
-        "error": gen_result["validation_message"],
-        "geojson_data": {"type": "FeatureCollection", "features": []},
-    }
+    return {**base, "row_count": 0, "is_count": False, "error": gen_result["validation_message"], "geojson_data": {"type": "FeatureCollection", "features": []}}
 
 def handle_db_error(base, db_result):
-    return {
-        **base,
-        "row_count": 0,
-        "is_count": False,
-        "error": db_result["error"],
-        "geojson_data": {"type": "FeatureCollection", "features": []},
-    }
+    return {**base, "row_count": 0, "is_count": False, "error": db_result["error"], "geojson_data": {"type": "FeatureCollection", "features": []}}
 
 def is_count_query(columns):
     if not columns:
@@ -93,26 +81,11 @@ def handle_count_query(base, sql, results, columns):
     else:
         geojson = {"type": "FeatureCollection", "features": []}
 
-    return {
-        **base,
-        "row_count": count_value,
-        "is_count": True,
-        "count_value": count_value,
-        "results": results,
-        "columns": columns,
-        "geojson_data": geojson,
-    }
+    return {**base, "row_count": count_value, "is_count": True, "count_value": count_value, "results": results, "columns": columns, "geojson_data": geojson}
 
 def handle_feature_query(base, results, columns):
     geojson, feature_count = prepare_geojson_collection(results, columns)
-    return {
-        **base,
-        "row_count": feature_count,
-        "is_count": False,
-        "results": results,
-        "columns": columns,
-        "geojson_data": geojson,
-    }
+    return {**base, "row_count": feature_count, "is_count": False, "results": results, "columns": columns, "geojson_data": geojson}
 
 def handle_results(base, sql, db_result):
     results = db_result["results"]
