@@ -1,6 +1,7 @@
 import psycopg2
 import os
 from dotenv import load_dotenv
+import re
 
 load_dotenv()
 
@@ -64,5 +65,24 @@ def detect_table_and_columns(sql):
         return 'planet_osm_line', 'way', 'name'
     
     return 'planet_osm_point', 'way', 'name'
+
+def extract_and_clean_where_clause(sql, table):
+    where_m = re.search(r'WHERE\s+(.+?)(?:GROUP\s+BY|ORDER\s+BY|LIMIT|;|$)', sql, re.IGNORECASE | re.DOTALL)
+    
+    if not where_m:
+        return None
+
+    where_clause = where_m.group(1).strip().rstrip(';').strip()
+
+    where_clause = re.sub(r'\b[a-zA-Z]\.', '', where_clause)
+
+    where_clause = re.sub(r'\s*AND\s+ST_Intersects\(\s*way\s*,\s*geom\s*\)', '', where_clause, flags=re.IGNORECASE)
+
+    if table != 'edinburgh_deprivation':
+        where_clause = re.sub(r'\s*AND\s+(?:la_decile|dzname|la_rank|la_pct)\s*[^A-Za-z\'"\s][^\n,)]*', '', where_clause, flags=re.IGNORECASE)
+
+    where_clause = re.sub(r'^\s*AND\s+', '', where_clause, flags=re.IGNORECASE).strip()
+
+    return where_clause or None
 
 
