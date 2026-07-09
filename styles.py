@@ -49,20 +49,17 @@ def apply():
     --edinburgh-slate: #4a5568;
     --edinburgh-green: #2d6a4f;
     --edinburgh-red: #9b2335;
-    --radius: 12px;
-            
+    --radius: 12px;      
 }
 
 html, body, [class*="css"] {
     font-family: 'DM Sans', sans-serif;
     background-color: var(--edinburgh-stone);
     color: var(--edinburgh-navy);}        
-        
-.stApp { background: var(--cream); }
-    
-.geoquery-header   { display:flex; align-items:center; gap:0.6rem; margin-bottom:0.25rem; }
-.geoquery-title    { font-family:'DM Serif Display',serif; font-size:2rem; color:var(--navy); margin:0; }
-.geoquery-subtitle { color:#4a5568; font-size:0.95rem; margin:0 0 1.2rem 0; }
+            
+.geoquery-header { display:flex; align-items:center; gap:1rem; margin-bottom:0.25rem;}
+.geoquery-title {font-family:'DM Serif Display',serif; font-size:2.4rem; color:var(--edinburgh-navy); margin:0; line-height:1;}
+.geoquery-subtitle {font-size:0.95rem; color: var(--edinburgh-slate); margin:0 0 1.5rem 0; font-weight: 300;}
 
 .query-card {
     background: #fff;
