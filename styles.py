@@ -65,10 +65,33 @@ html, body, [class*="css"] {
     background: #fff;
     border-radius: 12px;
     padding: 1.2rem 1.4rem;
+    border: 1px solid rgba(26,39,68,0.1);
     box-shadow: 0 2px 12px rgba(26,39,68,0.08);
     margin-bottom: 1rem;
 }
+                
+.result-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--edinburgh-navy);
+    color: white;
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+    font-family: 'DM Mono', monospace;
+}
 
+.result-badge.zero {
+    background: var(--edinburgh-red);
+}
+
+.result-badge.success {
+    background: var(--edinburgh-green);
+}
+                
 .sql-expander {
     font-family: 'DM Mono', monospace;
     font-size: 0.78rem;
