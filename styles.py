@@ -175,9 +175,68 @@ div[data-testid="stExpander"] {
     margin: 2px 4px 2px 0;
 }
 
-.stButton > button {border-radius:8px; font-family:'DM Sans',sans-serif; font-weight:500; }
-.stTextInput > div > div > input {border-radius:8px; border-color:#c9a84c; }
-.stTextInput > div > div > input:focus {border-color:#1a2744; box-shadow:0 0 0 2px rgba(26,39,68,.15); }
+.fix-tag {
+    display: inline-block;
+    background: rgba(157,35,53,0.1);
+    color: var(--edinburgh-red);
+    border-radius: 4px;
+    padding: 0.1rem 0.4rem;
+    font-size: 0.75rem;
+    font-family: 'DM Mono', monospace;
+    margin: 0.15rem 0.15rem 0.15rem 0;
+}
+
+.example-chip {
+    display: inline-block;
+    background: white;
+    border: 1px solid rgba(26,39,68,0.15);
+    border-radius: 8px;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.82rem;
+    color: var(--edinburgh-slate);
+    margin: 0.2rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.example-chip:hover {
+    border-color: var(--edinburgh-gold);
+    color: var(--edinburgh-navy);
+    background: rgba(201,168,76,0.08);
+}
+
+.stSpinner > div { border-top-color: var(--edinburgh-gold) !important; }
+
+footer { display: none !important; }
+#MainMenu { display: none !important; }
+/* header visible — needed for sidebar toggle button */
+
+section[data-testid="stSidebar"] {
+    background-color: var(--edinburgh-navy) !important;
+    padding: 1rem 0.5rem;
+}
+section[data-testid="stSidebar"] * {
+    color: white !important;
+}
+section[data-testid="stSidebar"] .stButton > button {
+    background: rgba(255,255,255,0.1) !important;
+    border: 1px solid rgba(255,255,255,0.2) !important;
+    color: white !important;
+    font-size: 0.85rem !important;
+    padding: 0.4rem 0.75rem !important;
+    text-align: left !important;
+}
+section[data-testid="stSidebar"] .stButton > button:hover {
+    background: var(--edinburgh-gold) !important;
+    color: var(--edinburgh-navy) !important;
+    border-color: var(--edinburgh-gold) !important;
+}
+section[data-testid="stSidebar"] .stSelectbox > div > div {
+    background: rgba(255,255,255,0.1) !important;
+    border-color: rgba(255,255,255,0.3) !important;
+    color: white !important;
+}
+</style>
 
 </style>
                 
