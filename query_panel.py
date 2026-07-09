@@ -272,27 +272,43 @@ def render_voice_input(asr_enabled, transcribe_fn):
     if st.session_state.get("pending_asr"):
         render_asr()
 
-def render_query_panel(asr_enabled=False, transcribe_fn=None):
-    st.markdown('<div class="query-card">', unsafe_allow_html=True)
+def render_query_panel(col, asr_enabled=False, transcribe_fn=None):
+    with col:
+        st.markdown('<div class="query-card">', unsafe_allow_html=True)
 
-    model_choice = st.selectbox("LLM Model", options=["qwen2.5-coder:1.5b"], index=0, help="Select which locally deployed model to use for SQL generation")
+        show_conversation_history()
 
-    approach_choice = st.selectbox(
-        "Query Approach", options=["Approach 1 — LLM only", "Approach 2 — LLM + MCP"],
-        index=0, help=("Approach 1 uses static schema injection. "
-              "Approach 2 uses the Postgres MCP server for live schema access."))
+        model_choice = st.selectbox(
+            "LLM Model",
+            options=["qwen2.5-coder:1.5b"],
+            index=0,
+            help="Select which locally deployed model to use for SQL generation",
+        )
 
-    user_query = st.text_input("Ask a question about Edinburgh", placeholder="e.g. Where can I go cycling near Leith?", label_visibility="collapsed")
+        approach_choice = st.selectbox(
+            "Query Approach",
+            options=["Approach 1 — LLM only", "Approach 2 — LLM + MCP"],
+            index=0,
+            help=("Approach 1 uses static schema injection. "
+                "Approach 2 uses the Postgres MCP server for live schema access."),
+        )
 
-    if asr_enabled:
-        render_voice_input(asr_enabled, transcribe_fn)
+        user_query = st.text_input(
+            "Ask a question about Edinburgh",
+            value=st.session_state.selected_example,
+            placeholder="e.g. Where can I go cycling near Leith?",
+            label_visibility="collapsed",
+        )
 
-    render_area_filter_controls()
+        if asr_enabled:
+            render_voice_input(asr_enabled, transcribe_fn)
 
-    run_btn = st.button("🔍  Search", use_container_width=True)
-    st.markdown("</div>", unsafe_allow_html=True)
+        render_area_filter_controls()
 
-    if not st.session_state.query_result:
+        run_btn = st.button("🔍  Search", use_container_width=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+
+        if not st.session_state.query_result:
             st.markdown("**Try an example:**")
             cols = st.columns(2)
             for i, example in enumerate(EXAMPLE_QUERIES):
@@ -301,10 +317,10 @@ def render_query_panel(asr_enabled=False, transcribe_fn=None):
                     if st.button(label, key=f"ex_{i}", use_container_width=True):
                         st.session_state.selected_example = example
                         st.rerun()
-    
-    if st.session_state.query_result:
+
+        if st.session_state.query_result:
             res = st.session_state.query_result
             st.markdown("---")
             show_result_panel(res, st.session_state.get('last_query', ''))
-        
-    return user_query, run_btn, user_query, model_choice, approach_choice
+
+        return user_query, run_btn, model_choice, approach_choice
