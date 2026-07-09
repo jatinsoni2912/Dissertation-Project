@@ -53,3 +53,16 @@ def get_schema():
     CROSS-QUERY PATTERN: JOIN edinburgh_deprivation d ON ST_Intersects(p.way, d.geom)
     """
 
+def detect_table_and_columns(sql):
+    if 'edinburgh_deprivation' in sql and 'planet_osm' not in sql:
+        return 'edinburgh_deprivation', 'geom', 'dzname'
+    
+    if 'planet_osm_polygon' in sql:
+        return 'planet_osm_polygon', 'way', 'name'
+    
+    if 'planet_osm_line' in sql:
+        return 'planet_osm_line', 'way', 'name'
+    
+    return 'planet_osm_point', 'way', 'name'
+
+
