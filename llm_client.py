@@ -70,3 +70,15 @@ def call_bedrock_model(prompt, model, max_tokens):
         raise
     except Exception as e:
         raise RuntimeError(f"Bedrock call failed: {e}") from e
+
+def list_models():
+    if get_provider() == PROVIDER_BEDROCK:
+        return BEDROCK_MODELS
+    
+    return OLLAMA_MODELS
+
+def default_model():
+    if get_provider() == PROVIDER_BEDROCK:
+        return DEFAULT_BEDROCK_MODEL
+    
+    return DEFAULT_OLLAMA_MODEL
