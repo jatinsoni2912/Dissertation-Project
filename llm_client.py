@@ -23,6 +23,18 @@ def call_model(prompt, model, max_tokens=512):
     provider = get_provider()
     
     if provider == PROVIDER_BEDROCK:
-        return call_bedrock(prompt, model, max_tokens)
+        return call_bedrock+model(prompt, model, max_tokens)
     
-    return call_ollama(prompt, model, max_tokens)
+    return call_ollama_model(prompt, model, max_tokens)
+
+def call_ollama_model(prompt, model, max_tokens):
+    try:
+        import ollama
+        response = ollama.chat(
+            model=model,
+            messages=[{"role": "user", "content": prompt}],
+            options={"temperature": 0, "num_predict": max_tokens},
+        )
+        return response["message"]["content"].strip()
+    except Exception as e:
+        raise RuntimeError(f"Ollama call failed: {e}") from e
