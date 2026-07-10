@@ -18,3 +18,11 @@ BEDROCK_MAX_ATTEMPTS  = 2
 
 def get_provider():
     return os.getenv("OLLAMA_PROVIDER", PROVIDER_OLLAMA).lower()
+
+def call_model(prompt, model, max_tokens=512):
+    provider = get_provider()
+    
+    if provider == PROVIDER_BEDROCK:
+        return call_bedrock(prompt, model, max_tokens)
+    
+    return call_ollama(prompt, model, max_tokens)
