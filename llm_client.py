@@ -15,3 +15,6 @@ DEFAULT_BEDROCK_MODEL = "google.gemma-3-4b-it"
 
 BEDROCK_READ_TIMEOUT  = 20
 BEDROCK_MAX_ATTEMPTS  = 2
+
+def get_provider():
+    return os.getenv("OLLAMA_PROVIDER", PROVIDER_OLLAMA).lower()
