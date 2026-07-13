@@ -18,6 +18,7 @@ from mcp_schema import (
 from mcp_utils import extract_location_candidate, return_explicit_search_radius, expand_radius_if_empty
 from prompt import build_prompt
 from utils import extract_activity_terms, extract_sql
+from llm_client import call_model, default_model
 
 
 load_dotenv()
@@ -38,15 +39,7 @@ def assemble_context(user_query, context_location):
     tag_hints = resolve_tags_via_mcp(activity_terms)
     search_radius, was_explicit = return_explicit_search_radius(user_query, activity_terms)
 
-    return (
-        is_city_wide,
-        loc_data,
-        activity_terms,
-        tag_hints,
-        schema,
-        search_radius,
-        was_explicit,
-    )
+    return (is_city_wide, loc_data, activity_terms, tag_hints, schema, search_radius, was_explicit)
 
 
 def generate_sql(user_query, model, schema, loc_data, tag_hints, is_city_wide, search_radius):
@@ -61,13 +54,13 @@ def generate_sql(user_query, model, schema, loc_data, tag_hints, is_city_wide, s
         search_radius=search_radius,
     )
 
-    response = ollama.chat(
-        model=model,
-        messages=[{'role': 'user', 'content': prompt}],
-        options={'temperature': 0, 'num_predict': 512}
-    )
+    try:
+        generated_sql = extract_sql(call_model(prompt, model, max_tokens=512))
+        return generated_sql
 
-    return extract_sql(response['message']['content'].strip())
+    except Exception as e:
+        print(f"[LLM] Call failed: {e}")
+        return ''
 
 def execute_and_expand_sql(generated_sql, search_radius, was_explicit):
     try:
@@ -100,7 +93,8 @@ def execute_and_expand_sql(generated_sql, search_radius, was_explicit):
     return final_sql, actual_rows, is_valid, validation_message, []
 
 def generate_sql_with_mcp(user_query, model=None, context_location=None):
-    model = model or os.getenv('OLLAMA_MODEL', 'qwen2.5-coder:1.5b')
+    if model is None:
+        model = default_model()
     
     is_city_wide, loc_data, activity_terms, tag_hints, schema, search_radius, was_explicit = assemble_context(user_query, context_location)
 
