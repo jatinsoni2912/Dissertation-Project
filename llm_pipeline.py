@@ -7,6 +7,7 @@ from constants import CITY_WIDE_SIGNALS
 from location_geocoder import geocode_location
 from mcp_utils import return_explicit_search_radius, extract_location_candidate, expand_radius_if_empty
 from utils import extract_activity_terms, extract_sql
+from llm_client import call_model, default_model
 
 load_dotenv()
 
@@ -43,20 +44,20 @@ def create_baseline_context(user_query, context_location):
     return (location_name, lon, lat, is_city_wide, activity_terms, search_radius, was_explicit)
 
 def generate_sql_baseline(user_query, model, location_name, lon, lat, is_city_wide, search_radius):
-    
+
     prompt = build_prompt(user_query, location_name, lon, lat, is_city_wide, search_radius)
 
     try:
-        response = ollama.chat(
-            model=model,
-            messages=[{'role': 'user', 'content': prompt}],
-            options={'temperature': 0, 'num_predict': 256},
-        )
-        return extract_sql(response['message']['content'].strip())
+        raw_sql = extract_sql(call_model(prompt, model, max_tokens=256))
+        llm_error = None
+
+    except RuntimeError as e:
+        raw_sql = ''
+        llm_error = str(e)
+        print(f'[LLM] Call failed: {llm_error}')
+        return ''   
     
-    except Exception:
-        return ''
-    
+    return raw_sql
 
 def execute_and_expand_baseline_sql(raw_sql, search_radius, was_explicit):
     if not raw_sql.strip().upper().startswith('SELECT'):
@@ -85,7 +86,7 @@ def execute_and_expand_baseline_sql(raw_sql, search_radius, was_explicit):
 
 def generate_sql(user_query, model=None, context_location=None):
     if model is None:
-        model = os.getenv('OLLAMA_MODEL', 'qwen2.5-coder:1.5b')
+        model = default_model()
 
     location_name, lon, lat, is_city_wide, activity_terms, search_radius, was_explicit = create_baseline_context(user_query, context_location)
 
