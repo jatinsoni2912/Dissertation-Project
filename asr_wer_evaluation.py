@@ -57,3 +57,20 @@ def main():
 
     load_model()
     results = []
+
+    while True:
+        typed = input("Query (or Enter to finish): ").strip()
+        if not typed:
+            break
+
+        input("Press Enter to record...")
+        audio = record_audio()
+
+        print(" Transcribing...")
+        transcript = transcribe(audio)
+        wer = word_error_rate(typed, transcript)
+
+        print(f"Transcript : {transcript}")
+        print(f"WER : {wer:.1%}\n")
+
+        results.append({"typed": typed, "transcript": transcript, "wer": round(wer, 3)})
