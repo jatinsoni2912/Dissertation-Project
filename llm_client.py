@@ -8,10 +8,10 @@ PROVIDER_OLLAMA  = "ollama"
 PROVIDER_BEDROCK = "bedrock"
 
 OLLAMA_MODELS  = ["qwen2.5-coder:1.5b"]
-BEDROCK_MODELS = ["google.gemma-3-4b-it"]
+BEDROCK_MODELS = ["qwen.qwen3-coder-30b-a3b-v1:0"]
 
 DEFAULT_OLLAMA_MODEL  = "qwen2.5-coder:1.5b"
-DEFAULT_BEDROCK_MODEL = "google.gemma-3-4b-it"
+DEFAULT_BEDROCK_MODEL = "qwen.qwen3-coder-30b-a3b-v1:0"
 
 BEDROCK_READ_TIMEOUT  = 20
 BEDROCK_MAX_ATTEMPTS  = 2
