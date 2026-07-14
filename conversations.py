@@ -29,12 +29,10 @@ def save(username, conv):
         json.dump(conv, f, indent=2, ensure_ascii=False)
 
 def get_all_users():
-    """Return all usernames (directory names under conversations/)."""
     os.makedirs(CONV_DIR, exist_ok=True)
     return sorted(
         d for d in os.listdir(CONV_DIR)
-        if os.path.isdir(os.path.join(CONV_DIR, d))
-    )
+        if os.path.isdir(os.path.join(CONV_DIR, d)))
 
 
 def create_user(username):
@@ -48,11 +46,11 @@ def delete_user(username):
 
 def new_conversation(username):
     conv = {
-        "id":         uuid.uuid4().hex[:12],
-        "title":      "New conversation",
+        "id": uuid.uuid4().hex[:12],
+        "title": "New conversation",
         "created_at": datetime.now().isoformat(),
         "updated_at": datetime.now().isoformat(),
-        "messages":   [],
+        "messages": [],
     }
     save(username, conv)
     return conv
@@ -71,8 +69,8 @@ def get_all_conversations(username):
                 "title":      c.get("title", "Untitled"),
                 "created_at": c.get("created_at", ""),
                 "updated_at": c.get("updated_at", ""),
-                "msg_count":  len(c.get("messages", [])),
-            })
+                "msg_count":  len(c.get("messages", []))})
+            
         except Exception:
             continue
     return sorted(convs, key=lambda x: x["updated_at"], reverse=True)
@@ -87,20 +85,20 @@ def add_message(username, conv_id, query, sql, approach, model, row_count, is_co
         conv = new_conversation(username)
 
     msg = {
-        "query":               query,
-        "sql":                 sql,
-        "approach":            approach,
-        "model":               model,
-        "row_count":           row_count,
-        "is_count":            is_count,
-        "fixes_applied":       fixes_applied or [],
-        "input_method":        input_method,
-        "asr_transcript":      asr_transcript,
-        "asr_confidence":      asr_confidence,
-        "area_filter_active":  area_filter_active,
+        "query": query,
+        "sql": sql,
+        "approach": approach,
+        "model": model,
+        "row_count": row_count,
+        "is_count": is_count,
+        "fixes_applied": fixes_applied or [],
+        "input_method": input_method,
+        "asr_transcript": asr_transcript,
+        "asr_confidence": asr_confidence,
+        "area_filter_active": area_filter_active,
         "area_filter_geojson": area_filter_geojson,
-        "timestamp":           datetime.now().isoformat(),
-    }
+        "timestamp": datetime.now().isoformat()}
+    
     conv["messages"].append(msg)
     conv["updated_at"] = msg["timestamp"]
 
@@ -128,5 +126,4 @@ def get_user_stats(username):
     return {
         "conversations": len(convs_meta),
         "total_queries": total_msgs,
-        "voice_queries": voice,
-    }
+        "voice_queries": voice}
