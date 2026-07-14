@@ -31,3 +31,18 @@ def record_audio():
     buf = io.BytesIO()
     wav.write(buf, SAMPLE_RATE, audio)
     return buf.getvalue()
+
+def transcribe(audio_bytes):
+    import tempfile, os
+    model = load_model()
+    
+    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
+        tmp.write(audio_bytes)
+        path = tmp.name
+    
+    try:
+        segments, _ = model.transcribe(path, language="en", beam_size=5, vad_filter=True)
+        return " ".join(s.text.strip() for s in segments).strip()
+    
+    finally:
+        os.unlink(path)
