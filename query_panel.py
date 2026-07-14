@@ -2,7 +2,7 @@ import streamlit as st
 from styles import EXAMPLE_QUERIES
 import os
 
-from app_utils import conversational_response, generate_follow_ups, feature_label
+from app_utils import conversational_response, generate_follow_ups, feature_label, fix_decimal_value
 from audio_recorder_streamlit import audio_recorder
 from llm_client import PROVIDER_OLLAMA, PROVIDER_BEDROCK, OLLAMA_MODELS, BEDROCK_MODELS
 
@@ -172,7 +172,7 @@ def render_results_table(res, row_count):
     display_rows = []
     for row in res['results'][:10]:
         dr = {
-            c: row[i]
+            c: fix_decimal_value(row[i])
             for i, c in enumerate(res.get('columns', []))
             if c not in ('geometry', 'st_asgeojson', 'geom', 'way')
             and row[i] is not None

@@ -3,7 +3,7 @@ import re
 import streamlit as st
 
 from database import execute_query, get_feature_locations_for_count
-from app_utils import prepare_geojson_collection
+from app_utils import prepare_geojson_collection, sanitise_rows
 from mcp_pipeline import generate_sql_with_mcp
 from llm_pipeline import generate_sql
         
@@ -80,12 +80,16 @@ def handle_count_query(base, sql, results, columns):
         geojson, _ = prepare_geojson_collection(loc_rows, ["name", "geometry"])
     else:
         geojson = {"type": "FeatureCollection", "features": []}
+    
+    safe_results = sanitise_rows(results)
 
-    return {**base, "row_count": count_value, "is_count": True, "count_value": count_value, "results": results, "columns": columns, "geojson_data": geojson}
+    return {**base, "row_count": count_value, "is_count": True, "count_value": count_value, "results": safe_results, "columns": columns, "geojson_data": geojson}
 
 def handle_feature_query(base, results, columns):
     geojson, feature_count = prepare_geojson_collection(results, columns)
-    return {**base, "row_count": feature_count, "is_count": False, "results": results, "columns": columns, "geojson_data": geojson}
+    safe_results = sanitise_rows(results)
+    
+    return {**base, "row_count": feature_count, "is_count": False, "results": safe_results, "columns": columns, "geojson_data": geojson}
 
 def handle_results(base, sql, db_result):
     results = db_result["results"]
