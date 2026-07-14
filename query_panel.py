@@ -277,7 +277,6 @@ def render_voice_input(asr_enabled, transcribe_fn):
 
 def render_query_panel(col, asr_enabled=False, transcribe_fn=None):
     with col:
-        st.markdown('<div class="query-card">', unsafe_allow_html=True)
 
         show_conversation_history()
 
