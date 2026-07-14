@@ -74,3 +74,20 @@ def main():
         print(f"WER : {wer:.1%}\n")
 
         results.append({"typed": typed, "transcript": transcript, "wer": round(wer, 3)})
+
+    if not results:
+        print("No results.")
+        return
+    
+    mean_wer = sum(r["wer"] for r in results) / len(results)
+    perfect = sum(1 for r in results if r["wer"] == 0.0)
+
+    print(f"{'='*40}")
+    print(f"Queries evaluated : {len(results)}")
+    print(f"Mean WER : {mean_wer:.1%}")
+    print(f"Perfect (WER=0) : {perfect}/{len(results)}")
+    print(f"Queries with errors: {len(results)-perfect}/{len(results)}")
+    print(f"{'='*40}")
+
+    
+    
