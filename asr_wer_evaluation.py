@@ -22,3 +22,12 @@ def load_model():
         print("Ready.\n")
 
     return model
+
+def record_audio():
+    print(f" Recording {RECORD_SECONDS}s — speak now...")
+    audio = sd.rec(int(RECORD_SECONDS * SAMPLE_RATE), samplerate=SAMPLE_RATE, channels=1, dtype="int16")
+    sd.wait()
+    print(" Done.")
+    buf = io.BytesIO()
+    wav.write(buf, SAMPLE_RATE, audio)
+    return buf.getvalue()
