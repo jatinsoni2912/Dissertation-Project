@@ -1,7 +1,7 @@
 import json
 import re
 import streamlit as st
-
+from decimal import Decimal
 
 EDINBURGH_CENTER = [55.9533, -3.1883]
 
@@ -37,6 +37,15 @@ FEATURE_COLOURS = {
     'default':       '#c9a84c',
 }
 
+def fix_decimal_value(v):
+    if isinstance(v, Decimal):
+        return int(v) if v == v.to_integral_value() else float(v)
+    
+    return v
+
+def sanitise_rows(rows):
+    return [tuple(fix_decimal_value(v) for v in row) for row in rows]
+
 def get_feature_colour(sql):
     sql_l = sql.lower()
     for tag, colour in FEATURE_COLOURS.items():
@@ -67,7 +76,7 @@ def prepare_geojson_collection(results, columns):
             continue
         count += 1
         name = row[name_idx] if name_idx is not None else f"Feature {count}"
-        props = {c: row[i] for i, c in enumerate(columns)
+        props = {c: fix_decimal_value(row[i]) for i, c in enumerate(columns)
                  if c not in ('geometry', 'st_asgeojson', 'geom', 'way')
                  and row[i] is not None}
         props.setdefault('name', name or f"Feature {count}")
