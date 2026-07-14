@@ -49,3 +49,11 @@ def transcribe(audio_bytes):
     
 def word_error_rate(reference, hypothesis):
     return wer(reference, hypothesis)
+
+def main():
+    print("GeoQuery — WER Evaluation")
+    print("Type a query, press Enter, then speak it aloud.")
+    print("Leave query blank to finish.\n")
+
+    load_model()
+    results = []
