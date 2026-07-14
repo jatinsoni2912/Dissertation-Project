@@ -33,3 +33,34 @@ SQL: SELECT p.name, ST_AsGeoJSON(p.way), d.dzname, d.la_decile FROM planet_osm_p
 User: "Find libraries in Morningside"
 SQL: SELECT p.name, ST_AsGeoJSON(p.way) FROM planet_osm_point p JOIN planet_osm_polygon boundary ON ST_Intersects(p.way, boundary.way) WHERE boundary.name ILIKE '%Morningside%' AND boundary.place IN ('suburb','neighbourhood') AND p.amenity = 'library';
     """
+
+def build_prompt(user_query):
+    schema_context = build_schema_context()
+    static_examples = build_static_examples()
+    return f"""You are a PostGIS SQL expert. Output ONLY raw SQL. No markdown.
+
+SCHEMA:
+{schema_context}
+
+RULES:
+- Alias table as p. Use p.name, p.way, p.amenity, p.leisure, p.highway, p.shop, p.tourism etc.
+- Always ST_AsGeoJSON(p.way) — never raw p.way
+- Deprivation: column is geom not way. la_decile<=2 most deprived, >=9 least deprived.
+- No deprivation JOIN unless query mentions deprived areas.
+- CORRECT TAGS: swimming_pool NOT swimming | tourism=attraction NOT amenity=tourist_attraction | shop=supermarket NOT amenity=supermarket | football: sport ILIKE '%football%' OR sport ILIKE '%soccer%'
+- ALWAYS use ST_SetSRID with ST_MakePoint: ST_SetSRID(ST_MakePoint(lon,lat),4326)::geography
+- CRITICAL: You must determine the correct longitude and latitude for Edinburgh locations from your own internal memory. Do not use placeholders.
+{static_examples}
+Q: {user_query}
+SQL:"""
+
+def run_llm(prompt, model):
+    try:
+        response = ollama.chat(
+            model=model,
+            messages=[{'role': 'user', 'content': prompt}],
+            options={'temperature': 0, 'num_predict': 256},
+        )
+        return extract_sql(response['message']['content'].strip())
+    except Exception:
+        return ''
