@@ -37,4 +37,19 @@ DEPRIVATION_QUERIES = [
     {"query": "Find pubs in the most deprived parts in Edinburgh", "expected_table": "planet_osm_point", "expected_key": "amenity", "expected_value": "pub", "location_type": "city_wide", "query_type": "features", "category": "cross_query"}
 ]
 
-
+EXTENDED_OSM_QUERIES = [
+    {"query": "Where can I play basketball in Edinburgh?", "expected_table": "planet_osm_polygon", "expected_key": "leisure", "expected_value": "pitch", "location_type": "city_wide", "query_type": "features", "category": "sport_city_wide"},
+    {"query": "Find bowls clubs near Morningside", "expected_table": "planet_osm_polygon", "expected_key": "leisure", "expected_value": "pitch", "location_type": "named_area", "query_type": "features", "category": "sport_named_area"},
+    {"query": "Where can I play hockey in Edinburgh?", "expected_table": "planet_osm_polygon", "expected_key": "leisure", "expected_value": "pitch", "location_type": "city_wide", "query_type": "features", "category": "sport_city_wide"},
+    {"query": "Where can I play rugby near Leith?", "expected_table": "planet_osm_polygon", "expected_key": "leisure", "expected_value": "pitch", "location_type": "named_area", "query_type": "features", "category": "sport_named_area"},
+    {"query": "Where are Edinburgh's playgrounds?", "expected_table": "planet_osm_polygon", "expected_key": "leisure", "expected_value": "playground", "location_type": "city_wide", "query_type": "features", "category": "city_wide_polygon"},
+    {"query": "Show me nature reserves in Edinburgh", "expected_table": "planet_osm_polygon", "expected_key": "leisure", "expected_value": "nature_reserve", "location_type": "city_wide", "query_type": "features", "category": "city_wide_polygon"},
+    {"query": "Find sports centres in Edinburgh", "expected_table": "planet_osm_polygon", "expected_key": "leisure", "expected_value": "sports_centre", "location_type": "city_wide", "query_type": "features", "category": "city_wide_polygon"},
+    {"query": "Find restaurants in Edinburgh", "expected_table": "planet_osm_point", "expected_key": "amenity", "expected_value": "restaurant", "location_type": "city_wide", "query_type": "features", "category": "city_wide_point"},
+    {"query": "Show me hotels near the Royal Mile", "expected_table": "planet_osm_point", "expected_key": "tourism", "expected_value": "hotel", "location_type": "point", "query_type": "features", "category": "proximity_point"},
+    {"query": "Find museums in Edinburgh", "expected_table": "planet_osm_point", "expected_key": "tourism", "expected_value": "museum", "location_type": "city_wide", "query_type": "features", "category": "city_wide_point"},
+    {"query": "Where are the ATMs in Edinburgh?", "expected_table": "planet_osm_point", "expected_key": "amenity", "expected_value": "atm", "location_type": "city_wide", "query_type": "features", "category": "city_wide_point"},
+    {"query": "Find restaurants near Stockbridge", "expected_table": "planet_osm_point", "expected_key": "amenity", "expected_value": "restaurant", "location_type": "named_area", "query_type": "features", "category": "named_area"},
+    {"query": "How many cafes are in Edinburgh?", "expected_table": "planet_osm_point", "expected_key": "amenity", "expected_value": "cafe", "location_type": "city_wide", "query_type": "count", "category": "count"},
+    {"query": "How many pubs are in Edinburgh?", "expected_table": "planet_osm_point", "expected_key": "amenity", "expected_value": "pub", "location_type": "city_wide", "query_type": "count", "category": "count"}
+]
