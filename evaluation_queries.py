@@ -73,3 +73,16 @@ EXTENDED_DEPRIVATION_QUERIES = [
     {"query": "How many parks are in deprived areas of Edinburgh?", "expected_table": "planet_osm_polygon", "expected_key": "leisure", "expected_value": "park", "location_type": "city_wide", "query_type": "count", "category": "cross_query_count"}
 ]
 
+EXPLICIT_DISTANCE_QUERIES = [
+    {"query": "Find pubs within 300 metres of Holyrood Road", "expected_table": "planet_osm_point", "expected_key": "amenity", "expected_value": "pub", "location_type": "point", "query_type": "features", "category": "explicit_distance"},
+    {"query": "Show me parks within 2 km of the city centre", "expected_table": "planet_osm_polygon", "expected_key": "leisure", "expected_value": "park", "location_type": "point", "query_type": "features", "category": "explicit_distance"},
+    {"query": "Find restaurants within 1 km of Waverley Station", "expected_table": "planet_osm_point", "expected_key": "amenity", "expected_value": "restaurant", "location_type": "point", "query_type": "features", "category": "explicit_distance"}
+]
+
+LANDMARK_PROXIMITY_QUERIES = [
+    {"query": "Find cafes near Edinburgh Castle", "expected_table": "planet_osm_point", "expected_key": "amenity", "expected_value": "cafe", "location_type": "point", "query_type": "features", "category": "landmark_proximity"},
+    {"query": "Find pubs near Waverley Station", "expected_table": "planet_osm_point", "expected_key": "amenity", "expected_value": "pub", "location_type": "point", "query_type": "features", "category": "landmark_proximity"}
+]
+
+
+
