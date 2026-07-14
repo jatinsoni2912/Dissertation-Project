@@ -64,3 +64,19 @@ def run_llm(prompt, model):
         return extract_sql(response['message']['content'].strip())
     except Exception:
         return ''
+
+def categorize_sql(raw_sql):
+    sql_lower = raw_sql.lower()
+    is_dep = 'edinburgh_deprivation' in sql_lower
+    if is_dep and 'planet_osm' not in sql_lower:
+        return 'deprivation'
+    if is_dep:
+        return 'cross'
+    return 'osm'
+
+
+def execute_sql(raw_sql):
+    db_result = execute_query(raw_sql)
+    is_valid = db_result.get('success', False)
+    validation_message = 'Valid' if is_valid else db_result.get('error', 'Execution failed')
+    return db_result, is_valid, validation_message
