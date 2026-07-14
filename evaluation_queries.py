@@ -53,3 +53,14 @@ EXTENDED_OSM_QUERIES = [
     {"query": "How many cafes are in Edinburgh?", "expected_table": "planet_osm_point", "expected_key": "amenity", "expected_value": "cafe", "location_type": "city_wide", "query_type": "count", "category": "count"},
     {"query": "How many pubs are in Edinburgh?", "expected_table": "planet_osm_point", "expected_key": "amenity", "expected_value": "pub", "location_type": "city_wide", "query_type": "count", "category": "count"}
 ]
+
+DEPRIVATION_QUERIES = [
+    {"query": "Show me the most deprived areas in Edinburgh", "expected_table": "edinburgh_deprivation", "expected_key": "la_decile", "expected_value": "1", "location_type": "city_wide", "query_type": "features", "category": "deprivation_only"},
+    {"query": "Show me the least deprived areas in Edinburgh", "expected_table": "edinburgh_deprivation", "expected_key": "la_decile", "expected_value": "10", "location_type": "city_wide", "query_type": "features", "category": "deprivation_only"},
+    {"query": "Which areas in Edinburgh are in deprivation decile 1?", "expected_table": "edinburgh_deprivation", "expected_key": "la_decile", "expected_value": "1", "location_type": "city_wide", "query_type": "features", "category": "deprivation_only"},
+    {"query": "How many deprived areas are in Edinburgh?", "expected_table": "edinburgh_deprivation", "expected_key": "la_decile", "expected_value": "2", "location_type": "city_wide", "query_type": "count", "category": "deprivation_count"},
+    {"query": "Find cafes in the most deprived areas in Edinburgh", "expected_table": "planet_osm_point", "expected_key": "amenity", "expected_value": "cafe", "location_type": "city_wide", "query_type": "features", "category": "cross_query"},
+    {"query": "Show cycle paths in deprived neighbourhoods", "expected_table": "planet_osm_line", "expected_key": "highway", "expected_value": "cycleway", "location_type": "city_wide", "query_type": "features", "category": "cross_query"},
+    {"query": "Are there parks in the least deprived areas in Edinburgh?", "expected_table": "planet_osm_polygon", "expected_key": "leisure", "expected_value": "park", "location_type": "city_wide", "query_type": "features", "category": "cross_query"},
+    {"query": "Find pubs in the most deprived parts in Edinburgh", "expected_table": "planet_osm_point", "expected_key": "amenity", "expected_value": "pub", "location_type": "city_wide", "query_type": "features", "category": "cross_query"}
+]
