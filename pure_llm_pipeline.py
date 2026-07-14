@@ -2,7 +2,7 @@ import os
 import ollama
 from database import execute_query
 from utils import extract_sql
-
+from llm_client import call_model
 
 def build_schema_context():
     return """
@@ -81,10 +81,53 @@ def execute_sql(raw_sql):
     validation_message = 'Valid' if is_valid else db_result.get('error', 'Execution failed')
     return db_result, is_valid, validation_message
 
-def generate_sql_pure_llm(user_query: str, model: str = None) -> dict:
+def generate_sql_pure_llm(user_query, model):
     model = model or os.getenv('OLLAMA_MODEL', 'qwen2.5-coder:1.5b')
     prompt = build_prompt(user_query)
     raw_sql = run_llm(prompt, model)
+    query_mode = categorize_sql(raw_sql)
+
+    if not raw_sql.strip().upper().startswith('SELECT'):
+        return {
+            'sql': raw_sql,
+            'valid': False,
+            'validation_message': 'invalid SQL',
+            'fixes_applied': [],
+            'ontology_used': False,
+            'activity_terms_found': [],
+            'location_resolved': 'None (Pure LLM Guess)',
+            'is_city_wide': False,
+            'model_used': model,
+            'query_mode': query_mode,
+            'approach': 'Approach 0 — Pure LLM (Few-Shot)',
+            'mcp_results': [],
+        }
+
+    db_result, is_valid, validation_message = execute_sql(raw_sql)
+
+    return {
+        'sql': raw_sql,
+        'valid': is_valid,
+        'validation_message': validation_message,
+        'fixes_applied': [],
+        'ontology_used': False,
+        'activity_terms_found': [],
+        'location_resolved': 'None (Pure LLM Guess)',
+        'is_city_wide': False,
+        'model_used': model,
+        'query_mode': query_mode,
+        'approach': 'Approach 0 — Pure LLM (Few-Shot)',
+        'mcp_results': db_result.get('results', [])}
+
+def generate_sql_pure_llm_using_bedrock(user_query, model):
+
+    try:
+        raw_sql = extract_sql(call_model(prompt, model, max_tokens=256))
+        
+    except Exception as e:
+        raw_sql = ''
+    
+    prompt = build_prompt(user_query)
     query_mode = categorize_sql(raw_sql)
 
     if not raw_sql.strip().upper().startswith('SELECT'):
