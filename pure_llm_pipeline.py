@@ -80,3 +80,41 @@ def execute_sql(raw_sql):
     is_valid = db_result.get('success', False)
     validation_message = 'Valid' if is_valid else db_result.get('error', 'Execution failed')
     return db_result, is_valid, validation_message
+
+def generate_sql_pure_llm(user_query: str, model: str = None) -> dict:
+    model = model or os.getenv('OLLAMA_MODEL', 'qwen2.5-coder:1.5b')
+    prompt = build_prompt(user_query)
+    raw_sql = run_llm(prompt, model)
+    query_mode = categorize_sql(raw_sql)
+
+    if not raw_sql.strip().upper().startswith('SELECT'):
+        return {
+            'sql': raw_sql,
+            'valid': False,
+            'validation_message': 'invalid SQL',
+            'fixes_applied': [],
+            'ontology_used': False,
+            'activity_terms_found': [],
+            'location_resolved': 'None (Pure LLM Guess)',
+            'is_city_wide': False,
+            'model_used': model,
+            'query_mode': query_mode,
+            'approach': 'Approach 0 — Pure LLM (Few-Shot)',
+            'mcp_results': [],
+        }
+
+    db_result, is_valid, validation_message = execute_sql(raw_sql)
+
+    return {
+        'sql': raw_sql,
+        'valid': is_valid,
+        'validation_message': validation_message,
+        'fixes_applied': [],
+        'ontology_used': False,
+        'activity_terms_found': [],
+        'location_resolved': 'None (Pure LLM Guess)',
+        'is_city_wide': False,
+        'model_used': model,
+        'query_mode': query_mode,
+        'approach': 'Approach 0 — Pure LLM (Few-Shot)',
+        'mcp_results': db_result.get('results', [])}
