@@ -6,7 +6,7 @@ import sounddevice as sd
 import scipy.io.wavfile as wav
 import numpy as np
 from faster_whisper import WhisperModel
-
+from jiwer import wer
 
 SAMPLE_RATE = 16000
 RECORD_SECONDS = 6
@@ -46,3 +46,6 @@ def transcribe(audio_bytes):
     
     finally:
         os.unlink(path)
+    
+def word_error_rate(reference, hypothesis):
+    return wer(reference, hypothesis)
