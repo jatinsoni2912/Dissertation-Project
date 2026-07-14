@@ -89,5 +89,13 @@ def main():
     print(f"Queries with errors: {len(results)-perfect}/{len(results)}")
     print(f"{'='*40}")
 
-    
+    filename = f"wer_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+    with open(filename, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=["typed", "transcript", "wer"])
+        writer.writeheader()
+        writer.writerows(results)
+    print(f"Saved to {filename}")
+
+if __name__ == "__main__":
+    main()
     
