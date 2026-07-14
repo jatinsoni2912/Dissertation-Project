@@ -64,3 +64,12 @@ DEPRIVATION_QUERIES = [
     {"query": "Are there parks in the least deprived areas in Edinburgh?", "expected_table": "planet_osm_polygon", "expected_key": "leisure", "expected_value": "park", "location_type": "city_wide", "query_type": "features", "category": "cross_query"},
     {"query": "Find pubs in the most deprived parts in Edinburgh", "expected_table": "planet_osm_point", "expected_key": "amenity", "expected_value": "pub", "location_type": "city_wide", "query_type": "features", "category": "cross_query"}
 ]
+
+EXTENDED_DEPRIVATION_QUERIES = [
+    {"query": "Find restaurants in the most deprived areas in Edinburgh", "expected_table": "planet_osm_point", "expected_key": "amenity", "expected_value": "restaurant", "location_type": "city_wide", "query_type": "features", "category": "cross_query"},
+    {"query": "Find pharmacies in deprived areas of Edinburgh", "expected_table": "planet_osm_point", "expected_key": "amenity", "expected_value": "pharmacy", "location_type": "city_wide", "query_type": "features", "category": "cross_query"},
+    {"query": "Show walking paths in deprived neighbourhoods", "expected_table": "planet_osm_line", "expected_key": "highway", "expected_value": "footway", "location_type": "city_wide", "query_type": "features", "category": "cross_query"},
+    {"query": "Find golf courses in the least deprived areas", "expected_table": "planet_osm_polygon", "expected_key": "leisure", "expected_value": "golf_course", "location_type": "city_wide", "query_type": "features", "category": "cross_query"},
+    {"query": "How many parks are in deprived areas of Edinburgh?", "expected_table": "planet_osm_polygon", "expected_key": "leisure", "expected_value": "park", "location_type": "city_wide", "query_type": "count", "category": "cross_query_count"}
+]
+
