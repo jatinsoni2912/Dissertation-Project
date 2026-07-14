@@ -1,8 +1,11 @@
 import streamlit as st
 from styles import EXAMPLE_QUERIES
+import os
 
 from app_utils import conversational_response, generate_follow_ups, feature_label
 from audio_recorder_streamlit import audio_recorder
+from llm_client import PROVIDER_OLLAMA, PROVIDER_BEDROCK, OLLAMA_MODELS, BEDROCK_MODELS
+
 
 def show_conversation_history():
     conv = st.session_state.get('current_conv')
@@ -278,12 +281,20 @@ def render_query_panel(col, asr_enabled=False, transcribe_fn=None):
 
         show_conversation_history()
 
-        model_choice = st.selectbox(
-            "LLM Model",
-            options=["qwen2.5-coder:1.5b"],
-            index=0,
-            help="Select which locally deployed model to use for SQL generation",
-        )
+        provider_choice = st.radio("LLM Provider", options=[PROVIDER_OLLAMA, PROVIDER_BEDROCK],
+            format_func=lambda p: "Ollama (local)" if p == PROVIDER_OLLAMA else "Amazon Bedrock",
+            horizontal=True, help="Ollama runs models locally. Bedrock uses AWS — requires AWS credentials in .env.")
+        
+        os.environ["OLLAMA_PROVIDER"] = provider_choice
+
+        if provider_choice == PROVIDER_BEDROCK:
+            model_options = BEDROCK_MODELS
+            model_help = "Bedrock model to use (requires AWS_ACCESS_KEY_ID etc. in .env)"
+        else:
+            model_options = OLLAMA_MODELS
+            model_help = "Locally deployed Ollama model to use for SQL generation"
+
+        model_choice = st.selectbox("Model", options=model_options, index=0, help=model_help)
 
         approach_choice = st.selectbox(
             "Query Approach",
