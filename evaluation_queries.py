@@ -84,5 +84,16 @@ LANDMARK_PROXIMITY_QUERIES = [
     {"query": "Find pubs near Waverley Station", "expected_table": "planet_osm_point", "expected_key": "amenity", "expected_value": "pub", "location_type": "point", "query_type": "features", "category": "landmark_proximity"}
 ]
 
+SPORT_DEPRIVATION_QUERIES = [
+    {"query": "Find football pitches in the most deprived areas in Edinburgh", "expected_table": "planet_osm_polygon", "expected_key": "leisure", "expected_value": "pitch", "location_type": "city_wide", "query_type": "features", "category": "sport_deprivation_cross"},
+    {"query": "Find sports centres in the least deprived areas of Edinburgh", "expected_table": "planet_osm_polygon", "expected_key": "leisure", "expected_value": "sports_centre", "location_type": "city_wide", "query_type": "features", "category": "sport_deprivation_cross"},
+    {"query": "Are there swimming pools in deprived areas of Edinburgh?", "expected_table": "planet_osm_polygon", "expected_key": "leisure", "expected_value": "swimming_pool", "location_type": "city_wide", "query_type": "features", "category": "sport_deprivation_cross"}
+]
+
+ALL_QUERIES = OSM_QUERIES + DEPRIVATION_QUERIES
+
+ALL_EXTENDED_QUERIES = (ALL_QUERIES + EXTENDED_OSM_QUERIES + EXTENDED_DEPRIVATION_QUERIES + EXPLICIT_DISTANCE_QUERIES + LANDMARK_PROXIMITY_QUERIES + SPORT_DEPRIVATION_QUERIES)
+
+
 
 
