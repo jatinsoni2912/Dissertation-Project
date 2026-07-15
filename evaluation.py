@@ -14,3 +14,11 @@ from llm_client import (PROVIDER_OLLAMA, PROVIDER_BEDROCK,  DEFAULT_OLLAMA_MODEL
 from pure_llm_pipeline import generate_sql_pure_llm, generate_sql_pure_llm_using_bedrock
 from llm_pipeline import generate_sql
 from mcp_pipeline import generate_sql_with_mcp
+
+APPROACH_PIPELINES = {'0': (generate_sql_pure_llm, 'Approach 0 — Pure LLM'),
+    '1': (generate_sql, 'Approach 1 — LLM only (no MCP)'),
+    '2': (generate_sql_with_mcp, 'Approach 2 — LLM + MCP')}
+
+QUERY_SETS = {
+    'core': (ALL_QUERIES, 'Core ALL'),
+    'all': (ALL_EXTENDED_QUERIES + EXPLICIT_DISTANCE_QUERIES + LANDMARK_PROXIMITY_QUERIES + SPORT_DEPRIVATION_QUERIES,'Full set ALL')}
