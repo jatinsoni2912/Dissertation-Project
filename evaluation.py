@@ -117,6 +117,7 @@ def run_approach(queries, approach_fn, approach_label, model, provider):
 
 def compute_summary_metrics(results):
     n = len(results)
+
     return {
         'n': n, 'sql_valid': sum(1 for r in results if r['sql_valid']),
         'exec_success': sum(1 for r in results if r['exec_success']),
@@ -127,3 +128,24 @@ def compute_summary_metrics(results):
         'qtype_correct': sum(1 for r in results if r['qtype_correct']),
         'avg_latency': round(sum(r['latency'] for r in results) / n, 2),
         'avg_fixes': round(sum(r['fixes_count'] for r in results) / n, 1)}
+
+def print_metrics_table(metrics, results, label):
+    n = metrics['n']
+    pct = lambda count: f"{count}/{n} ({100*count//n}%)"
+    provider = results[0].get('provider', '?')
+    model = results[0].get('model', '?')
+
+    print(f"\n{'─'*60}")
+    print(f" {label}")
+    print(f" Provider: {provider}  |  Model: {model}")
+    print(f"{'─'*60}")
+    print(f" SQL validity {pct(metrics['sql_valid'])}")
+    print(f" Execution success {pct(metrics['exec_success'])}")
+    print(f" Results returned {pct(metrics['has_results'])}")
+    print(f" Table accuracy {pct(metrics['table_correct'])}")
+    print(f" Tag accuracy {pct(metrics['tag_correct'])}")
+    print(f" Location accuracy {pct(metrics['loc_correct'])}")
+    print(f" Query type acc. {pct(metrics['qtype_correct'])}")
+    print(f" Avg latency {metrics['avg_latency']}s")
+    print(f" Avg fixes applied {metrics['avg_fixes']}")
+    print(f"{'─'*60}")
