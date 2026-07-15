@@ -63,3 +63,23 @@ def check_query_type_accuracy(sql_upper, expected):
     if expected['query_type'] == 'count':
         return 'COUNT(' in sql_upper
     return 'COUNT(' not in sql_upper
+
+def score_result(result, expected):
+    sql = result.get('sql', '')
+    sql_lower = sql.lower()
+    sql_upper = sql.upper()
+    sql_valid = result.get('valid', False)
+
+    rows, exec_success, error_msg = get_execution_outcome(result, sql, sql_valid)
+    has_results = exec_success and len(rows) > 0
+    fixes = result.get('fixes_applied', [])
+
+    return {
+        'sql_valid': sql_valid,
+        'exec_success': exec_success,
+        'has_results': has_results,
+        'table_correct': check_table_accuracy(sql_lower, expected),
+        'tag_correct': check_tag_accuracy(sql, sql_lower, expected),
+        'loc_correct': check_location_accuracy(sql_upper, expected),
+        'qtype_correct': check_query_type_accuracy(sql_upper, expected),
+        'row_count': len(rows), 'fixes_count': len(fixes), 'fixes': fixes, 'sql': sql, 'error': error_msg}
