@@ -205,4 +205,6 @@ def save_csv(all_results, filename):
     
     print(f"\n  Results saved to {filename}")
 
+def build_arg_parser():
+    parser = argparse.ArgumentParser(description='GeoQuery evaluation', formatter_class=argparse.RawTextHelpFormatter)
 
