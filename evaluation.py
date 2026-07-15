@@ -114,3 +114,16 @@ def run_approach(queries, approach_fn, approach_label, model, provider):
         scores['approach'] = approach_label
         results.append(scores)
     return results
+
+def compute_summary_metrics(results):
+    n = len(results)
+    return {
+        'n': n, 'sql_valid': sum(1 for r in results if r['sql_valid']),
+        'exec_success': sum(1 for r in results if r['exec_success']),
+        'has_results': sum(1 for r in results if r['has_results']),
+        'table_correct': sum(1 for r in results if r['table_correct']),
+        'tag_correct': sum(1 for r in results if r['tag_correct']),
+        'loc_correct': sum(1 for r in results if r['loc_correct']),
+        'qtype_correct': sum(1 for r in results if r['qtype_correct']),
+        'avg_latency': round(sum(r['latency'] for r in results) / n, 2),
+        'avg_fixes': round(sum(r['fixes_count'] for r in results) / n, 1)}
