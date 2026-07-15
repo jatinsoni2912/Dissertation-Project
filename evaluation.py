@@ -230,3 +230,11 @@ def build_arg_parser():
             'all  — every query set combined'))
     
     return parser
+
+def resolve_model(provider, args):
+    if provider == PROVIDER_BEDROCK:
+        return args.bedrock_model
+    
+    return args.model or DEFAULT_OLLAMA_MODEL
+
+
