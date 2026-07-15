@@ -223,3 +223,10 @@ def build_arg_parser():
         help=('Model name override. Defaults to the provider default if not set.\n'
             f'Ollama default : {DEFAULT_OLLAMA_MODEL}\n'
             f'Bedrock default : {DEFAULT_BEDROCK_MODEL}'))
+    
+    parser.add_argument('--queries', choices=['core', 'all'], default='core',
+        help=('Query set to evaluate:\n'
+            'core — the core OSM + deprivation queries (default)\n'
+            'all  — every query set combined'))
+    
+    return parser
