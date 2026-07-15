@@ -213,3 +213,8 @@ def build_arg_parser():
                               '0 — Pure LLM baseline (no helpers, no MCP)\n'
                               '1 — LLM only (static schema, no MCP)\n'
                               '2 — LLM + MCP (live schema, via MCP)'))
+    
+    parser.add_argument('--provider', choices=[PROVIDER_OLLAMA, PROVIDER_BEDROCK], default=PROVIDER_OLLAMA,
+        help=('Which LLM backend to use:\n'
+            f'{PROVIDER_OLLAMA} — local Ollama models (default)\n'
+            f'{PROVIDER_BEDROCK} — Amazon Bedrock\n'))
