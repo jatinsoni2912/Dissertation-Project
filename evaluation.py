@@ -58,3 +58,8 @@ def check_location_accuracy(sql_upper, expected):
         return ('ST_DWITHIN' in sql_upper or 'ST_MAKEPOINT' in sql_upper ('JOIN' in sql_upper and 'BOUNDARY' in sql_upper) or 'ILIKE' in sql_upper)
 
     return 'ST_DWITHIN' in sql_upper or 'ST_MAKEPOINT' in sql_upper 
+
+def check_query_type_accuracy(sql_upper, expected):
+    if expected['query_type'] == 'count':
+        return 'COUNT(' in sql_upper
+    return 'COUNT(' not in sql_upper
