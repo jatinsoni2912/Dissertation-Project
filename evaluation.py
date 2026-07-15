@@ -104,3 +104,13 @@ def run_single_query(query, index, total, approach_fn, model, provider):
     status = '✓' if scores['has_results'] or (query['query_type'] == 'count' and scores['exec_success']) else '✗'
     print(f"{status}  {latency}s  rows={scores['row_count']}  fixes={scores['fixes_count']}")
     return scores
+
+def run_approach(queries, approach_fn, approach_label, model, provider):
+    os.environ["OLLAMA_PROVIDER"] = provider
+
+    results = []
+    for i, q in enumerate(queries, 1):
+        scores = run_single_query(q, i, len(queries), approach_fn, model, provider)
+        scores['approach'] = approach_label
+        results.append(scores)
+    return results
