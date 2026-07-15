@@ -38,3 +38,12 @@ def get_execution_outcome(result, sql, sql_valid):
 
 def check_table_accuracy(sql_lower, expected):
     return expected['expected_table'] in sql_lower
+
+def check_tag_accuracy(sql, sql_lower, expected):
+    exp_key = expected['expected_key']
+    exp_value = expected['expected_value']
+
+    if exp_key == 'la_decile':
+        return 'la_decile' in sql_lower and exp_value in sql
+
+    return (f"{exp_key} = '{exp_value}'" in sql_lower or f"{exp_key}='{exp_value}'" in sql_lower or f"{exp_key} ilike '%{exp_value}%'" in sql_lower)
