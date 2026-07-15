@@ -47,3 +47,14 @@ def check_tag_accuracy(sql, sql_lower, expected):
         return 'la_decile' in sql_lower and exp_value in sql
 
     return (f"{exp_key} = '{exp_value}'" in sql_lower or f"{exp_key}='{exp_value}'" in sql_lower or f"{exp_key} ilike '%{exp_value}%'" in sql_lower)
+
+def check_location_accuracy(sql_upper, expected):
+    exp_loc = expected['location_type']
+
+    if exp_loc == 'city_wide':
+        return 'ST_DWITHIN' not in sql_upper and 'ST_MAKEPOINT' not in sql_upper
+
+    if exp_loc == 'named_area':
+        return ('ST_DWITHIN' in sql_upper or 'ST_MAKEPOINT' in sql_upper ('JOIN' in sql_upper and 'BOUNDARY' in sql_upper) or 'ILIKE' in sql_upper)
+
+    return 'ST_DWITHIN' in sql_upper or 'ST_MAKEPOINT' in sql_upper 
