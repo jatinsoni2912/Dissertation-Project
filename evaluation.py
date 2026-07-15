@@ -218,3 +218,8 @@ def build_arg_parser():
         help=('Which LLM backend to use:\n'
             f'{PROVIDER_OLLAMA} — local Ollama models (default)\n'
             f'{PROVIDER_BEDROCK} — Amazon Bedrock\n'))
+    
+    parser.add_argument('--model', default=None,
+        help=('Model name override. Defaults to the provider default if not set.\n'
+            f'Ollama default : {DEFAULT_OLLAMA_MODEL}\n'
+            f'Bedrock default : {DEFAULT_BEDROCK_MODEL}'))
