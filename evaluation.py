@@ -193,3 +193,16 @@ def print_failures(results, label):
         if r['error']:
             print(f" Error: {r['error'][:80]}")
 
+def save_csv(all_results, filename):
+    fields = ['provider', 'model', 'approach', 'category', 'query', 'latency', 'sql_valid', 'exec_success', 'has_results', 'table_correct', 'tag_correct', 'loc_correct', 'qtype_correct', 'row_count', 'fixes_count', 'sql', 'error']
+    
+    with open(filename, 'w', newline='', encoding='utf-8') as f:
+        w = csv.DictWriter(f, fieldnames=fields, extrasaction='ignore')
+        w.writeheader()
+        
+        for r in all_results:
+            w.writerow(r)
+    
+    print(f"\n  Results saved to {filename}")
+
+
