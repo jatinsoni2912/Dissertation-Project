@@ -169,3 +169,11 @@ def print_category_breakdown(results):
         bar = '✓' * c['passed'] + '✗' * (c['total'] - c['passed'])
         print(f" {cat:<30} {c['passed']}/{c['total']}  {bar}")
     print(f"{'─'*60}")
+
+def print_summary(results, label):
+    if len(results) == 0:
+        return
+    
+    metrics = compute_summary_metrics(results)
+    print_metrics_table(metrics, results, label)
+    print_category_breakdown(results)
