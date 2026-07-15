@@ -207,4 +207,9 @@ def save_csv(all_results, filename):
 
 def build_arg_parser():
     parser = argparse.ArgumentParser(description='GeoQuery evaluation', formatter_class=argparse.RawTextHelpFormatter)
-
+    
+    parser.add_argument('--approach', choices=['0', '1', '2'], default='1',
+                        help=('Which pipeline approach to evaluate:\n'
+                              '0 — Pure LLM baseline (no helpers, no MCP)\n'
+                              '1 — LLM only (static schema, no MCP)\n'
+                              '2 — LLM + MCP (live schema, via MCP)'))
