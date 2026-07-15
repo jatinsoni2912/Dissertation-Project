@@ -251,4 +251,38 @@ def run_provider_evaluation(approach, target_queries, provider, model):
     print_failures(results, label)
     return results
 
+def print_cross_provider_comparison(all_evaluation_logs, providers):
+    print(f"\n{'═'*60}")
+    print(" Cross-provider comparison")
+    print(f"{'═'*60}")
+
+    by_provider = defaultdict(list)
+    for r in all_evaluation_logs:
+        by_provider[r['provider']].append(r)
+
+    metric_fns = {'SQL validity': lambda r: r['sql_valid'], 'Execution success': lambda r: r['exec_success'], 'Results returned': lambda r: r['has_results'], 'Tag accuracy': lambda r: r['tag_correct'], 'Avg latency (s)': None}
+
+    header = f"  {'Metric':<22}"
+    for p in providers:
+        header += f"  {p.upper():<14}"
+    print(header)
+    print(f"  {'─'*22}" + f"  {'─'*14}" * len(providers))
+
+    for metric, fn in metric_fns.items():
+        row = f"  {metric:<22}"
+        for p in providers:
+            rs = by_provider[p]
+            if not rs:
+                row += f"  {'—':<14}"
+                continue
+            if fn is None:
+                val = f"{round(sum(r['latency'] for r in rs) / len(rs), 2)}s"
+            else:
+                n = len(rs)
+                cnt = sum(1 for r in rs if fn(r))
+                val = f"{cnt}/{n} ({100*cnt//n}%)"
+            row += f"  {val:<14}"
+        print(row)
+    print(f"{'═'*60}")
+
 
