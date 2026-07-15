@@ -83,3 +83,24 @@ def score_result(result, expected):
         'loc_correct': check_location_accuracy(sql_upper, expected),
         'qtype_correct': check_query_type_accuracy(sql_upper, expected),
         'row_count': len(rows), 'fixes_count': len(fixes), 'fixes': fixes, 'sql': sql, 'error': error_msg}
+
+def run_single_query(query, index, total, approach_fn, model, provider):
+    print(f" [{index:2d}/{total}] {query['query'][:60]}...", end=' ', flush=True)
+
+    t0 = time.time()
+    try:
+        result = approach_fn(query['query'], model=model)
+    except Exception as e:
+        result = {'sql': '', 'valid': False, 'fixes_applied': [], 'error': str(e)}
+    latency = round(time.time() - t0, 2)
+
+    scores = score_result(result, query)
+    scores['latency'] = latency
+    scores['query'] = query['query']
+    scores['category'] = query['category']
+    scores['provider'] = provider
+    scores['model'] = model
+
+    status = '✓' if scores['has_results'] or (query['query_type'] == 'count' and scores['exec_success']) else '✗'
+    print(f"{status}  {latency}s  rows={scores['row_count']}  fixes={scores['fixes_count']}")
+    return scores
