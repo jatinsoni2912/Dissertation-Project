@@ -177,3 +177,19 @@ def print_summary(results, label):
     metrics = compute_summary_metrics(results)
     print_metrics_table(metrics, results, label)
     print_category_breakdown(results)
+
+def print_failures(results, label):
+    failures = [r for r in results if not r['has_results'] and not (r['exec_success'] and 'count' in r.get('category',''))]
+    if not failures:
+        print(f"\n  {label}: no failures!")
+        
+        return
+    
+    print(f"\n {label} — failed queries ({len(failures)}):")
+    
+    for r in failures:
+        print(f"• {r['query'][:60]}")
+        print(f" SQL: {r['sql'][:100]}")
+        if r['error']:
+            print(f" Error: {r['error'][:80]}")
+
