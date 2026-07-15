@@ -22,3 +22,16 @@ APPROACH_PIPELINES = {'0': (generate_sql_pure_llm, 'Approach 0 — Pure LLM'),
 QUERY_SETS = {
     'core': (ALL_QUERIES, 'Core ALL'),
     'all': (ALL_EXTENDED_QUERIES + EXPLICIT_DISTANCE_QUERIES + LANDMARK_PROXIMITY_QUERIES + SPORT_DEPRIVATION_QUERIES,'Full set ALL')}
+
+def get_execution_outcome(result, sql, sql_valid):
+    if 'mcp_results' in result:
+        rows = result.get('mcp_results', [])
+        exec_success = result.get('valid', False)
+        error_msg = result.get('validation_message', '')
+        return rows, exec_success, error_msg
+
+    db_result = execute_query(sql) if sql_valid else {'success': False, 'results': [], 'error': 'invalid SQL'}
+    rows = db_result.get('results', [])
+    exec_success = db_result.get('success', False)
+    error_msg = db_result.get('error', '')
+    return rows, exec_success, error_msg
