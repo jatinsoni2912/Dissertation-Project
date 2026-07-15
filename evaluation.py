@@ -35,3 +35,6 @@ def get_execution_outcome(result, sql, sql_valid):
     exec_success = db_result.get('success', False)
     error_msg = db_result.get('error', '')
     return rows, exec_success, error_msg
+
+def check_table_accuracy(sql_lower, expected):
+    return expected['expected_table'] in sql_lower
