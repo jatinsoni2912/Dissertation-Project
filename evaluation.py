@@ -262,14 +262,15 @@ def print_cross_provider_comparison(all_evaluation_logs, providers):
 
     metric_fns = {'SQL validity': lambda r: r['sql_valid'], 'Execution success': lambda r: r['exec_success'], 'Results returned': lambda r: r['has_results'], 'Tag accuracy': lambda r: r['tag_correct'], 'Avg latency (s)': None}
 
-    header = f"  {'Metric':<22}"
+    header = f" {'Metric':<22}"
     for p in providers:
-        header += f"  {p.upper():<14}"
+        header += f" {p.upper():<14}"
+    
     print(header)
-    print(f"  {'─'*22}" + f"  {'─'*14}" * len(providers))
+    print(f" {'─'*22}" + f"  {'─'*14}" * len(providers))
 
     for metric, fn in metric_fns.items():
-        row = f"  {metric:<22}"
+        row = f" {metric:<22}"
         for p in providers:
             rs = by_provider[p]
             if not rs:
@@ -284,5 +285,41 @@ def print_cross_provider_comparison(all_evaluation_logs, providers):
             row += f"  {val:<14}"
         print(row)
     print(f"{'═'*60}")
+
+def main():
+    parser = build_arg_parser()
+    args = parser.parse_args()
+
+    target_queries, query_label = QUERY_SETS[args.queries]
+
+    providers = [PROVIDER_OLLAMA, PROVIDER_BEDROCK] if args.provider == 'both' else [args.provider]
+
+    print(f"GeoQuery Evaluation — {datetime.now().strftime('%Y-%m-%d %H:%M')}")
+    print(f"Query set : {query_label}")
+    print(f"Provider : {args.provider}")
+    
+    if args.provider in (PROVIDER_BEDROCK, 'both'):
+        print(f"Bedrock model : {args.bedrock_model}")
+    
+    print()
+
+    all_evaluation_logs = []
+
+    for provider in providers:
+        model = resolve_model(provider, args)
+        results = run_provider_evaluation(args.approach, target_queries, provider, model)
+        all_evaluation_logs.extend(results)
+
+    if args.provider == 'both' and all_evaluation_logs:
+        print_cross_provider_comparison(all_evaluation_logs, providers)
+
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"evaluation_results_{timestamp}.csv"
+    save_csv(all_evaluation_logs, filename)
+
+if __name__ == "__main__":
+    main()
+
+
 
 
