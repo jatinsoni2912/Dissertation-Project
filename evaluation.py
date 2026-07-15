@@ -149,3 +149,23 @@ def print_metrics_table(metrics, results, label):
     print(f" Avg latency {metrics['avg_latency']}s")
     print(f" Avg fixes applied {metrics['avg_fixes']}")
     print(f"{'─'*60}")
+
+def print_category_breakdown(results):
+    cat_results = defaultdict(lambda: {'total': 0, 'passed': 0})
+    
+    for r in results:
+        cat = r.get('category', 'unknown')
+        cat_results[cat]['total'] += 1
+        passed = r['has_results'] or (r['exec_success'] and 'count' in cat)
+        if passed:
+            cat_results[cat]['passed'] += 1
+
+    if len(cat_results) <= 1:
+        return
+
+    print(f"\n Results by category:")
+    for cat in sorted(cat_results):
+        c = cat_results[cat]
+        bar = '✓' * c['passed'] + '✗' * (c['total'] - c['passed'])
+        print(f" {cat:<30} {c['passed']}/{c['total']}  {bar}")
+    print(f"{'─'*60}")
