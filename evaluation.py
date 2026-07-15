@@ -237,4 +237,18 @@ def resolve_model(provider, args):
     
     return args.model or DEFAULT_OLLAMA_MODEL
 
+def run_provider_evaluation(approach, target_queries, provider, model):
+    print(f"\n{'═'*60}")
+    print(f"  Provider: {provider}  |  Model: {model}")
+    print(f"{'═'*60}")
+
+    approach_fn, approach_name = APPROACH_PIPELINES[approach]
+    label = f"[{provider.upper()}] {approach_name}"
+
+    print(f"\nRunning {label}...")
+    results = run_approach(target_queries, approach_fn, label, model, provider)
+    print_summary(results, f"{label} — Metrics")
+    print_failures(results, label)
+    return results
+
 
