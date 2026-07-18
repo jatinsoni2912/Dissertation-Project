@@ -232,7 +232,7 @@ def render_asr():
     color = "#2d8a4e" if conf >= 0.7 else "#c47a1a"
 
     st.markdown(
-        f'<div style="background:#f0f4f0;border-left:3px solid {color};'
+        f'<div style="background:#1e2a1e;border-left:3px solid {color};'
         f'padding:8px;border-radius:4px;margin:6px 0">'
         f'<b>Heard:</b> {st.session_state.asr_transcript}<br>'
         f'<small style="color:{color}">Confidence: {conf:.0%}</small></div>',
