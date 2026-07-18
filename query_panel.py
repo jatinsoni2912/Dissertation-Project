@@ -32,11 +32,10 @@ def render_error_if_any(res):
 
 def render_conversational_summary(res, last_query):
     msg = conversational_response(res, last_query)
-    st.markdown(
-        f'<div style="background:white;border-left:4px solid #c9a84c;'
+    st.markdown(f'<div style="background:white;border-left:4px solid #c9a84c;'
         f'border-radius:0 10px 10px 0;padding:0.85rem 1rem;margin-bottom:0.75rem;'
         f'font-size:0.95rem;color:#1a2744;box-shadow:0 1px 4px rgba(26,39,68,0.07)">'
-        f'🗺️ {msg}</div>', unsafe_allow_html=True,)
+        f'🗺️ {msg}</div>', unsafe_allow_html=True)
 
 def render_area_filter_notice():
     if st.session_state.get('area_filter_active'):
@@ -101,10 +100,10 @@ def render_followup_suggestions(res, last_query):
             lbl = sug[:40] + ("…" if len(sug) > 40 else "")
             if st.button(lbl, key=f"fu_{i}", use_container_width=True, help=sug):
                 st.session_state.selected_example = sug
-                st.session_state.input_method     = 'text'
-                st.session_state.pending_asr      = False
-                st.session_state.asr_transcript   = ''
-                st.session_state.auto_run         = True
+                st.session_state.input_method = 'text'
+                st.session_state.pending_asr = False
+                st.session_state.asr_transcript = ''
+                st.session_state.auto_run = True
                 st.rerun()
 
 def render_followup_input(row_count, is_count):
@@ -121,10 +120,10 @@ def render_followup_input(row_count, is_count):
                      use_container_width=True, disabled=not followup_val.strip()):
             
             st.session_state.selected_example = followup_val.strip()
-            st.session_state.input_method     = 'text'
-            st.session_state.pending_asr      = False
-            st.session_state.asr_transcript   = ''
-            st.session_state.auto_run         = True
+            st.session_state.input_method = 'text'
+            st.session_state.pending_asr = False
+            st.session_state.asr_transcript = ''
+            st.session_state.auto_run = True
             st.rerun()
 
     with col_new:
@@ -138,12 +137,10 @@ def reset_query_state():
     for k in ('query_result', 'show_on_map', 'selected_example',
               'last_query', 'pending_asr', 'asr_transcript', 'context_history'):
         
-        st.session_state[k] = (
-            None if k in ('query_result', 'show_on_map')
+        st.session_state[k] = (None if k in ('query_result', 'show_on_map')
             else [] if k == 'context_history'
             else False if k == 'pending_asr'
-            else ''
-        )
+            else '')
     
     st.session_state.input_method = 'text'
 
@@ -157,10 +154,7 @@ def render_technical_details(res, row_count, is_count):
             st.markdown(f"**Fixes applied:**<br>{fixes_html}", unsafe_allow_html=True)
 
         st.markdown("**Generated SQL:**")
-        st.markdown(
-            f'<div class="sql-expander">{res.get("sql", "")}</div>',
-            unsafe_allow_html=True,
-        )
+        st.markdown(f'<div class="sql-expander">{res.get("sql", "")}</div>', unsafe_allow_html=True)
 
         if res.get('results') and not is_count and row_count > 0:
             render_results_table(res, row_count)
@@ -171,8 +165,7 @@ def render_results_table(res, row_count):
 
     display_rows = []
     for row in res['results'][:10]:
-        dr = {
-            c: fix_decimal_value(row[i])
+        dr = {c: fix_decimal_value(row[i])
             for i, c in enumerate(res.get('columns', []))
             if c not in ('geometry', 'st_asgeojson', 'geom', 'way')
             and row[i] is not None
@@ -231,13 +224,11 @@ def render_asr():
     conf = st.session_state.asr_confidence
     color = "#2d8a4e" if conf >= 0.7 else "#c47a1a"
 
-    st.markdown(
-        f'<div style="background:#1e2a1e;border-left:3px solid {color};'
+    st.markdown(f'<div style="background:#1e2a1e;border-left:3px solid {color};'
         f'padding:8px;border-radius:4px;margin:6px 0">'
         f'<b>Heard:</b> {st.session_state.asr_transcript}<br>'
         f'<small style="color:{color}">Confidence: {conf:.0%}</small></div>',
-        unsafe_allow_html=True
-    )
+        unsafe_allow_html=True)
 
     col_a, col_b = st.columns(2)
 
@@ -303,12 +294,10 @@ def render_query_panel(col, asr_enabled=False, transcribe_fn=None):
                 "Approach 2 uses the Postgres MCP server for live schema access."),
         )
 
-        user_query = st.text_input(
-            "Ask a question about Edinburgh",
+        user_query = st.text_input("Ask a question about Edinburgh",
             value=st.session_state.selected_example,
             placeholder="e.g. Where can I go cycling near Leith?",
-            label_visibility="collapsed",
-        )
+            label_visibility="collapsed")
 
         if asr_enabled:
             render_voice_input(asr_enabled, transcribe_fn)
