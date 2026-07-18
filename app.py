@@ -18,32 +18,14 @@ except ImportError:
     def transcribe(*a, **kw):
         return {"text": "", "confidence": 0.0}
 
-st.set_page_config(
-    page_title="GeoQuery Edinburgh",
-    page_icon="🗺️",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
+st.set_page_config(page_title="GeoQuery Edinburgh", page_icon="🗺️", layout="wide", initial_sidebar_state="expanded")
+
 styles.apply()
 
-defaults = {
-    "query_result":        None,
-    "last_query":          "",
-    "selected_example":    "",
-    "auto_run":            False,
-    "show_on_map":         None,
-    "map_reset_key":       0,
-    "area_filter_active":  False,
-    "area_filter_geojson": None,
-    "current_user":        None,
-    "current_conv_id":     None,
-    "current_conv":        None,
-    "asr_transcript":      "",
-    "asr_confidence":      0.0,
-    "pending_asr":         False,
-    "input_method":        'text',
-    "context_history":     []
-    }
+defaults = {"query_result": None, "last_query": "", "selected_example": "", "auto_run": False,
+    "show_on_map": None, "map_reset_key": 0, "area_filter_active": False,
+    "area_filter_geojson": None, "current_user": None, "current_conv_id": None, "current_conv": None,
+    "asr_transcript": "", "asr_confidence": 0.0, "pending_asr": False, "input_method": 'text', "context_history": []}
 
 for k, v in defaults.items():
     if k not in st.session_state:
