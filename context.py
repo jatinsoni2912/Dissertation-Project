@@ -10,8 +10,8 @@ PATTERNS = [
     r'\bnear\s+(it|that|there)\b',
     r'\bto\s+that\b',
     r'\bthe\s+same\s+(area|location|place|spot)\b',
-    r'\b(close\s+by|nearby)\b',
-]
+    r'\b(close\s+by|nearby)\b']
+
 COMPILED = [re.compile(p, re.IGNORECASE) for p in PATTERNS]
 
 def has_reference(query):
@@ -92,15 +92,9 @@ def build_context_note(query):
 def update_context_history(user_query, location_resolved, results, columns, is_count):
     coords = extract_coordinates(results if not is_count else [], columns if not is_count else [])
     
-    entry = {
-        'query':         user_query,
-        'location_name': location_resolved,
-        'lon':           None,
-        'lat':           None,
-        'result_name':   coords[2] if coords else None,
-        'result_lon':    coords[0] if coords else None,
-        'result_lat':    coords[1] if coords else None,
-    }
+    entry = {'query': user_query, 'location_name': location_resolved,
+        'lon': None, 'lat': None, 'result_name': coords[2] if coords else None, 
+        'result_lon': coords[0] if coords else None, 'result_lat': coords[1] if coords else None}
     
     history = st.session_state.get('context_history', [])
     history.append(entry)
