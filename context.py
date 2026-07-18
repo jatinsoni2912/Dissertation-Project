@@ -82,7 +82,7 @@ def build_context_note(query):
         return query
     
     last = history[-1]
-    ref  = last.get('result_name') or last.get('location_name', '')
+    ref = last.get('result_name') or last.get('location_name', '')
     prev = last.get('query', '')
     
     if ref:

@@ -48,15 +48,10 @@ def generate_sql_result(pipeline_query, model_choice, approach_choice, context_l
 
 def build_base_metadata(gen_result, approach_label, model_choice):
     
-    return {
-        "sql": gen_result["sql"],
-        "ontology_used": gen_result.get("ontology_used", False),
+    return {"sql": gen_result["sql"], "ontology_used": gen_result.get("ontology_used", False),
         "activity_terms": gen_result.get("activity_terms_found", []),
-        "location": gen_result.get("location_resolved", ""),
-        "approach": approach_label,
-        "fixes": gen_result.get("fixes_applied", []),
-        "is_city_wide": gen_result.get("is_city_wide", True),
-        "classification": gen_result.get("classification"),
+        "location": gen_result.get("location_resolved", ""), "approach": approach_label, "fixes": gen_result.get("fixes_applied", []),
+        "is_city_wide": gen_result.get("is_city_wide", True), "classification": gen_result.get("classification"),
         "model_used": model_choice,
     }
 

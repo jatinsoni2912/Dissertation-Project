@@ -78,12 +78,11 @@ def lookup_feature_tags(search_terms):
 @mcp.tool()    
 def is_query_citywide(query):
     
-    CITY_WIDE_SIGNALS = {
-        'in edinburgh', 'across edinburgh', 'throughout edinburgh',
+    CITY_WIDE_SIGNALS = {'in edinburgh', 'across edinburgh', 'throughout edinburgh',
         'all edinburgh', 'edinburgh wide', 'citywide',
         'deprived areas', 'deprived neighbourhoods', 'deprived parts',
-        'least deprived', 'most deprived', 'deprivation decile',
-    }
+        'least deprived', 'most deprived', 'deprivation decile'}
+    
     is_citywide = any(sig in query.lower() for sig in CITY_WIDE_SIGNALS)
     if not is_citywide and 'edinburgh' in query.lower() and not any(ind in query.lower() for ind in ['near ', 'in ', 'around ', 'close to ', 'next to ', 'within ']):
         is_citywide = True

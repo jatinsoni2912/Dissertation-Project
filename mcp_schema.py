@@ -12,9 +12,7 @@ MCP_AVAILABLE = True
 schema_cache: str = ''
 schema_is_live: bool = False
 
-READ_ONLY_GUARD = re.compile(
-    r'\b(INSERT|UPDATE|DELETE|DROP|ALTER|TRUNCATE|GRANT|REVOKE)\b', re.IGNORECASE
-)
+READ_ONLY_GUARD = re.compile(r'\b(INSERT|UPDATE|DELETE|DROP|ALTER|TRUNCATE|GRANT|REVOKE)\b', re.IGNORECASE)
 
 SERVER_PATH = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "mcp_server.py")
@@ -80,17 +78,14 @@ def resolve_tags_via_mcp(activity_terms):
             if not matches:
                 continue
             best = matches[0]
-            lines.append(
-                f"  - '{term}' → {best['osm_table']}: "
-                f"{best['osm_key']} = '{best['osm_value']}'"
-            )
+            lines.append(f"  - '{term}' → {best['osm_table']}: "
+                f"{best['osm_key']} = '{best['osm_value']}'")
             
             for alt in matches[1:]:
                 if alt['osm_value'] != best['osm_value']:
-                    lines.append(
-                        f"    (also: {alt['osm_table']}: "
-                        f"{alt['osm_key']} = '{alt['osm_value']}')"
-                    )
+                    lines.append(f"    (also: {alt['osm_table']}: "
+                        f"{alt['osm_key']} = '{alt['osm_value']}')")
+                    
         return "\n".join(lines) + "\n" if len(lines) > 1 else ""
     
     except Exception:
@@ -133,9 +128,9 @@ def build_schema_from_mcp_result(raw_result):
     )
     
     SCHEMA_USE_HINTS = {
-        "planet_osm_point":      "USE FOR: pubs (amenity=pub), cafes (amenity=cafe), restaurants, libraries, supermarkets (shop=supermarket), pharmacies (amenity=pharmacy), post offices, tourist attractions",
-        "planet_osm_polygon":    "USE FOR: parks (leisure=park), pitches (leisure=pitch, sport=...), golf courses, swimming pools, sports centres",
-        "planet_osm_line":       "USE FOR: cycleways (highway=cycleway), walking/footpaths (highway=footway OR path)",
+        "planet_osm_point": "USE FOR: pubs (amenity=pub), cafes (amenity=cafe), restaurants, libraries, supermarkets (shop=supermarket), pharmacies (amenity=pharmacy), post offices, tourist attractions",
+        "planet_osm_polygon": "USE FOR: parks (leisure=park), pitches (leisure=pitch, sport=...), golf courses, swimming pools, sports centres",
+        "planet_osm_line": "USE FOR: cycleways (highway=cycleway), walking/footpaths (highway=footway OR path)",
         "edinburgh_deprivation": "USE FOR: deprivation queries — geometry column is 'geom' (NOT 'way'). la_decile<=2 = most deprived, la_decile>=9 = least deprived",
     }
 

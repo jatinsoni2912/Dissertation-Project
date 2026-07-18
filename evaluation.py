@@ -74,14 +74,9 @@ def score_result(result, expected):
     has_results = exec_success and len(rows) > 0
     fixes = result.get('fixes_applied', [])
 
-    return {
-        'sql_valid': sql_valid,
-        'exec_success': exec_success,
-        'has_results': has_results,
-        'table_correct': check_table_accuracy(sql_lower, expected),
-        'tag_correct': check_tag_accuracy(sql, sql_lower, expected),
-        'loc_correct': check_location_accuracy(sql_upper, expected),
-        'qtype_correct': check_query_type_accuracy(sql_upper, expected),
+    return {'sql_valid': sql_valid, 'exec_success': exec_success, 'has_results': has_results,
+        'table_correct': check_table_accuracy(sql_lower, expected), 'tag_correct': check_tag_accuracy(sql, sql_lower, expected),
+        'loc_correct': check_location_accuracy(sql_upper, expected), 'qtype_correct': check_query_type_accuracy(sql_upper, expected),
         'row_count': len(rows), 'fixes_count': len(fixes), 'fixes': fixes, 'sql': sql, 'error': error_msg}
 
 def run_single_query(query, index, total, approach_fn, model, provider):
@@ -118,8 +113,7 @@ def run_approach(queries, approach_fn, approach_label, model, provider):
 def compute_summary_metrics(results):
     n = len(results)
 
-    return {
-        'n': n, 'sql_valid': sum(1 for r in results if r['sql_valid']),
+    return {'n': n, 'sql_valid': sum(1 for r in results if r['sql_valid']),
         'exec_success': sum(1 for r in results if r['exec_success']),
         'has_results': sum(1 for r in results if r['has_results']),
         'table_correct': sum(1 for r in results if r['table_correct']),

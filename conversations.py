@@ -45,13 +45,9 @@ def delete_user(username):
         shutil.rmtree(path)
 
 def new_conversation(username):
-    conv = {
-        "id": uuid.uuid4().hex[:12],
-        "title": "New conversation",
-        "created_at": datetime.now().isoformat(),
-        "updated_at": datetime.now().isoformat(),
-        "messages": [],
-    }
+    conv = {"id": uuid.uuid4().hex[:12], "title": "New conversation",
+        "created_at": datetime.now().isoformat(), "updated_at": datetime.now().isoformat(), "messages": []}
+
     save(username, conv)
     return conv
 
@@ -64,12 +60,10 @@ def get_all_conversations(username):
         try:
             with open(os.path.join(udir, fname), encoding="utf-8") as f:
                 c = json.load(f)
-            convs.append({
-                "id":         c["id"],
-                "title":      c.get("title", "Untitled"),
-                "created_at": c.get("created_at", ""),
-                "updated_at": c.get("updated_at", ""),
-                "msg_count":  len(c.get("messages", []))})
+            
+            convs.append({"id": c["id"], "title": c.get("title", "Untitled"),
+                "created_at": c.get("created_at", ""),  "updated_at": c.get("updated_at", ""),
+                "msg_count": len(c.get("messages", []))})
             
         except Exception:
             continue
@@ -84,20 +78,10 @@ def add_message(username, conv_id, query, sql, approach, model, row_count, is_co
     if conv is None:
         conv = new_conversation(username)
 
-    msg = {
-        "query": query,
-        "sql": sql,
-        "approach": approach,
-        "model": model,
-        "row_count": row_count,
-        "is_count": is_count,
-        "fixes_applied": fixes_applied or [],
-        "input_method": input_method,
-        "asr_transcript": asr_transcript,
-        "asr_confidence": asr_confidence,
-        "area_filter_active": area_filter_active,
-        "area_filter_geojson": area_filter_geojson,
-        "timestamp": datetime.now().isoformat()}
+    msg = {"query": query, "sql": sql, "approach": approach,
+        "model": model, "row_count": row_count, "is_count": is_count, "fixes_applied": fixes_applied or [],
+        "input_method": input_method, "asr_transcript": asr_transcript, "asr_confidence": asr_confidence,
+        "area_filter_active": area_filter_active, "area_filter_geojson": area_filter_geojson, "timestamp": datetime.now().isoformat()}
     
     conv["messages"].append(msg)
     conv["updated_at"] = msg["timestamp"]
@@ -123,7 +107,5 @@ def get_user_stats(username):
         if conv:
             voice += sum(1 for m in conv["messages"]
                          if m.get("input_method") == "voice")
-    return {
-        "conversations": len(convs_meta),
-        "total_queries": total_msgs,
-        "voice_queries": voice}
+    
+    return {"conversations": len(convs_meta), "total_queries": total_msgs, "voice_queries": voice}

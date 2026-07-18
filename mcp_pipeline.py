@@ -43,16 +43,9 @@ def assemble_context(user_query, context_location):
 
 
 def generate_sql(user_query, model, schema, loc_data, tag_hints, is_city_wide, search_radius):
-    prompt = build_prompt(
-        user_query=user_query,
-        schema=schema,
-        location_name=loc_data.get('name', 'Edinburgh'),
-        lon=loc_data.get('lon', -3.1883),
-        lat=loc_data.get('lat', 55.9533),
-        tag_hints=tag_hints,
-        is_city_wide=is_city_wide,
-        search_radius=search_radius,
-    )
+    prompt = build_prompt(user_query=user_query, schema=schema, location_name=loc_data.get('name', 'Edinburgh'),
+        lon=loc_data.get('lon', -3.1883), lat=loc_data.get('lat', 55.9533),
+        tag_hints=tag_hints, is_city_wide=is_city_wide, search_radius=search_radius)
 
     try:
         generated_sql = extract_sql(call_model(prompt, model, max_tokens=512))
@@ -82,13 +75,9 @@ def execute_and_expand_sql(generated_sql, search_radius, was_explicit):
             expanded_result = execute_query(expanded_sql)
             if expanded_result.get('success'):
                 
-                return (
-                    expanded_sql,
-                    expanded_result.get('results', []),
-                    True,
-                    "Valid",
-                    [f"Expanded radius {multiplier}x to {search_radius * multiplier}m"]
-                )
+                return (expanded_sql, expanded_result.get('results', []),
+                    True, "Valid",
+                    [f"Expanded radius {multiplier}x to {search_radius * multiplier}m"])
 
     return final_sql, actual_rows, is_valid, validation_message, []
 
@@ -110,17 +99,8 @@ def generate_sql_with_mcp(user_query, model=None, context_location=None):
         else 'osm'
     )
 
-    return {
-        'sql': final_sql,
-        'valid': is_valid,
-        'validation_message': validation_message,
-        'fixes_applied': radius_fix,
-        'ontology_used': True,
-        'activity_terms_found': activity_terms,
+    return {'sql': final_sql, 'valid': is_valid, 'validation_message': validation_message,
+        'fixes_applied': radius_fix, 'ontology_used': True, 'activity_terms_found': activity_terms,
         'location_resolved': loc_data.get('name', 'Edinburgh'),
-        'is_city_wide': is_city_wide,
-        'model_used': model,
-        'query_mode': query_mode,
-        'approach': 'Approach 2 - MCP + LLM SQL Generation',
-        'mcp_results': actual_rows,
-    }
+        'is_city_wide': is_city_wide, 'model_used': model, 'query_mode': query_mode,
+        'approach': 'Approach 2 - MCP + LLM SQL Generation','mcp_results': actual_rows}

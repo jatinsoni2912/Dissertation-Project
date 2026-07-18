@@ -126,7 +126,7 @@ PATTERNS = {
         "WHERE p.amenity = 'cafe'\n"
         "AND ST_DWithin(p.way::geography, ST_SetSRID(ST_MakePoint({lon},{lat}),4326)::geography, {radius})\n"
         "LIMIT {limit};"
-    ),
+    )
 }
 
 def get_deprivation_pattern(q):
@@ -138,8 +138,7 @@ def get_deprivation_pattern(q):
     is_line_cross = any(w in q for w in ['cycle', 'cycling', 'path', 'walk', 'footway'])
     is_polygon_cross = any(w in q for w in ['park', 'pitch', 'golf', 'swim', 'playground'])
 
-    is_point_cross = bool(re.search(
-        r'\b(cafes?|pubs?|bars?|shops?|librar(y|ies)|pharmacies?|restaurants?|schools?|'
+    is_point_cross = bool(re.search(r'\b(cafes?|pubs?|bars?|shops?|librar(y|ies)|pharmacies?|restaurants?|schools?|'
         r'hospitals?|doctors?|gp|supermarkets?|hotels?|museums?|churches?|atms?|banks?|post office)\b',q))
 
     if is_line_cross:
@@ -154,13 +153,11 @@ def get_deprivation_pattern(q):
 def detect_city_or_proximity_pattern(q, is_city_wide):
     is_running = bool(re.search(r'\b(running|run|jog|jogging)\b', q))
     is_line    = bool(re.search(r'\b(cycling|cycle|walking|walk|paths?|footway|biking|bike)\b', q))
-    is_polygon = bool(re.search(
-        r'\b(parks?|golf|swimming|swim|pitches?|sports?\s+centres?|'
+    is_polygon = bool(re.search(r'\b(parks?|golf|swimming|swim|pitches?|sports?\s+centres?|'
         r'playground|playgrounds?|nature\s+reserves?)\b', q
     ))
-    has_proximity = bool(re.search(
-        r'\b(near|within\s+\d+\s*(metres?|meters?|km|miles?|yards?))\b', q
-    ))
+    
+    has_proximity = bool(re.search(r'\b(near|within\s+\d+\s*(metres?|meters?|km|miles?|yards?))\b', q))
 
     if is_city_wide:
         if is_running:
@@ -202,11 +199,8 @@ def select_patterns(user_query, is_city_wide):
     if re.search(r'\b(show|find|give)\s+me\s+(\d+)\b', q):
         return ['explicit_limit']
 
-    is_sport = any(w in q for w in [
-        'football', 'soccer', 'tennis', 'cricket', 'rugby', 'pitch',
-        'basketball', 'bowls', 'bowling', 'hockey', 'netball',
-        'volleyball', 'badminton', 'squash'
-    ])
+    is_sport = any(w in q for w in ['football', 'soccer', 'tennis', 'cricket', 'rugby', 'pitch',
+        'basketball', 'bowls', 'bowling', 'hockey', 'netball', 'volleyball', 'badminton', 'squash'])
     
     if is_sport:
         return ['city_wide_sport'] if is_city_wide else ['sport_proximity']
@@ -240,14 +234,12 @@ def build_prompt(user_query, location_name, lon, lat, is_city_wide, search_radiu
         location_context = ("LOCATION: City-wide Edinburgh — no ST_DWithin, no boundary JOIN, no LIMIT.")
     
     elif has_near:
-        location_context = (
-            f"LOCATION: near '{location_name}' (lon={lon:.4f}, lat={lat:.4f}).\n"
+        location_context = (f"LOCATION: near '{location_name}' (lon={lon:.4f}, lat={lat:.4f}).\n"
             f"USE ST_DWithin with radius {search_radius} metres — do NOT use boundary JOIN."
         )
     
     else:
-        location_context = (
-            f"LOCATION: '{location_name}' suburb (lon={lon:.4f}, lat={lat:.4f}).\n"
+        location_context = (f"LOCATION: '{location_name}' suburb (lon={lon:.4f}, lat={lat:.4f}).\n"
             f"For suburb queries use this exact JOIN pattern:\n"
             f"JOIN planet_osm_polygon boundary ON ST_Intersects(p.way, boundary.way)\n"
             f"WHERE boundary.name ILIKE '%{location_name}%'\n"

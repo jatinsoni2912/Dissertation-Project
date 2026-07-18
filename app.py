@@ -18,7 +18,7 @@ except ImportError:
     def transcribe(*a, **kw):
         return {"text": "", "confidence": 0.0}
 
-st.set_page_config(page_title="GeoQuery Edinburgh", page_icon="🗺️", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="GeoQuery", page_icon="🗺️", layout="wide", initial_sidebar_state="expanded")
 
 styles.apply()
 
@@ -64,29 +64,19 @@ if trigger and user_query.strip():
         st.session_state.query_result = result
         st.session_state.last_query = user_query
 
-        context.update_context_history(user_query,
-            result.get('location', 'Edinburgh'),
-            result.get('results', []),
-            result.get('columns', []),
-            result.get('is_count', False))
+        context.update_context_history(user_query, result.get('location', 'Edinburgh'),
+            result.get('results', []), result.get('columns', []), result.get('is_count', False))
 
         if st.session_state.get('current_user') and st.session_state.get('current_conv_id'):
-            updated = add_message(
-                username = st.session_state.current_user,
-                conv_id = st.session_state.current_conv_id,
-                query = user_query,
-                sql = result.get('sql', ''),
-                approach = result.get('approach', approach_choice),
-                model = result.get('model_used', model_choice),
-                row_count = result.get('row_count', 0),
-                is_count = result.get('is_count', False),
-                fixes_applied = result.get('fixes', []),
-                input_method = st.session_state.input_method,
+            updated = add_message(username = st.session_state.current_user, conv_id = st.session_state.current_conv_id,
+                query = user_query, sql = result.get('sql', ''), approach = result.get('approach', approach_choice),
+                model = result.get('model_used', model_choice), row_count = result.get('row_count', 0),
+                is_count = result.get('is_count', False), fixes_applied = result.get('fixes', []), input_method = st.session_state.input_method,
                 asr_transcript = st.session_state.asr_transcript or None,
                 asr_confidence = st.session_state.asr_confidence or None,
                 area_filter_active = st.session_state.get('area_filter_active', False),
-                area_filter_geojson = st.session_state.get('area_filter_geojson')
-            )
+                area_filter_geojson = st.session_state.get('area_filter_geojson'))
+            
             st.session_state.current_conv = updated
             st.session_state.input_method   = 'text'
             st.session_state.asr_transcript = ''

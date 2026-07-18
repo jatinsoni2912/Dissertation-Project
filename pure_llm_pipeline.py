@@ -56,11 +56,10 @@ SQL:"""
 
 def run_llm(prompt, model):
     try:
-        response = ollama.chat(
-            model=model,
+        response = ollama.chat(model=model,
             messages=[{'role': 'user', 'content': prompt}],
-            options={'temperature': 0, 'num_predict': 256},
-        )
+            options={'temperature': 0, 'num_predict': 256})
+        
         return extract_sql(response['message']['content'].strip())
     except Exception:
         return ''
@@ -88,35 +87,17 @@ def generate_sql_pure_llm(user_query, model):
     query_mode = categorize_sql(raw_sql)
 
     if not raw_sql.strip().upper().startswith('SELECT'):
-        return {
-            'sql': raw_sql,
-            'valid': False,
-            'validation_message': 'invalid SQL',
-            'fixes_applied': [],
-            'ontology_used': False,
-            'activity_terms_found': [],
-            'location_resolved': 'None (Pure LLM Guess)',
-            'is_city_wide': False,
-            'model_used': model,
-            'query_mode': query_mode,
-            'approach': 'Approach 0 — Pure LLM (Few-Shot)',
-            'mcp_results': [],
-        }
+        
+        return {'sql': raw_sql, 'valid': False, 'validation_message': 'invalid SQL',
+            'fixes_applied': [], 'ontology_used': False, 'activity_terms_found': [],
+            'location_resolved': 'None (Pure LLM Guess)', 'is_city_wide': False, 'model_used': model, 'query_mode': query_mode,
+            'approach': 'Approach 0 — Pure LLM (Few-Shot)', 'mcp_results': []}
 
     db_result, is_valid, validation_message = execute_sql(raw_sql)
 
-    return {
-        'sql': raw_sql,
-        'valid': is_valid,
-        'validation_message': validation_message,
-        'fixes_applied': [],
-        'ontology_used': False,
-        'activity_terms_found': [],
-        'location_resolved': 'None (Pure LLM Guess)',
-        'is_city_wide': False,
-        'model_used': model,
-        'query_mode': query_mode,
-        'approach': 'Approach 0 — Pure LLM (Few-Shot)',
+    return {'sql': raw_sql, 'valid': is_valid, 'validation_message': validation_message, 'fixes_applied': [], 'ontology_used': False,
+        'activity_terms_found': [], 'location_resolved': 'None (Pure LLM Guess)',
+        'is_city_wide': False, 'model_used': model, 'query_mode': query_mode, 'approach': 'Approach 0 — Pure LLM (Few-Shot)',
         'mcp_results': db_result.get('results', [])}
 
 def generate_sql_pure_llm_using_bedrock(user_query, model):
@@ -131,33 +112,15 @@ def generate_sql_pure_llm_using_bedrock(user_query, model):
     query_mode = categorize_sql(raw_sql)
 
     if not raw_sql.strip().upper().startswith('SELECT'):
-        return {
-            'sql': raw_sql,
-            'valid': False,
-            'validation_message': 'invalid SQL',
-            'fixes_applied': [],
-            'ontology_used': False,
-            'activity_terms_found': [],
-            'location_resolved': 'None (Pure LLM Guess)',
-            'is_city_wide': False,
-            'model_used': model,
-            'query_mode': query_mode,
-            'approach': 'Approach 0 — Pure LLM (Few-Shot)',
-            'mcp_results': [],
-        }
+        
+        return {'sql': raw_sql, 'valid': False, 'validation_message': 'invalid SQL',
+            'fixes_applied': [], 'ontology_used': False, 'activity_terms_found': [],
+            'location_resolved': 'None (Pure LLM Guess)', 'is_city_wide': False,
+            'model_used': model, 'query_mode': query_mode, 'approach': 'Approach 0 — Pure LLM (Few-Shot)', 'mcp_results': []}
 
     db_result, is_valid, validation_message = execute_sql(raw_sql)
 
-    return {
-        'sql': raw_sql,
-        'valid': is_valid,
-        'validation_message': validation_message,
-        'fixes_applied': [],
-        'ontology_used': False,
-        'activity_terms_found': [],
-        'location_resolved': 'None (Pure LLM Guess)',
-        'is_city_wide': False,
-        'model_used': model,
-        'query_mode': query_mode,
-        'approach': 'Approach 0 — Pure LLM (Few-Shot)',
-        'mcp_results': db_result.get('results', [])}
+    return {'sql': raw_sql, 'valid': is_valid, 'validation_message': validation_message, 'fixes_applied': [], 'ontology_used': False,
+        'activity_terms_found': [], 'location_resolved': 'None (Pure LLM Guess)',
+        'is_city_wide': False, 'model_used': model, 'query_mode': query_mode,
+        'approach': 'Approach 0 — Pure LLM (Few-Shot)', 'mcp_results': db_result.get('results', [])}

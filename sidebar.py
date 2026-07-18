@@ -25,16 +25,16 @@ def create_new_user_flow():
     if st.button("Create", use_container_width=True, key="create_user_btn"):
         if name.strip():
             create_user(name.strip())
-            st.session_state.current_user    = name.strip()
+            st.session_state.current_user = name.strip()
             st.session_state.current_conv_id = None
-            st.session_state.current_conv    = None
+            st.session_state.current_conv = None
             st.rerun()
 
 def switch_user_if_needed(sel):
     if st.session_state.current_user != sel:
-        st.session_state.current_user    = sel
+        st.session_state.current_user = sel
         st.session_state.current_conv_id = None
-        st.session_state.current_conv    = None
+        st.session_state.current_conv = None
         st.rerun()
 
 def render_chat_controls():
@@ -80,12 +80,10 @@ def render_user_stats():
     st.markdown("---")
     stats = get_user_stats(st.session_state.current_user)
 
-    st.caption(
-        f"**{st.session_state.current_user}**  ·  "
+    st.caption(f"**{st.session_state.current_user}**  ·  "
         f"{stats['conversations']} chats  ·  "
         f"{stats['total_queries']} queries  ·  "
-        f"🎤 {stats['voice_queries']}"
-    )
+        f"🎤 {stats['voice_queries']}")
         
 def render_sidebar():
     with st.sidebar:

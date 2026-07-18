@@ -86,13 +86,12 @@ def prepare_geojson_collection(results, columns):
 
 def feature_label(sql):
     sql_l = sql.lower()
-    patterns = [
-        (r"amenity\s*=\s*'(\w+)'", lambda v: v.replace('_', ' ')),
-        (r"leisure\s*=\s*'(\w+)'",  lambda v: v.replace('_', ' ')),
-        (r"highway\s*=\s*'(\w+)'",  lambda v: v.replace('_', ' ') + ' path'),
-        (r"shop\s*=\s*'(\w+)'",     lambda v: v.replace('_', ' ') + ' shop'),
-        (r"tourism\s*=\s*'(\w+)'",  lambda v: v.replace('_', ' '))
-    ]
+    patterns = [(r"amenity\s*=\s*'(\w+)'", lambda v: v.replace('_', ' ')),
+        (r"leisure\s*=\s*'(\w+)'", lambda v: v.replace('_', ' ')),
+        (r"highway\s*=\s*'(\w+)'", lambda v: v.replace('_', ' ') + ' path'),
+        (r"shop\s*=\s*'(\w+)'", lambda v: v.replace('_', ' ') + ' shop'), 
+        (r"tourism\s*=\s*'(\w+)'", lambda v: v.replace('_', ' '))]
+    
     for pat, fmt in patterns:
         m = re.search(pat, sql_l)
         if m:

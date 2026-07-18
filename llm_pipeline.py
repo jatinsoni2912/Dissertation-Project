@@ -94,25 +94,15 @@ def generate_sql(user_query, model=None, context_location=None):
 
     sql_lower = raw_sql.lower()
     is_dep = 'edinburgh_deprivation' in sql_lower
-    query_mode = (
-        'deprivation' if (is_dep and 'planet_osm' not in sql_lower)
+    
+    query_mode = ('deprivation' if (is_dep and 'planet_osm' not in sql_lower)
         else 'cross' if is_dep
-        else 'osm'
-    )
+        else 'osm')
 
     final_sql, db_result, is_valid, validation_message, radius_fix = execute_and_expand_baseline_sql(raw_sql, search_radius, was_explicit)
 
-    return {
-        'sql': final_sql,
-        'valid': is_valid,
-        'validation_message': validation_message,
-        'fixes_applied': radius_fix,
-        'ontology_used': False,
-        'activity_terms_found': activity_terms,
-        'location_resolved': location_name,
-        'is_city_wide': is_city_wide,
-        'model_used': model,
-        'query_mode': query_mode,
-        'approach': 'Approach 1 — LLM Baseline (static schema, no MCP)',
-        'mcp_results': db_result.get('results', []),
-    }
+    return {'sql': final_sql, 'valid': is_valid, 'validation_message': validation_message,
+        'fixes_applied': radius_fix, 'ontology_used': False, 'activity_terms_found': activity_terms,
+        'location_resolved': location_name, 'is_city_wide': is_city_wide, 'model_used': model,
+        'query_mode': query_mode, 'approach': 'Approach 1 — LLM Baseline (static schema, no MCP)',
+        'mcp_results': db_result.get('results', [])}
