@@ -128,7 +128,6 @@ PATTERNS = {
 import re
 
 def get_deprivation_pattern(q):
-    """Return deprivation pattern key if query mentions deprivation."""
     is_deprivation = any(w in q for w in ['deprived', 'deprivation', 'decile'])
     if not is_deprivation:
         return None
