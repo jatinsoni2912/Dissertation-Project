@@ -58,12 +58,20 @@ def find_point_of_interest(cur, location_name):
     cur.execute(sql, (f"%{location_name}%", location_name, location_name, location_name))
     return cur.fetchone()
 
-
+# This method is the final fallback for non-street queries.
+# It looks for named line features that are not streets, such as paths, cycleways, named boundaries & waterways
+# It is only used when the input doesn't resemble a street name.
 def find_line_fallback(cur, location_name):
     sql = "SELECT ST_X(ST_Centroid(way)) AS lon, ST_Y(ST_Centroid(way)) AS lat, name FROM planet_osm_line WHERE (name ILIKE %s OR name ~* ('\\y' || %s || '\\y')) AND name IS NOT NULL " + ORDER_BY_NAME_MATCH + " LIMIT 1"
     cur.execute(sql, (f"%{location_name}%", location_name, location_name, location_name))
     return cur.fetchone()
 
+# This method is the main geocoding location function.
+# It coordinates all lookup strategies in a logical order.
+# If the input looks like a street then run street lookups. Try neighbourhoods such as suburbs, villages, ect
+# Try generic polygons such as parks, estates, campuses
+# Try points of interest such asshops, landmarks
+# If there's still no match and it's not a street then try line fallback
 def geocode_location(location_name, conn=None):
 
     is_local_conn = conn is None
