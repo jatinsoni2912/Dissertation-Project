@@ -105,7 +105,6 @@ def get_user_stats(username):
     for cm in convs_meta:
         conv = load_conversation(username, cm["id"])
         if conv:
-            voice += sum(1 for m in conv["messages"]
-                         if m.get("input_method") == "voice")
+            voice += sum(1 for m in conv["messages"] if m.get("input_method") == "voice")
     
     return {"conversations": len(convs_meta), "total_queries": total_msgs, "voice_queries": voice}
