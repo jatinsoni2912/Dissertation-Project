@@ -241,8 +241,7 @@ def build_prompt(user_query, schema, location_name, lon, lat, tag_hints="", is_c
         location_context = ("LOCATION: City-wide Edinburgh — no ST_DWithin, no boundary JOIN, no LIMIT.")
     
     elif has_near:
-        location_context = (
-            f"LOCATION: near '{location_name}' (lon={lon:.4f}, lat={lat:.4f}).\n"
+        location_context = (f"LOCATION: near '{location_name}' (lon={lon:.4f}, lat={lat:.4f}).\n"
             f"USE ST_DWithin with radius {search_radius} metres — do NOT use boundary JOIN or ST_Intersects for proximity.")
     else:
         location_context = (f"LOCATION: '{location_name}' suburb (lon={lon:.4f}, lat={lat:.4f}).\n"
