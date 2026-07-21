@@ -25,16 +25,8 @@ def build_base_map():
     return map
 
 def add_draw_controls(m):
-    Draw(position='topleft', 
-         draw_options={'polyline': False, 'circle': False, 'marker': False, 'circlemarker': False,
-                       
-                       'polygon': {
-                           'allowIntersection': False, 'showArea': True,
-                           'shapeOptions': {'color': '#c9a84c', 'fillOpacity': 0.15},},
-                        
-                        'rectangle': {'shapeOptions': {'color': '#c9a84c', 'fillOpacity': 0.15},},},
-        
-        edit_options={'edit': True, 'remove': True}).add_to(m)
+    Draw(position='topleft', draw_options={'polyline': False, 'circle': False, 'marker': False, 'circlemarker': False, 'polygon': {'allowIntersection': False, 'showArea': True, 'shapeOptions': {'color': '#c9a84c', 'fillOpacity': 0.15}}, 'rectangle': {'shapeOptions': {'color': '#c9a84c', 'fillOpacity': 0.15}}}, edit_options={'edit': True, 'remove': True}).add_to(m)
+
 
 def split_features_by_geometry(features):
     points, lines, polygons = [], [], []
