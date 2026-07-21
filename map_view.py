@@ -57,23 +57,19 @@ def add_point_layer(fg, points, colour, tooltip, popup):
     if not points:
         return
 
-    folium.GeoJson({"type": "FeatureCollection", "features": points}, name='Points',
-        marker=folium.CircleMarker(radius=8, color=colour, fill_color=colour,weight=2, fill_opacity=0.85),
-        tooltip=tooltip, popup=popup,).add_to(fg)
+    folium.GeoJson({"type": "FeatureCollection", "features": points}, name='Points', marker=folium.CircleMarker(radius=8, color=colour, fill_color=colour,weight=2, fill_opacity=0.85), tooltip=tooltip, popup=popup,).add_to(fg)
 
 def add_line_layer(fg, lines, colour, tooltip, popup):
     if not lines:
         return
 
-    folium.GeoJson({"type": "FeatureCollection", "features": lines},name='Lines',
-        style_function=lambda f, c=colour: {'color': c, 'weight': 4, 'opacity': 0.85}, tooltip=tooltip, popup=popup,).add_to(fg)
+    folium.GeoJson({"type": "FeatureCollection", "features": lines},name='Lines', style_function=lambda f, c=colour: {'color': c, 'weight': 4, 'opacity': 0.85}, tooltip=tooltip, popup=popup,).add_to(fg)
 
 def add_polygon_layer(fg, polygons, colour, tooltip, popup):
     if not polygons:
         return
 
-    folium.GeoJson({"type": "FeatureCollection", "features": polygons},name='Polygons',
-        style_function=lambda f, c=colour: {'fillColor': c, 'color': c, 'weight': 2, 'fillOpacity': 0.45}, tooltip=tooltip, popup=popup,).add_to(fg)
+    folium.GeoJson({"type": "FeatureCollection", "features": polygons},name='Polygons', style_function=lambda f, c=colour: {'fillColor': c, 'color': c, 'weight': 2, 'fillOpacity': 0.45}, tooltip=tooltip, popup=popup,).add_to(fg)
 
 def build_results_layer(geojson_collection, colour):
 
@@ -117,8 +113,7 @@ def fit_map_to_results(base_map, geojson_collection):
 
 def restore_area_filter(results_fg):
     if st.session_state.area_filter_active and st.session_state.get('area_filter_geojson'):
-        folium.GeoJson({"type": "Feature", "geometry": st.session_state.area_filter_geojson},name='Selected area',
-            style_function=lambda f: {'color': '#c9a84c','weight': 2,'fillColor': '#c9a84c','fillOpacity': 0.10}).add_to(results_fg)
+        folium.GeoJson({"type": "Feature", "geometry": st.session_state.area_filter_geojson},name='Selected area', style_function=lambda f: {'color': '#c9a84c','weight': 2,'fillColor': '#c9a84c','fillOpacity': 0.10}).add_to(results_fg)
 
 def render_area_filter_badge():
     if st.session_state.area_filter_active:
