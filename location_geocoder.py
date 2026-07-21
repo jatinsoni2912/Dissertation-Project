@@ -14,11 +14,13 @@ def find_street_exact(cur, location_name):
     cur.execute(sql, (location_name,))
     return cur.fetchone()
 
+# This method performs a whole-word street match. It is useful when the street name appears inside a longer name but still as a standalone word such as 'Rose' matching 'Rose Street' but not 'Rosebank'
 def find_street_word_boundary(cur, location_name):
     sql = "SELECT ST_X(ST_Centroid(way)) AS lon, ST_Y(ST_Centroid(way)) AS lat, name FROM planet_osm_line WHERE name ~* ('\\y' || %s || '\\y') AND name IS NOT NULL " + EXCLUDE_ROUTES_CLAUSE + " ORDER BY LENGTH(name) ASC LIMIT 1"
     cur.execute(sql, (location_name,))
     return cur.fetchone()
 
+# This method performs a partial street match using ILIKE operator. It catches cases where the user types only part of the street name.
 def find_street_partial(cur, location_name):
     sql = "SELECT ST_X(ST_Centroid(way)) AS lon, ST_Y(ST_Centroid(way)) AS lat, name FROM planet_osm_line WHERE name ILIKE %s AND name IS NOT NULL " + EXCLUDE_ROUTES_CLAUSE + " ORDER BY (LOWER(name) = LOWER(%s)) DESC, LENGTH(name) ASC LIMIT 1"
     cur.execute(sql, (f"%{location_name}%", location_name))
