@@ -2,8 +2,7 @@ import re
 import json
 import streamlit as st
 
-PATTERNS = [
-    r'\b(that|the)\s+(hospital|clinic|cafe|pub|restaurant|hotel|museum|park|school|'
+PATTERNS = [r'\b(that|the)\s+(hospital|clinic|cafe|pub|restaurant|hotel|museum|park|school|'
     r'library|shop|place|spot|location|building|site)\b',
     r'\b(nearest|closest|near|close)\s+to\s+(it|that|there|this)\b',
     r'\bfrom\s+(there|that|it|here)\b',
