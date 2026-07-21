@@ -1,10 +1,14 @@
 from constants import STREET_SUFFIXES, EXCLUDE_ROUTES_CLAUSE, ORDER_BY_NAME_MATCH
 from database import get_connection
 
+# This method checks whether the input string is likely to be a street name.
+# It doesn't check against OSM but checks if any word in the input string matches a known street suffix e.g. street, road
 def is_street_name(location_name):
     words = location_name.lower().strip().split()
     return any(word in STREET_SUFFIXES for word in words)
 
+# This method attempts an exactstreet match. If the user typed the full street name exactly as it appears in OSM, this method should find it.
+# Bus/tram/train routes and other non-street line features are excluded using EXCLUDE_ROUTES_CLAUSE to avoid false positives.
 def find_street_exact(cur, location_name):
     sql = "SELECT ST_X(ST_Centroid(way)) AS lon, ST_Y(ST_Centroid(way)) AS lat, name FROM planet_osm_line WHERE LOWER(name) = LOWER(%s) AND name IS NOT NULL " + EXCLUDE_ROUTES_CLAUSE + " LIMIT 1"
     cur.execute(sql, (location_name,))
