@@ -117,22 +117,18 @@ def resolve_location_via_mcp(location_name):
     return {"lon": -3.1883, "lat": 55.9533, "name": "Edinburgh"}
 
 def build_schema_from_mcp_result(raw_result):
-    SPATIAL_INSTRUCTIONS = (
-        "CRITICAL POSTGIS SPATIAL INSTRUCTIONS:\n"
+    SPATIAL_INSTRUCTIONS = ("CRITICAL POSTGIS SPATIAL INSTRUCTIONS:\n"
         "- All coordinates are in WGS84 degrees (SRID 4326).\n"
         "- PROXIMITY (near a location): ALWAYS use ST_DWithin with actual numeric coordinates:\n"
         "  ST_DWithin(way::geography, ST_SetSRID(ST_MakePoint(-3.188267, 55.953251), 4326)::geography, 500)\n"
         "  CRITICAL: NEVER use ST_Intersects for proximity/near queries. NEVER output literal 'lon' or 'lat'.\n"
         "- Deprivation JOIN: use ST_Intersects(p.way, d.geom) — table is edinburgh_deprivation.\n"
-        "- edinburgh_deprivation geometry column is 'geom', NOT 'way' and NOT 'geometry'."
-    )
+        "- edinburgh_deprivation geometry column is 'geom', NOT 'way' and NOT 'geometry'.")
     
-    SCHEMA_USE_HINTS = {
-        "planet_osm_point": "USE FOR: pubs (amenity=pub), cafes (amenity=cafe), restaurants, libraries, supermarkets (shop=supermarket), pharmacies (amenity=pharmacy), post offices, tourist attractions",
+    SCHEMA_USE_HINTS = {"planet_osm_point": "USE FOR: pubs (amenity=pub), cafes (amenity=cafe), restaurants, libraries, supermarkets (shop=supermarket), pharmacies (amenity=pharmacy), post offices, tourist attractions",
         "planet_osm_polygon": "USE FOR: parks (leisure=park), pitches (leisure=pitch, sport=...), golf courses, swimming pools, sports centres",
         "planet_osm_line": "USE FOR: cycleways (highway=cycleway), walking/footpaths (highway=footway OR path)",
-        "edinburgh_deprivation": "USE FOR: deprivation queries — geometry column is 'geom' (NOT 'way'). la_decile<=2 = most deprived, la_decile>=9 = least deprived",
-    }
+        "edinburgh_deprivation": "USE FOR: deprivation queries — geometry column is 'geom' (NOT 'way'). la_decile<=2 = most deprived, la_decile>=9 = least deprived"}
 
     try:
         data = json.loads(raw_result)
@@ -153,8 +149,7 @@ def build_schema_from_mcp_result(raw_result):
         return "\n".join(lines)
     
     except Exception:
-        return (
-            "LIVE DATABASE TABLE SCHEMAS:\n"
+        return ("LIVE DATABASE TABLE SCHEMAS:\n"
             "1. planet_osm_point   -> Fields: name, amenity, shop, tourism, way (GEOMETRY Point SRID 4326)\n"
             "   USE FOR: pubs (amenity=pub), cafes (amenity=cafe), restaurants (amenity=restaurant), libraries, supermarkets (shop=supermarket), pharmacies, tourist attractions (tourism=attraction)\n"
             "2. planet_osm_polygon -> Fields: name, leisure, landuse, sport, way (GEOMETRY Polygon SRID 4326)\n"
@@ -164,8 +159,7 @@ def build_schema_from_mcp_result(raw_result):
             "4. edinburgh_deprivation -> Fields: dzname, la_decile, geom (GEOMETRY MultiPolygon SRID 4326)\n"
             "   CRITICAL: geometry column is 'geom' — NOT 'way', NOT 'geometry'. la_decile<=2 most deprived, >=9 least deprived\n\n"
             "PROXIMITY: ST_DWithin(way::geography, ST_SetSRID(ST_MakePoint(lon,lat),4326)::geography, metres)\n"
-            "DEPRIVATION JOIN: ST_Intersects(p.way, d.geom) — table edinburgh_deprivation, geom column NOT way"
-        )
+            "DEPRIVATION JOIN: ST_Intersects(p.way, d.geom) — table edinburgh_deprivation, geom column NOT way")
 
 def get_live_schema_via_mcp():
     global schema_cache, schema_is_live
@@ -178,13 +172,9 @@ def get_live_schema_via_mcp():
 
 def fetch_and_cache_schema():
     global schema_cache, schema_is_live
-    
-    schema_query = """
-        SELECT table_name, column_name, data_type
-        FROM information_schema.columns
-        WHERE table_schema = 'public'
-        ORDER BY table_name, ordinal_position;
-    """
+
+    schema_query = "SELECT table_name, column_name, data_type FROM information_schema.columns WHERE table_schema = 'public' ORDER BY table_name, ordinal_position;"
+
     raw = run_mcp_query_sync(schema_query, timeout=30)
     schema_cache = build_schema_from_mcp_result(raw)
     schema_is_live = True
