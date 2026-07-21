@@ -1,39 +1,23 @@
-STREET_SUFFIXES = {
-    'road','street','lane','avenue','drive','crescent','place',
+STREET_SUFFIXES = {'road','street','lane','avenue','drive','crescent','place',
     'rd','st','ave','mile','wynd','close','gate','terrace',
     'grove','walk','row','gardens','court','way','path',
     'vennel','loan','brae','hill','bank','view','park',
-    'square','circus','quay','bridge','causeway',
-}
+    'square','circus','quay','bridge','causeway'}
 
-EXCLUDE_ROUTES_CLAUSE = (
-    " AND (route IS NULL OR route NOT IN ('bus','tram','train','subway',"
-    "'monorail','light_rail','ferry','bicycle','foot'))"
-    " AND name NOT ILIKE 'Bus %%'"
-    " AND name NOT ILIKE 'Route %%'"
-    " AND name NOT ILIKE 'Cycle Route %%'"
-    " AND highway IS NOT NULL"
-)
+EXCLUDE_ROUTES_CLAUSE = " AND (route IS NULL OR route NOT IN ('bus','tram','train','subway','monorail','light_rail','ferry','bicycle','foot')) AND name NOT ILIKE 'Bus %%' AND name NOT ILIKE 'Route %%' AND name NOT ILIKE 'Cycle Route %%' AND highway IS NOT NULL"
 
-CITY_WIDE_SIGNALS = {
-    'in edinburgh', 'across edinburgh', 'throughout edinburgh',
+CITY_WIDE_SIGNALS = {'in edinburgh', 'across edinburgh', 'throughout edinburgh',
     'all edinburgh', 'edinburgh wide', 'city wide', 'citywide',
     'deprived areas', 'deprived neighbourhoods', 'deprived parts',
-    'least deprived', 'most deprived', 'deprivation decile',
-}
+    'least deprived', 'most deprived', 'deprivation decile'}
 
-BLOCKED_KEYWORDS = [
-    'INSERT', 'UPDATE', 'DELETE', 'DROP', 'CREATE',
-    'ALTER', 'TRUNCATE', 'GRANT', 'REVOKE', 'EXECUTE',
-]
+BLOCKED_KEYWORDS = ['INSERT', 'UPDATE', 'DELETE', 'DROP', 'CREATE',
+    'ALTER', 'TRUNCATE', 'GRANT', 'REVOKE', 'EXECUTE']
 
-SPORTS = {
-    'football', 'soccer', 'cricket', 'tennis', 'rugby',
-    'basketball', 'bowls', 'hockey', 'netball', 'volleyball',
-}
+SPORTS = {'football', 'soccer', 'cricket', 'tennis', 'rugby',
+    'basketball', 'bowls', 'hockey', 'netball', 'volleyball'}
 
-SKIP_WORDS = {
-    'me', 'the', 'a', 'an', 'some', 'any', 'good', 'nice', 'best',
+SKIP_WORDS = {'me', 'the', 'a', 'an', 'some', 'any', 'good', 'nice', 'best',
     'nearest', 'closest', 'find', 'show', 'where', 'can', 'go', 'get',
     'are', 'there', 'parks', 'cafes', 'restaurants', 'cycling', 'walking',
     'swimming', 'running', 'hiking', 'football', 'tennis', 'within',
@@ -42,13 +26,11 @@ SKIP_WORDS = {
     'edinburgh', 'city', 'centre', 'near', 'in', 'at', 'of',
     'my', 'dog', 'pub', 'bar', 'cafe', 'shop', 'store',
     'of edinburgh', 'the most', 'the least', 'most deprived', 'least deprived',
-    'deprived areas', 'deprived neighbourhoods', 'deprived parts',
-}
+    'deprived areas', 'deprived neighbourhoods', 'deprived parts'}
 
 SKIP_PREFIXES = ('of ', 'the ', 'in the ', 'at the ')
 
-LANDUSE_CORRECTIONS = {
-    'park': ('leisure', 'park', 'planet_osm_polygon'),
+LANDUSE_CORRECTIONS = {'park': ('leisure', 'park', 'planet_osm_polygon'),
     'recreation_ground': ('leisure', 'park', 'planet_osm_polygon'),
     'pitch': ('leisure', 'pitch', 'planet_osm_polygon'),
     'garden': ('leisure', 'garden', 'planet_osm_polygon'),
@@ -61,49 +43,30 @@ LANDUSE_CORRECTIONS = {
     'cycleway': ('highway', 'cycleway', 'planet_osm_line'),
     'footway': ('highway', 'footway', 'planet_osm_line'),
     'path': ('highway', 'path', 'planet_osm_line'),
-    'cycling': ('highway', 'cycleway', 'planet_osm_line'),
-}
+    'cycling': ('highway', 'cycleway', 'planet_osm_line')}
 
-LEISURE_POLYGON_TAGS = [
-    'swimming_pool', 'sports_centre', 'golf_course',
-    'track', 'garden', 'park', 'nature_reserve', 'playground',
-]
+LEISURE_POLYGON_TAGS = ['swimming_pool', 'sports_centre', 'golf_course',
+    'track', 'garden', 'park', 'nature_reserve', 'playground']
 
-CROSS_TAG_FIXES = [
-    ('amenity', 'cycleway', 'highway', 'cycleway', 'planet_osm_line'),
-    ('amenity', 'footway',  'highway', 'footway',  'planet_osm_line'),
-    ('amenity', 'path',     'highway', 'path',     'planet_osm_line'),
-    ('amenity', 'park',     'leisure', 'park',     'planet_osm_polygon'),
-]
+CROSS_TAG_FIXES = [('amenity', 'cycleway', 'highway', 'cycleway', 'planet_osm_line'),
+    ('amenity', 'footway', 'highway', 'footway', 'planet_osm_line'),
+    ('amenity', 'path', 'highway', 'path', 'planet_osm_line'),
+    ('amenity', 'park', 'leisure', 'park', 'planet_osm_polygon')]
 
-STREET_SUFFIXES = {
-    'road','street','lane','avenue','drive','crescent','place',
+STREET_SUFFIXES = {'road','street','lane','avenue','drive','crescent','place',
     'rd','st','ave','mile','wynd','close','gate','terrace',
     'grove','walk','row','gardens','court','way','path',
     'vennel','loan','brae','hill','bank','view','park',
-    'square','circus','quay','bridge','causeway',
-}
+    'square','circus','quay','bridge','causeway'}
 
-EXCLUDE_ROUTES_CLAUSE = (
-    " AND (route IS NULL OR route NOT IN ('bus','tram','train','subway',"
-    "'monorail','light_rail','ferry','bicycle','foot'))"
-    " AND name NOT ILIKE 'Bus %%'"
-    " AND name NOT ILIKE 'Route %%'"
-    " AND name NOT ILIKE 'Cycle Route %%'"
-    " AND highway IS NOT NULL"
-)
+EXCLUDE_ROUTES_CLAUSE = " AND (route IS NULL OR route NOT IN ('bus','tram','train','subway','monorail','light_rail','ferry','bicycle','foot')) AND name NOT ILIKE 'Bus %%' AND name NOT ILIKE 'Route %%' AND name NOT ILIKE 'Cycle Route %%' AND highway IS NOT NULL"
 
-ORDER_BY_NAME_MATCH = """
-    ORDER BY (LOWER(name) = LOWER(%s)) DESC, 
-             (name ~* ('\\y' || %s || '\\y')) DESC, 
-             LENGTH(name) ASC
-"""
+ORDER_BY_NAME_MATCH = " ORDER BY (LOWER(name) = LOWER(%s)) DESC, (name ~* ('\\y' || %s || '\\y')) DESC, LENGTH(name) ASC "
 
 ACTIVITY_KEYWORDS = {
     'walking': 'walking', 'walk': 'walking', 'stroll': 'walking', 'strolling': 'walking',
     'path': 'walking', 'paths': 'walking', 'footpath': 'walking', 'footpaths': 'walking',
-    'pedestrian': 'walking', 'on foot': 'walking',
-    'dog': 'dog walking', 'dogs': 'dog walking',
+    'pedestrian': 'walking', 'on foot': 'walking','dog': 'dog walking', 'dogs': 'dog walking',
 
     'cycling': 'cycling', 'cycle': 'cycling', 'bike': 'cycling', 'biking': 'cycling',
     'bicycle': 'cycling', 'bicycles': 'cycling', 'cycleway': 'cycling', 'cycleways': 'cycling',
@@ -177,8 +140,7 @@ ACTIVITY_KEYWORDS = {
 
     'sports centre': 'sports_centre', 'sports centers': 'sports_centre',
     'leisure centre': 'sports_centre', 'leisure centers': 'sports_centre',
-    'gym': 'sports_centre', 'fitness': 'sports_centre', 'fitness centre': 'sports_centre',
-}
+    'gym': 'sports_centre', 'fitness': 'sports_centre', 'fitness centre': 'sports_centre'}
 
 
 PROXIMITY_RADIUS = {
@@ -208,8 +170,7 @@ PROXIMITY_RADIUS = {
     'nature_reserve': 3000,
     
     # default fallback
-    'default': 1000,
-}
+    'default': 1000}
 
 STATIC_SCHEMA = (
     "LIVE DATABASE TABLE SCHEMAS:\n"
