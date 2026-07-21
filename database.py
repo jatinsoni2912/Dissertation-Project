@@ -98,8 +98,8 @@ def get_feature_locations_for_count(sql):
    if not where_clause:
        return []
    
-   loc_sql = (f"SELECT {name_col}, ST_AsGeoJSON({geom_col}) AS geometry "
-        f"FROM {table} WHERE {where_clause} LIMIT 500")
+   loc_sql = f"SELECT {name_col}, ST_AsGeoJSON({geom_col}) AS geometry FROM {table} WHERE {where_clause} LIMIT 500"
+
    
    conn = get_connection()
    cur  = conn.cursor()
