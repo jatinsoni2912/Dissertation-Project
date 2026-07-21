@@ -1,0 +1,13 @@
+streamlit
+folium
+streamlit-folium
+audio-recorder-streamlit
+faster-whisper
+psycopg2-binary
+ollama
+boto3
+botocore
+mcp
+fastmcp
+python-dotenv
+requests
