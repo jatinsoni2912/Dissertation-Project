@@ -75,9 +75,7 @@ def execute_and_expand_sql(generated_sql, search_radius, was_explicit):
             expanded_result = execute_query(expanded_sql)
             if expanded_result.get('success'):
                 
-                return (expanded_sql, expanded_result.get('results', []),
-                    True, "Valid",
-                    [f"Expanded radius {multiplier}x to {search_radius * multiplier}m"])
+                return (expanded_sql, expanded_result.get('results', []), True, "Valid", [f"Expanded radius {multiplier}x to {search_radius * multiplier}m"])
 
     return final_sql, actual_rows, is_valid, validation_message, []
 
@@ -93,11 +91,7 @@ def generate_sql_with_mcp(user_query, model=None, context_location=None):
 
     sql_lower = final_sql.lower()
     is_dep = 'edinburgh_deprivation' in sql_lower
-    query_mode = (
-        'deprivation' if (is_dep and 'planet_osm' not in sql_lower)
-        else 'cross' if is_dep
-        else 'osm'
-    )
+    query_mode = ('deprivation' if (is_dep and 'planet_osm' not in sql_lower) else 'cross' if is_dep else 'osm')
 
     return {'sql': final_sql, 'valid': is_valid, 'validation_message': validation_message,
         'fixes_applied': radius_fix, 'ontology_used': True, 'activity_terms_found': activity_terms,
