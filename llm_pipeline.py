@@ -16,8 +16,7 @@ def create_baseline_context(user_query, context_location):
 
     is_city_wide = any(sig in q for sig in CITY_WIDE_SIGNALS)
     if not is_city_wide and 'edinburgh' in q and not any(
-        ind in q for ind in ['near ', 'in ', 'around ', 'within ']
-    ):
+        ind in q for ind in ['near ', 'in ', 'around ', 'within ']):
         is_city_wide = True
 
     location_name = 'Edinburgh'
