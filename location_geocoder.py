@@ -26,6 +26,8 @@ def find_street_partial(cur, location_name):
     cur.execute(sql, (f"%{location_name}%", location_name))
     return cur.fetchone()
 
+# This method orchestrates the three street lookup strategies.
+# It tries the exact match first then the whole-word match and then the partial fuzzy match in that order, returning the first successful result.
 def find_street(cur, location_name):
     for finder in (find_street_exact, find_street_word_boundary, find_street_partial):
         result = finder(cur, location_name)
@@ -35,18 +37,22 @@ def find_street(cur, location_name):
         
     return None
 
+# This method looks for named neighbourhoods or administrative areas.
+# It checks polygons tagged with place values such as 'suburb', 'neighbourhood', 'quarter', 'village'
 def find_neighbourhood(cur, location_name):
     sql = "SELECT ST_X(ST_Centroid(way)) AS lon, ST_Y(ST_Centroid(way)) AS lat, name FROM planet_osm_polygon WHERE (name ILIKE %s OR name ~* ('\\y' || %s || '\\y')) AND place IN ('suburb','neighbourhood','quarter','village','town') ORDER BY (LOWER(name) = LOWER(%s)) DESC, (name ~* ('\\y' || %s || '\\y')) DESC, ST_Area(way::geography) DESC LIMIT 1"
     cur.execute(sql, (f"%{location_name}%", location_name, location_name, location_name))
     return cur.fetchone()
 
-
+# This method is the generic polygon fallback.
+# It is used when the name refers to a park, estate, campus, or any large named polygon that is not a neighbourhood or street.
 def find_polygon_boundary(cur, location_name):
     sql = "SELECT ST_X(ST_Centroid(way)) AS lon, ST_Y(ST_Centroid(way)) AS lat, name FROM planet_osm_polygon WHERE (name ILIKE %s OR name ~* ('\\y' || %s || '\\y')) AND way IS NOT NULL ORDER BY (LOWER(name) = LOWER(%s)) DESC, (name ~* ('\\y' || %s || '\\y')) DESC, LENGTH(name) ASC, ST_Area(way::geography) DESC LIMIT 1"
     cur.execute(sql, (f"%{location_name}%", location_name, location_name, location_name))
     return cur.fetchone()
 
-
+# This method looks for named points of interest (POIs).
+# These are OSM nodes such as shops, landmarks, amenities, venues, etc.
 def find_point_of_interest(cur, location_name):
     sql = "SELECT ST_X(way) AS lon, ST_Y(way) AS lat, name FROM planet_osm_point WHERE (name ILIKE %s OR name ~* ('\\y' || %s || '\\y')) " + ORDER_BY_NAME_MATCH + " LIMIT 1"
     cur.execute(sql, (f"%{location_name}%", location_name, location_name, location_name))
