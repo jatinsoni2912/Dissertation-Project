@@ -54,12 +54,7 @@ def lookup_feature_tags(search_terms):
         results = []
         
         for term in search_terms:
-            cur.execute("""
-                SELECT osm_key, osm_value, osm_table 
-                FROM ontology_mappings 
-                WHERE activity_term ILIKE %s OR osm_value ILIKE %s OR activity_term = %s OR osm_key LIKE %s
-                LIMIT 3;
-            """, (f'%{term}%', f'%{term}%', term, f'{term}%'))
+            cur.execute("SELECT osm_key, osm_value, osm_table FROM ontology_mappings WHERE activity_term ILIKE %s OR osm_value ILIKE %s OR activity_term = %s OR osm_key LIKE %s LIMIT 3;", (f"%{term}%", f"%{term}%", term, f"{term}%"))
             rows = cur.fetchall()
             
             if rows:
